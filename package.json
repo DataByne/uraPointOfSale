@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "concurrently \"node ./src/server/server.ts\" \"ng serve --open\"",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
@@ -43,6 +43,7 @@
     "chai": "^4.2.0",
     "codelyzer": "^5.2.0",
     "cucumber": "5.1.0",
+    "express": "^4.17.1",
     "gherkin": "^8.1.1",
     "karma": "~4.1.0",
     "karma-chrome-launcher": "~2.2.0",
