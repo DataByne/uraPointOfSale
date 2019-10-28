@@ -18,9 +18,9 @@ const appRoutes: Routes = [
   { path:'login' , component:LoginPageComponent },
   { path:'registration', component:RegisterPageComponent },
   { path:'about' , component:AboutPageComponent },
-  { path:'insert_employee', component:InsertEmployeeComponent },
-  { path:'list_employee', component:ListEmployeeComponent },
-  { path:'edit_employee', component:EditEmployeeComponent},
+  { path:'employees/insert', component:InsertEmployeeComponent },
+  { path:'employees/', component:ListEmployeeComponent },
+  { path:'employees/edit', component:EditEmployeeComponent},
   { path: '', redirectTo:'landing',pathMatch:'full'},
   { path:'**', component:LandingPageComponent}
 ];
