@@ -9,12 +9,18 @@ import { LandingPageComponent } from './landing-page/landing-page.component';
 import { AboutPageComponent } from './about-page/about-page.component';
 import { LoginPageComponent } from './login-page/login-page.component';
 import { RegisterPageComponent } from './register-page/register-page.component';
+import { InsertEmployeeComponent } from './insert-employee/insert-employee.component';
+import { ListEmployeeComponent } from './list-employee/list-employee.component';
+import { EditEmployeeComponent } from './edit-employee/edit-employee.component';
 
 const appRoutes: Routes = [
   { path:'landing', component:LandingPageComponent },
   { path:'login' , component:LoginPageComponent },
   { path:'registration', component:RegisterPageComponent },
   { path:'about' , component:AboutPageComponent },
+  { path:'insert_employee', component:InsertEmployeeComponent },
+  { path:'list_employee', component:ListEmployeeComponent },
+  { path:'edit_employee', component:EditEmployeeComponent},
   { path: '', redirectTo:'landing',pathMatch:'full'},
   { path:'**', component:LandingPageComponent}
 ];
@@ -27,7 +33,10 @@ const appRoutes: Routes = [
     LandingPageComponent,
     AboutPageComponent,
     LoginPageComponent,
-    RegisterPageComponent
+    RegisterPageComponent,
+    InsertEmployeeComponent,
+    ListEmployeeComponent,
+    EditEmployeeComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,33 @@
+
+<h1>COMMING SOON!!!</h1>
+<div class="navbar">
+
+  <a routerLink="insert_employee" routerLinkActive="active">INSERT Employee</a> <br>
+  <a routerLink="edit_employee">EDIT EMPLOYEE</a>
+</div>
+<form class="employee-form" method='POST'>
+        <p class ="form-label">Add New Employee</p>
+        <fieldset>
+          <div><label>Employee ID</label><input type="text" placeholder="Employee ID" name="employee_ID" required></div>
+          <div><label>First name</label><input type="text" placeholder="First name" name="first_name" required></div>
+          <div><label>Last name:</label><input type="text" placeholder="Last name" name="last_name" required></div>
+          <div><label>Middle name:</label><input type="text" placeholder="Middle name" name="middle_name" required></div>
+          <div><label>SSN:</label><input type="text" name="SSN" placeholder="SSN" required></div>
+          <div>
+              <label>Gender:</label><select style="font-size:20px" name="gender" required>
+                <option selected hidden value="">select</option>
+                <option value = "M">Male</option>
+                <option value = "F">Female</option>
+                <option value = "O">Others</option>
+              </select>
+          </div>
+          <div><label>Date of Birth:</label><input type="date" name="birthday" required></div>
+          <div><label>Email:</label><input type="email" name="email" placeholder="Email" required></div>
+          <div><label>Phone number:</label><input type="text" name="phone" placeholder="Phone number" required></div>
+          <div><label>Address:</label><input type="text" name="address" placeholder="Address" required></div>
+          <div><label>Hiring date</label><input type="date" name="hiring_date" required></div>
+          <div><label>Salary</label><input type="text" name="salary" placeholder="Salary" required></div>
+          <div><label>Position</label><input type="text" name="position" placeholder="position" required></div><br>
+          <button class="btn-submit" type="submit" name="btnInsert">Insert New Record</button>
+        </fieldset>
+    </form>
