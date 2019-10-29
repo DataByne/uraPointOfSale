@@ -16,15 +16,15 @@ import { EditEmployeeComponent } from './edit-employee/edit-employee.component';
 const appRoutes: Routes = [
   { path:'landing', component:LandingPageComponent },
   { path:'login' , component:LoginPageComponent },
-  { path:'registration', component:RegisterPageComponent },
+  { path:'register', component:RegisterPageComponent },
   { path:'about' , component:AboutPageComponent },
-  { path:'employees/insert', component:InsertEmployeeComponent },
-  { path:'employees/', component:ListEmployeeComponent },
-  { path:'employees/edit', component:EditEmployeeComponent},
+  { path:'employees/add', component:InsertEmployeeComponent },
+  { path:'employees', component:ListEmployeeComponent },
+  { path:'employees/:id', component:EditEmployeeComponent},
   { path: '', redirectTo:'landing',pathMatch:'full'},
   { path:'**', component:LandingPageComponent}
 ];
- 
+
 @NgModule({
   declarations: [
     AppComponent,

@@ -60,7 +60,7 @@ input {
 .employee-form{
   background-color: lightblue;
 	float:left;
-	width: 50%;
+	width: 100%;
 }
 .form-label{
   background-color: #008B8B;
