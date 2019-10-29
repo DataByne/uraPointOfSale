@@ -24,7 +24,7 @@ const appRoutes: Routes = [
   { path: '', redirectTo:'landing',pathMatch:'full'},
   { path:'**', component:LandingPageComponent}
 ];
-
+ 
 @NgModule({
   declarations: [
     AppComponent,
