@@ -1,26 +1,7 @@
-div.sm-jumbotton{
-  margin: 0px;
-  padding: 2rem;
-  background-color: #38547b;
-  color: #fff;
-}
 
-button.btn-submit{
-  background-color: #F4A460;
-  font-size: 20px;
-  color: #fff;
-  width: 120px;
-  padding: 0.5rem;
-}
 
 button.btn-submit:focus, button.btn-submit:hover{
   background-color: #708090;
-}
-
-legend {
-	padding:10px2;
-	font-size:20px;
-	color: darkblue;
 }
 
 label {
@@ -45,25 +26,12 @@ input {
 
 /* CLASS*/
 .btn{
-  background-color: #4CAF50;
-  border: none;
+  background-color: seagreen;
   color: white;
-  padding: 2rem;;
+  padding: 1rem;;
   text-align: center;
-  text-decoration: none;
   display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
+  font-size: 20px;
+  margin: 4px 3px;
   cursor: pointer;
-}
-
-.employee-form{
-  background-color: lightblue;
-	float:left;
-	width: 50%;
-}
-.form-label{
-  background-color: #008B8B;
-  font-size: 25px;
-  color: #2F4F4F;
 }

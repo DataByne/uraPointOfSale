@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {FormsModule} from '@angular/forms';             // for creating form
+
 
 
 @Component({
@@ -9,7 +9,10 @@ import {FormsModule} from '@angular/forms';             // for creating form
 })
 export class InsertEmployeeComponent implements OnInit {
 
-  constructor() { }
+  constructor() {
+
+    
+   }
 
   ngOnInit() {
   }

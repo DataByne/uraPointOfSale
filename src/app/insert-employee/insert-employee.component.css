@@ -1,20 +1,21 @@
-div.sm-jumbotton{
-  margin: 0px;
-  padding: 2rem;
-  background-color: #38547b;
-  color: #fff;
+form
+{
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    text-align: center;
 }
 
-button.btn-submit{
-  background-color: #F4A460;
-  font-size: 20px;
-  color: #fff;
-  width: 120px;
-  padding: 0.5rem;
+h1{
+  text-align: center;
+  background-color: navy;
+  color: white;
+  padding: 1.5rem;
 }
 
-button.btn-submit:focus, button.btn-submit:hover{
-  background-color: #708090;
+.btn:hover {
+  background-color: gray;
 }
 
 legend {
@@ -23,10 +24,12 @@ legend {
 	color: darkblue;
 }
 
+
 label {
 	display: inline-block;
-	width:130px;
+	width:150px;
   font-size: 20px;
+  font-weight: bold
 }
 
 div {
@@ -38,29 +41,28 @@ input:hover {
 }
 
 input {
+  margin: 2.5px;
   font-size: 20px;
   padding: 0.5rem;
-  width: 60%;
+  width: 50%;
 }
 
-/* CLASS*/
+/* ########################## CLASS ####################*/
 .btn{
-  background-color: #4CAF50;
-  border: none;
+  background-color: seagreen;
   color: white;
-  padding: 2rem;;
+  padding: 0.75rem;;
   text-align: center;
-  text-decoration: none;
   display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
+  font-size: 20px;
+  margin: 4px 3px;
   cursor: pointer;
 }
 
-.employee-form{
+.employeeForm{
   background-color: lightblue;
-	float:left;
-	width: 100%;
+  width: 700px;
+  text-align: left;
 }
 .form-label{
   background-color: #008B8B;

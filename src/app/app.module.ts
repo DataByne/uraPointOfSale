@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { FormsModule} from '@angular/forms';             // for creating form
 
 import { AppComponent } from './app.component';
 import { FooterComponent } from './footer/footer.component';

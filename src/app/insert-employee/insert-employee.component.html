@@ -1,26 +1,26 @@
-<form class="employee-form" method='POST'>
-        <p class ="form-label">Add New Employee</p>
-        <fieldset>
-          <div><label>Employee ID</label><input type="text" placeholder="Employee ID" name="employee_ID" required></div>
-          <div><label>First name</label><input type="text" placeholder="First name" name="first_name" required></div>
-          <div><label>Last name:</label><input type="text" placeholder="Last name" name="last_name" required></div>
-          <div><label>Middle name:</label><input type="text" placeholder="Middle name" name="middle_name" required></div>
-          <div><label>SSN:</label><input type="text" name="SSN" placeholder="SSN" required></div>
-          <div>
-              <label>Gender:</label><select style="font-size:20px" name="gender" required>
-                <option selected hidden value="">select</option>
-                <option value = "M">Male</option>
-                <option value = "F">Female</option>
-                <option value = "O">Others</option>
-              </select>
-          </div>
-          <div><label>Date of Birth:</label><input type="date" name="birthday" required></div>
-          <div><label>Email:</label><input type="email" name="email" placeholder="Email" required></div>
-          <div><label>Phone number:</label><input type="text" name="phone" placeholder="Phone number" required></div>
-          <div><label>Address:</label><input type="text" name="address" placeholder="Address" required></div>
-          <div><label>Hiring date</label><input type="date" name="hiring_date" required></div>
-          <div><label>Salary</label><input type="text" name="salary" placeholder="Salary" required></div>
-          <div><label>Position</label><input type="text" name="position" placeholder="position" required></div><br>
-          <button class="btn-submit" type="submit" name="btnInsert">Insert New Record</button>
-        </fieldset>
-  </form>
+
+
+
+<form class="employeeForm" name="employeeForm">
+    <h1>New Employee</h1>
+    <fieldset>
+        <div class="form-group">
+            <label for="employeeID">Employee ID</label><input ngModel name="employee_ID" required id="employeeID" type="text" class="form-control" placeholder="Employee ID" required><br>
+            <label for="firstName">First name</label><input ngModel name="firstName" required id="firstName" type="text" class="form-control" placeholder="First name" required><br>
+            <label for="lastName">Last name</label><input ngModel name="lastName" required id="lastName" type="text" class="form-control" placeholder="Last name" required><br>
+            <label for="middleName">Middle name</label><input ngModel name="employee_ID" required id="employeeID" type="text" class="form-control" placeholder="Middle name" required><br>
+            <label for="SSN">SSN</label><input ngModel name="SSN" required id="SSN" type="text" class="form-control" placeholder="xxx-xx-xxxx" required><br>
+            <label for="gender">gender</label><input ngModel name="gender" required id="gender" type="text" class="form-control" placeholder="Gender" required><br>
+            <label for="birthday">Date of Birth</label><input ngModel name="birthday" required id="birthday" type="text" class="form-control" placeholder="dd/mm/yyyy" required><br>
+            <label for="email">Email</label><input ngModel name="Email" required id="email" type="text" class="form-control" placeholder="Email" required><br>
+            <label for="phoneNumber">Phone number</label><input ngModel name="phoneNumber" required id="phoneNumber" type="text" class="form-control" placeholder="Phone number" required><br>
+            <label for="address">Address</label><input ngModel name="address" required id="address" type="text" class="form-control" placeholder="Address" required><br>
+            <label for="hiringDate">Hiring date</label><input ngModel name="hiringDate" required id="hiringDate" type="text" class="form-control" placeholder="dd/mm/yyyy" required><br>
+            <label for="salary">Salary</label><input ngModel name="salary" required id="salary" type="text" class="form-control" placeholder="Salary" required><br>
+            <label for="position">Position</label><input ngModel name="position" required id="position" type="text" class="form-control" placeholder="Position" required><br>
+        </div>  
+        <button class="btn" type="submit" name="btnSubmit">Insert New Record</button>
+    </fieldset>  
+
+</form>
+

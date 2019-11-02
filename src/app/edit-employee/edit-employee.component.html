@@ -1,9 +1,34 @@
 
-<form class="employee-form">
+<form class="employeeForm">
     <fieldset >
-      <h2 style="color: blue">Delete an Employee</h2>
-      <div><label>Employee ID</label><input type="text" placeholder="Employee ID" name="del_empID"></div>
-
-      <button type="submit" name="btnConfirm" value="Confirm" class="btn-submit">Delete a record</button>
-    </fieldset>
+      <div class="form-group">   
+        <label for="employeeID">Employee ID</label><input ngModel name="employee_ID" required id="employeeID" type="text" class="form-control" placeholder="Employee ID" required>
+        <button type="submit" name="view" value="view" class="btn">  View </button>
+      </div>
+   </fieldset>
 </form>
+
+<form>
+   <table>
+      <h1>Employee's Information</h1>
+      <tr>Employee ID</tr>
+      <tr>First Name</tr>
+      <tr>Last name</tr>
+      <tr>Middle name</tr>
+      <tr>SSN</tr>
+      <tr>Gender</tr>
+      <tr>Date of Birth</tr>
+      <tr>Email</tr>
+      <tr>Phone number</tr>
+      <tr>Address</tr>
+      <tr>Hiring date</tr>
+      <tr>Salary</tr>
+      <tr>Position</tr>
+    </table>
+    
+    
+    <button type="submit" name="view" value="view" class="btn">  Update  </button>
+    <button type="submit" name="delete" value="delete" class="btnDelete">  Delete record </button>
+ 
+</form>
+
