@@ -1,34 +1,22 @@
-
-<form class="employeeForm">
-    <fieldset >
-      <div class="form-group">   
-        <label for="employeeID">Employee ID</label><input ngModel name="employee_ID" required id="employeeID" type="text" class="form-control" placeholder="Employee ID" required>
-        <button type="submit" name="view" value="view" class="btn">  View </button>
-      </div>
-   </fieldset>
+<form class="employeeForm" name="employeeForm">
+  <h1>New Employee</h1>
+  <fieldset>
+      <div class="form-group">
+          <label for="employeeID">Employee ID</label><input ngModel name="employeeID"  id="employeeID" type="text" class="form-control" placeholder="Employee ID" required><br>
+          <label for="firstName">First name</label><input ngModel name="firstName"  id="firstName" type="text" class="form-control" placeholder="First name" required><br>
+          <label for="lastName">Last name</label><input ngModel name="lastName"  id="lastName" type="text" class="form-control" placeholder="Last name" required><br>
+          <label for="middleName">Middle name</label><input ngModel name="employee_ID"  id="employeeID" type="text" class="form-control" placeholder="Middle name" required><br>
+          <label for="SSN">SSN</label><input ngModel name="SSN"  id="SSN" type="text" class="form-control" placeholder="xxx-xx-xxxx" required><br>
+          <label for="gender">gender</label><input ngModel name="gender"  id="gender" type="text" class="form-control" placeholder="Gender" required><br>
+          <label for="birthday">Date of Birth</label><input ngModel name="birthday"  id="birthday" type="date" class="form-control" required><br>
+          <label for="email">Email</label><input ngModel name="Email"  id="email" type="text" class="form-control" placeholder="Email" required><br>
+          <label for="phoneNumber">Phone number</label><input ngModel name="phoneNumber" id="phoneNumber" type="text" class="form-control" placeholder="Phone number" required><br>
+          <label for="address">Address</label><input ngModel name="address"  id="address" type="text" class="form-control" placeholder="Address" required><br>
+          <label for="hiringDate">Hiring date</label><input ngModel name="hiringDate"  id="hiringDate" type="date" class="form-control" required><br>
+          <label for="salary">Salary</label><input ngModel name="salary" id="salary" type="text" class="form-control" placeholder="Salary" required><br>
+          <label for="position">Position</label><input ngModel name="position" id="position" type="text" class="form-control" placeholder="Position" required><br>
+      </div>  
+      <button type="submit" name="btnUpdate" value="update" class="btn">Update</button>
+  </fieldset>  
 </form>
-
-<form>
-   <table>
-      <h1>Employee's Information</h1>
-      <tr>Employee ID</tr>
-      <tr>First Name</tr>
-      <tr>Last name</tr>
-      <tr>Middle name</tr>
-      <tr>SSN</tr>
-      <tr>Gender</tr>
-      <tr>Date of Birth</tr>
-      <tr>Email</tr>
-      <tr>Phone number</tr>
-      <tr>Address</tr>
-      <tr>Hiring date</tr>
-      <tr>Salary</tr>
-      <tr>Position</tr>
-    </table>
-    
-    
-    <button type="submit" name="view" value="view" class="btn">  Update  </button>
-    <button type="submit" name="delete" value="delete" class="btnDelete">  Delete record </button>
- 
-</form>
-
+{{employeeForm.value | json}}
