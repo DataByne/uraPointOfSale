@@ -1,29 +1,27 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { FormsModule} from '@angular/forms';             // for creating form
+import { FormsModule} from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
-import { LandingPageComponent } from './landing-page/landing-page.component';
-import { AboutPageComponent } from './about-page/about-page.component';
-import { LoginPageComponent } from './login-page/login-page.component';
-import { RegisterPageComponent } from './register-page/register-page.component';
-import { InsertEmployeeComponent } from './insert-employee/insert-employee.component';
-import { ListEmployeeComponent } from './list-employee/list-employee.component';
+import { LandingComponent } from './landing/landing.component';
+import { AboutComponent } from './about/about.component';
+import { LoginComponent } from './login/login.component';
+import { RegisterComponent } from './register/register.component';
+import { EmployeesComponent } from './employees/employees.component';
 import { EditEmployeeComponent } from './edit-employee/edit-employee.component';
 
 const appRoutes: Routes = [
-  { path:'landing', component:LandingPageComponent },
-  { path:'login' , component:LoginPageComponent },
-  { path:'register', component:RegisterPageComponent },
-  { path:'about' , component:AboutPageComponent },
-  { path:'employees/add', component:InsertEmployeeComponent },
-  { path:'employees', component:ListEmployeeComponent },
-  { path:'employees/edit/:employeeID', component:EditEmployeeComponent},
-  { path: '', redirectTo:'landing',pathMatch:'full'},
-  { path:'**', component:LandingPageComponent}
+  { path: '', component: LandingComponent },
+  { path: 'login' , component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
+  { path: 'about' , component: AboutComponent },
+  { path: 'employees/add', component: EditEmployeeComponent },
+  { path: 'employees', component: EmployeesComponent },
+  { path: 'employees/edit/:id', component: EditEmployeeComponent },
+  { path: '**', redirectTo: '/', pathMatch: 'full' }
 ];
 
 @NgModule({
@@ -31,12 +29,11 @@ const appRoutes: Routes = [
     AppComponent,
     FooterComponent,
     HeaderComponent,
-    LandingPageComponent,
-    AboutPageComponent,
-    LoginPageComponent,
-    RegisterPageComponent,
-    InsertEmployeeComponent,
-    ListEmployeeComponent,
+    LandingComponent,
+    AboutComponent,
+    LoginComponent,
+    RegisterComponent,
+    EmployeesComponent,
     EditEmployeeComponent
   ],
   imports: [
