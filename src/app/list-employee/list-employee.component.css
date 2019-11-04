@@ -1,37 +1,6 @@
-
-
-button.btn-submit:focus, button.btn-submit:hover{
-  background-color: #708090;
-}
-
-label {
-	display: inline-block;
-	width:130px;
-  font-size: 20px;
-}
-
-div {
-	margin-bottom: 10px;
-}
-
-input:hover {
-	background-color : #FFF8DC;
-}
-
-input {
-  font-size: 20px;
-  padding: 0.5rem;
-  width: 60%;
-}
-
-/* CLASS*/
-.btn{
-  background-color: seagreen;
-  color: white;
-  padding: 1rem;;
+h1{
   text-align: center;
-  display: inline-block;
-  font-size: 20px;
-  margin: 4px 3px;
-  cursor: pointer;
+  background-color: rgb(0, 81, 128);
+  color: white;
+  padding: 1rem;
 }

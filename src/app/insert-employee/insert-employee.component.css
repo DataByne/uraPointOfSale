@@ -7,23 +7,19 @@ form
     text-align: center;
 }
 
+input {
+  margin: 2.5px;
+  font-size: 20px;
+  padding: 0.5rem;
+  width: 50%;
+}
+
 h1{
   text-align: center;
   background-color: navy;
   color: white;
   padding: 1.5rem;
 }
-
-.btn:hover {
-  background-color: gray;
-}
-
-legend {
-	padding:10px2;
-	font-size:20px;
-	color: darkblue;
-}
-
 
 label {
 	display: inline-block;
@@ -32,33 +28,7 @@ label {
   font-weight: bold
 }
 
-div {
-	margin-bottom: 10px;
-}
-
-input:hover {
-	background-color : #FFF8DC;
-}
-
-input {
-  margin: 2.5px;
-  font-size: 20px;
-  padding: 0.5rem;
-  width: 50%;
-}
-
 /* ########################## CLASS ####################*/
-.btn{
-  background-color: seagreen;
-  color: white;
-  padding: 0.75rem;;
-  text-align: center;
-  display: inline-block;
-  font-size: 20px;
-  margin: 4px 3px;
-  cursor: pointer;
-}
-
 .employeeForm{
   background-color: lightblue;
   width: 700px;

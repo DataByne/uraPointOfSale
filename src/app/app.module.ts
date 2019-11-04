@@ -21,7 +21,7 @@ const appRoutes: Routes = [
   { path:'about' , component:AboutPageComponent },
   { path:'employees/add', component:InsertEmployeeComponent },
   { path:'employees', component:ListEmployeeComponent },
-  { path:'employees/:id', component:EditEmployeeComponent},
+  { path:'employees/edit/:employeeID', component:EditEmployeeComponent},
   { path: '', redirectTo:'landing',pathMatch:'full'},
   { path:'**', component:LandingPageComponent}
 ];
