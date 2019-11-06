@@ -143,6 +143,7 @@ npm-debug.log
 yarn-error.log
 testem.log
 /typings
+*.spec.ts
 
 # System Files
 .DS_Store
