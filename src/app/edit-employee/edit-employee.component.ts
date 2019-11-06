@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {FormsModule} from '@angular/forms';             // for creating form
+import { Location } from '@angular/common'
 
 @Component({
   selector: 'app-edit-employee',
@@ -8,9 +8,12 @@ import {FormsModule} from '@angular/forms';             // for creating form
 })
 export class EditEmployeeComponent implements OnInit {
 
-  constructor() { }
+  constructor(private location: Location ) { }
 
   ngOnInit() {
   }
 
+  goBack(){
+    this.location.back()
+  }
 }

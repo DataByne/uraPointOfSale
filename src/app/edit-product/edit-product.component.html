@@ -1,0 +1,14 @@
+<form class="productForm" name="productForm">
+  <h1>Add New Product</h1>
+  <div class="form-group">
+    Product Name: <input type="text" name="product-name-input"><br>
+    Product ID: <input type="text" name="product-id-input"><br>
+    Procut Price: <input type="number" min="1" step="any" name="price-input" /><br>
+    Description:<textarea rows="4" cols="50" name="description-input"></textarea><br>
+    Stock:<input type="text" name="stock-input"><br>
+    Last Refill:<input type="datetime-local" name="last-refill-input"><br>
+    Next Refill:<input type="datetime-local" name="next-refill-input"><br>
+  </div>
+  <button type="submit">Save</button>
+  <button (click)="goBack()">Cancel</button>
+</form>
