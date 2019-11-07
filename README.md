@@ -1,4 +1,4 @@
-# uraPointOfSale
-![uraPointOfSale Logo](/src/assets/images/logo.png?raw=true "uraPointOfSale Logo")
+# Note Weaver
+
 =====
-Course project for Software Engineering. Project is a web based POS service aimed at brick and mortar stores.
+Course project for Software Engineering. Project is a web based note service.

@@ -1,0 +1,45 @@
+<div>
+  <h1>Employee Management</h1>
+  <div class="navbar">
+    <button class="btn btn-primary" routerLink="/employees/add" routerLinkActive="active">Add Employee </button>
+  </div>
+
+  <div class="panel panel-primary">
+    <table>
+      <thead>
+      <th scope='col'>Employee ID</th>
+      <th scope='col'>First Name</th>
+      <th scope='col'>Last Name</th>
+      <th scope='col'>Middle Name</th>
+      <th scope='col'>SSN</th>
+      <th scope='col'>Gender</th>
+      <th scope='col'>Date of Birth</th>
+      <th scope='col'>Email</th>
+      <th scope='col'>Phone Number</th>
+      <th scope='col'>Address</th>
+      <th scope='col'>Hiring Date</th>
+      <th scope='col'>Salary</th>
+      <th scope='col'>Position </th>
+      <th scope="col">Actions</th>
+      </thead>
+      <tbody ng-app="" name="employeeRow" *ngFor="let employee of employees">
+      <th scope='row'>{{employee.employeeID}}</th>
+      <td scope='row'>{{employee.firstName}}</td>
+      <td scope='row'>{{employee.lastName}}</td>
+      <td scope='row'>{{employee.middleName}}</td>
+      <td scope='row'>{{employee.ssn}}</td>
+      <td scope='row'>{{employee.gender}}</td>
+      <td scope='row'>{{employee.birthday}}</td>
+      <td scope='row'>{{employee.email}}</td>
+      <td scope='row'>{{employee.phoneNumber}}</td>
+      <td scope='row'>{{employee.address}}</td>
+      <td scope='row'>{{employee.hiringDate}}</td>
+      <td scope='row'>{{employee.salary}}</td>
+      <td scope='row'>{{employee.position}}</td>
+      <td scope='row'>
+        <button class="btn btn-primary" (click)="editEmployee(employee)">Edit</button>
+        <button class="btn btn-danger" (click)="deleteEmployee(employee)"> delete </button>
+      </td>
+    </table>
+  </div>
+</div>
