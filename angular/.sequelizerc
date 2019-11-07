@@ -1,9 +1,0 @@
-var path = require('path');
-
-module.exports = {
-  'config': path.resolve('./', 'src/server/config/config.js'),
-  'migrations-path': path.resolve('./', 'src/server/migrations'),
-  'seeders-path': path.resolve('./', 'src/server/seeders'),
-  'models-path': path.resolve('./', 'src/server/models')
-};
-
