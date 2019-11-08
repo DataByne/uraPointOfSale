@@ -6,9 +6,13 @@ from app.forms import LoginForm
 @app.route( '/index' )
 def index():
     return render_template('index.html', title='Home')
-    
+
+@app.route('/css/<path:path>')
+def send_css(path):
+    return send_from_directory('css', path)
+
 @app.route('/images/<path:path>')
-def send_js(path):
+def send_images(path):
     return send_from_directory('images', path)
 
 @app.route('/login', methods=['GET', 'POST'])
