@@ -7,12 +7,24 @@
             {{ form.hidden_tag() }}
             {{ form.email.label }}<br />
             {{ form.email()}}<br />
+            {% if error in form.email.errors %}
+                <span style = "color: red;">[{{ error }}]</span>
+            {% endif %}
             {{ form.username.label }}<br />
             {{ form.username()}}<br />
+            {% if error in form.username.errors %}
+                <span style = "color: red;">[{{ error }}]</span>
+            {% endif %}
             {{ form.password.label }}<br />
             {{ form.password() }}<br />
+            {% if error in form.password.errors %}
+                <span style = "color: red;">[{{ error }}]</span>
+            {% endif %}
             {{ form.password_confirm.label }}<br />
-            {{ form.password_confirm() }}<br /><br />
+            {{ form.password_confirm() }}<br />
+            {% if error in form.password_confirm.errors %}
+                <span style = "color: red;">[{{ error }}]</span>
+            {% endif %}<br />
             {{ form.submit() }}
         </form>
     </div>
