@@ -1,26 +1,19 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h1>Register to start taking notes!</h1>
-  <form action="" method="post" novalidate>
-    {{ form.hidden_tag() }}
-    <p>
-      {{ form.email.label }}<br>
-      {{ form.email(size=64)}}
-    </p>
-    <p>
-      {{ form.username.label }}<br>
-      {{ form.username(size=64)}}
-    </p>
-    <p>
-      {{ form.password.label }}<br>
-      {{ form.password(size=64) }}
-    </p>
-    <p>
-      {{ form.password_confirm.label }}<br>
-      {{ form.password_confirm(size=64) }}
-    </p>
-    <p>{{ form.submit() }}</p>
-  </form>
-
+    <div align="center">
+        <h1>Register to start taking notes!</h1>
+        <form action="" method="post" novalidate>
+            {{ form.hidden_tag() }}
+            {{ form.email.label }}<br />
+            {{ form.email()}}<br />
+            {{ form.username.label }}<br />
+            {{ form.username()}}<br />
+            {{ form.password.label }}<br />
+            {{ form.password() }}<br />
+            {{ form.password_confirm.label }}<br />
+            {{ form.password_confirm() }}<br /><br />
+            {{ form.submit() }}
+        </form>
+    </div>
 {% endblock %}

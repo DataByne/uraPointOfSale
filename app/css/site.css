@@ -7,6 +7,22 @@ a {
     text-decoration: none;
 }
 
+button,
+label,
+input,
+submit {
+    padding: 5;
+}
+
+h1,
+h2 {
+    padding: 10;
+}
+
+img {
+    margin: 5;
+}
+
 .nav-bar {
     width: 100%;
     background-color: navy;
