@@ -11,9 +11,9 @@
     <div class="nav-bar">
       Note Weave:
       <a href="{{ url_for('index') }}"><div class="nav-link">Home</div></a>
+      <a href="{{ url_for('register') }}"><div class="nav-link">Register</div></a>
       <a href="{{ url_for('login') }}"><div class="nav-link">Login</div></a>
     </div>
-    <hr>
     {% block content %}{% endblock %}
     <div class="footer">
       <a target="_blank" rel="noopener noreferrer" href="https://www.kent.edu/cs"><img src="images/kent_state_university_stacked_2-color.png" width="50" height="50" align="left"></a>

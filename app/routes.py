@@ -1,6 +1,6 @@
 from app import app
 from flask import render_template, send_from_directory
-from app.forms import LoginForm
+from app.forms import LoginForm, RegisterForm
 
 @app.route( '/' )
 @app.route( '/index' )
@@ -15,7 +15,11 @@ def send_css(path):
 def send_images(path):
     return send_from_directory('images', path)
 
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    return render_template('register.html', title="Register", form=RegisterForm())
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    form = LoginForm()
-    return render_template('login.html', title="Login", form=form)
+    return render_template('login.html', title="Login", form=LoginForm())
+

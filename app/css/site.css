@@ -1,0 +1,27 @@
+
+a {
+    text-decoration: none;
+}
+
+.nav-bar {
+    width: 100%;
+    background-color: navy;
+    color: white;
+    padding: 10;
+}
+
+.nav-link,
+.nav-link:active,
+.nav-link:focus,
+.nav-link:link,
+.nav-link:visited {
+    display: inline;
+    background-color: navy;
+    color: white;
+    padding: 10;
+}
+
+.nav-link:hover {
+    background-color: blue;
+}
+
