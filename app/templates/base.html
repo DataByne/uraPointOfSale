@@ -11,8 +11,12 @@
     <div class="nav-bar">
       Note Weave:
       <a href="{{ url_for('index') }}"><div class="nav-link">Home</div></a>
+      {% if current_user.is_anonymous %}
       <a href="{{ url_for('register') }}"><div class="nav-link">Register</div></a>
       <a href="{{ url_for('login') }}"><div class="nav-link">Login</div></a>
+      {% else %}
+      <a href="{{ url_for('logout') }}"><div class="nav-link">Logout</div></a>
+      {% endif %}
     </div>
     {% block content %}{% endblock %}
     <div class="footer">

@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h1>Welcome to Note Weave!</h1>
+
+  {% if current_user.is_anonymous %}
+    <h1>Welcome to Note Weave!</h1>
+  {% else %}
+    <h1>Welcome back to Note Weave {{ current_user.username }}!</h1>
+  {% endif %}
 
 {% endblock %}
