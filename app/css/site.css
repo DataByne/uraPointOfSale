@@ -3,7 +3,12 @@
     font-family: Arial, Helvetica, sans-serif;
 }
 
-a {
+a,
+a:active,
+a:focus,
+a:hover,
+a:link,
+a:visited {
     text-decoration: none;
 }
 
@@ -30,11 +35,7 @@ img {
     padding: 10;
 }
 
-.nav-link,
-.nav-link:active,
-.nav-link:focus,
-.nav-link:link,
-.nav-link:visited {
+.nav-link {
     display: inline;
     background-color: navy;
     color: white;
