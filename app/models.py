@@ -10,3 +10,13 @@ class User(db.Model):
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
+
+class Note(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    title = db.Column(db.String(50), index = True)
+    note = db.Column(db.String(500), index = True)
+    note_date = db.Column(db.DateTime, index = True, default = datetime.utcnow)
+    last_edited = db.Column(db.DateTime, index = True, default = datetime.utcnow)
+
+    def __repr__(self):
+        return '<Note: {}>'.format(self.note)
