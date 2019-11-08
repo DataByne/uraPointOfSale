@@ -1,0 +1,19 @@
+<html>
+  <head>
+    {% if title %}
+    <title>{{ title }} -Note Weave</title>
+    {% else %}
+    <title>Welcome to Note Weave</title>
+    {% endif %}
+  </head>
+  <body>
+    <div>Note Weave:
+      <a href="{{ url_for('index')}}">Home</a>
+      <a href="{{ url_for('login')}}">Login</a>
+      <a href="https://github.com/DataByne/uraPointOfSale">Git Hub</a>
+      <a href="https://www.kent.edu/">Kent State </a>
+    </div>
+    <hr>
+    {% block content %}{% endblock %}
+  </body>
+</html>
