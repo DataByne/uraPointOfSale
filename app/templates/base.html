@@ -1,13 +1,13 @@
 <html>
   <head>
     {% if title %}
-    <title>{{ title }} -Note Weave</title>
+    <title>{{ title }} - Note Weave</title>
     {% else %}
     <title>Welcome to Note Weave</title>
     {% endif %}
   </head>
   <body>
-    <div>Note Weave:
+    <div>Note Weave:&nbsp;
       <a href="{{ url_for('index') }}">Home</a>
       <a href="{{ url_for('login') }}">Login</a>
     </div>
