@@ -147,6 +147,7 @@ yarn-error.log
 testem.log
 /typings
 *.spec.ts
+/app.db
 
 # System Files
 .DS_Store
