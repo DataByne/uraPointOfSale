@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="col" align="center">
+        <h1>Go ahead, add a note, {{ current_user.username }}!</h1>
+        <form action="" method="post" novalidate>
+            {{ form.hidden_tag() }}
+            {{ form.title.label }}<br />
+            {{ form.title(autofocus=true) }}<br />
+            {{ form.note.label }}<br />
+            {{ form.note }}<br /><br />
+            {{ form.submit() }}
+        </form>
+    </div>
+{% endblock %}

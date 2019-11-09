@@ -1,8 +1,8 @@
 from app import app, db
 from flask import render_template, send_from_directory, flash, redirect, url_for, request
-from app.forms import LoginForm, RegisterForm
-from flask_login import current_user, login_user, logout_user
-from app.models import User
+from app.forms import LoginForm, RegisterForm, NoteForm
+from flask_login import current_user, login_user, logout_user, login_required
+from app.models import User, Note
 
 @app.route( '/' )
 @app.route( '/index' )
@@ -49,3 +49,20 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+@app.route('/notes')
+@login_required
+def notes():
+    return render_template('notes.html', title='Your Notes')
+
+@app.route('/addnote', methods=['GET', 'POST'])
+@login_required
+def addnote():
+    form = NoteForm()
+    if form.validate_on_submit():
+        newnote = Note(title = form.title.data, note=form.note.data, user_id=current_user.id)
+        db.session.add(newnote)
+        db.session.commit()
+        return redirect(url_for('index'))#may need to be changed depending on things
+    return render_template('addnote.html', title='Add A Note', form=form)
+
