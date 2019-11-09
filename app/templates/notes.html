@@ -5,7 +5,7 @@
           <h1>These are your notes, {{ current_user.username }}!</h1>
           {% for note in notes %}
             <div>
-              <h4><b>{{ note.title }}</b></h3>
+              <h4><a href="{{ url_for('singlenote', NoteID = note.id )}}"><b>{{ note.title }}</b></a></h4>
               <p>{{ note.note }}</p>
             </div>
           {% endfor %}
