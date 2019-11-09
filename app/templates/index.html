@@ -3,9 +3,9 @@
 {% block content %}
     <div align="center">
       {% if current_user.is_anonymous %}
-          <h1>Welcome to Note Weave!</h1>
+          <h1>Welcome to Note Weaver!</h1>
       {% else %}
-          <h1>Welcome back to Note Weave, {{ current_user.username }}!</h1>
+          <h1>Welcome back to Note Weaver, {{ current_user.username }}!</h1>
       {% endif %}
     </div>
 {% endblock %}

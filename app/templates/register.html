@@ -4,35 +4,59 @@
     <div class="row">
         <div class="offset-1 offset-sm-2 offset-md-3 text-center">
             <h1>Register to start taking notes!</h1>
-            <form class="justify-content-center" action="" method="post" novalidate>
+            <form class="needs-validation justify-content-center" action="" method="post" novalidate>
                 {{ form.hidden_tag() }}
                 <div class="form-group row col-sm-12">
                     {{ form.email.label(class="col-sm-5 col-form-label") }}
-                    {{ form.email(autofocus=true, class="col-sm-7 form-control")}}
-                    {% if error in form.email.errors %}
-                        <span style = "color: red;">[{{ error }}]</span>
+                    {% set email_isvalid = "" %}
+                    {% if form.email.errors %}
+                      {% set email_isvalid = " is-invalid" %}
                     {% endif %}
+                    {{ form.email(autofocus=true, class="col-sm-7 form-control" + email_isvalid) }}
+                    {% for error in form.email.errors %}
+                        <div class="invalid-feedback">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
                 </div>
                 <div class="form-group row col-sm-12">
                     {{ form.username.label(class="col-sm-5 col-form-label") }}
-                    {{ form.username(class="col-sm-7 form-control")}}
-                    {% if error in form.username.errors %}
-                        <span style = "color: red;">[{{ error }}]</span>
+                    {% set username_isvalid = "" %}
+                    {% if form.username.errors %}
+                      {% set username_isvalid = " is-invalid" %}
                     {% endif %}
+                    {{ form.username(class="col-sm-7 form-control" + username_isvalid) }}
+                    {% for error in form.username.errors %}
+                        <div class="invalid-feedback">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
                 </div>
                 <div class="form-group row col-sm-12">
                     {{ form.password.label(class="col-sm-5 col-form-label") }}
-                    {{ form.password(class="col-sm-7 form-control") }}
-                    {% if error in form.password.errors %}
-                        <span style = "color: red;">[{{ error }}]</span>
+                    {% set password_isvalid = "" %}
+                    {% if form.password.errors %}
+                        {% set password_isvalid = " is-invalid" %}
                     {% endif %}
+                    {{ form.password(class="col-sm-7 form-control" + password_isvalid) }}
+                    {% for error in form.password.errors %}
+                        <div class="invalid-feedback">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
                 </div>
                 <div class="form-group row col-sm-12">
                     {{ form.password_confirm.label(class="col-sm-5 col-form-label") }}
-                    {{ form.password_confirm(class="col-sm-7 form-control") }}
-                    {% if error in form.password_confirm.errors %}
-                        <span style = "color: red;">[{{ error }}]</span>
+                    {% set password_confirm_isvalid = "" %}
+                    {% if form.password_confirm.errors %}
+                        {% set password_confirm_isvalid = " is-invalid" %}
                     {% endif %}
+                    {{ form.password_confirm(class="col-sm-7 form-control" + password_confirm_isvalid) }}
+                    {% for error in form.password_confirm.errors %}
+                        <div class="invalid-feedback">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
                 </div>
                 <div class="form-group row col-sm-4 offset-sm-4">
                     {{ form.submit(class="form-control") }}
