@@ -1,31 +1,43 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div align="center">
-        <h1>Register to start taking notes!</h1>
-        <form action="" method="post" novalidate>
-            {{ form.hidden_tag() }}
-            {{ form.email.label }}<br />
-            {{ form.email(autofocus=true)}}<br />
-            {% if error in form.email.errors %}
-                <span style = "color: red;">[{{ error }}]</span>
-            {% endif %}
-            {{ form.username.label }}<br />
-            {{ form.username()}}<br />
-            {% if error in form.username.errors %}
-                <span style = "color: red;">[{{ error }}]</span>
-            {% endif %}
-            {{ form.password.label }}<br />
-            {{ form.password() }}<br />
-            {% if error in form.password.errors %}
-                <span style = "color: red;">[{{ error }}]</span>
-            {% endif %}
-            {{ form.password_confirm.label }}<br />
-            {{ form.password_confirm() }}<br />
-            {% if error in form.password_confirm.errors %}
-                <span style = "color: red;">[{{ error }}]</span>
-            {% endif %}<br />
-            {{ form.submit() }}
-        </form>
+    <div class="row">
+        <div class="offset-1 offset-sm-2 offset-md-3 text-center">
+            <h1>Register to start taking notes!</h1>
+            <form class="justify-content-center" action="" method="post" novalidate>
+                {{ form.hidden_tag() }}
+                <div class="form-group row col-sm-12">
+                    {{ form.email.label(class="col-sm-5 col-form-label") }}
+                    {{ form.email(autofocus=true, class="col-sm-7 form-control")}}
+                    {% if error in form.email.errors %}
+                        <span style = "color: red;">[{{ error }}]</span>
+                    {% endif %}
+                </div>
+                <div class="form-group row col-sm-12">
+                    {{ form.username.label(class="col-sm-5 col-form-label") }}
+                    {{ form.username(class="col-sm-7 form-control")}}
+                    {% if error in form.username.errors %}
+                        <span style = "color: red;">[{{ error }}]</span>
+                    {% endif %}
+                </div>
+                <div class="form-group row col-sm-12">
+                    {{ form.password.label(class="col-sm-5 col-form-label") }}
+                    {{ form.password(class="col-sm-7 form-control") }}
+                    {% if error in form.password.errors %}
+                        <span style = "color: red;">[{{ error }}]</span>
+                    {% endif %}
+                </div>
+                <div class="form-group row col-sm-12">
+                    {{ form.password_confirm.label(class="col-sm-5 col-form-label") }}
+                    {{ form.password_confirm(class="col-sm-7 form-control") }}
+                    {% if error in form.password_confirm.errors %}
+                        <span style = "color: red;">[{{ error }}]</span>
+                    {% endif %}
+                </div>
+                <div class="form-group row col-sm-4 offset-sm-4">
+                    {{ form.submit(class="form-control") }}
+                </div>
+            </form>
+        </div>
     </div>
 {% endblock %}

@@ -1,15 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="col" align="center">
-        <h1>Go ahead, add a note, {{ current_user.username }}!</h1>
-        <form action="" method="post" novalidate>
-            {{ form.hidden_tag() }}
-            {{ form.title.label }}<br />
-            {{ form.title(autofocus=true) }}<br />
-            {{ form.note.label }}<br />
-            {{ form.note }}<br /><br />
-            {{ form.submit() }}
-        </form>
+    <div class="row">
+        <div class="offset-1 offset-sm-3 text-center">
+            <h1>Go ahead, add a note, {{ current_user.username }}!</h1>
+            <form class="justify-content-center" action="" method="post" novalidate>
+                {{ form.hidden_tag() }}
+                <div class="form-group row col-sm-12">
+                    {{ form.title.label(class="col-sm-2 col-form-label") }}
+                    {{ form.title(autofocus=true, class="col-sm-10 form-control") }}
+                </div>
+                <div class="form-group row col-sm-12">
+                    {{ form.note.label(class="col-sm-2 col-form-label") }}
+                    {{ form.note(class="col-sm-10 form-control") }}
+                </div>
+                <div class="form-group row col-sm-4 offset-sm-4">
+                    {{ form.submit(class="form-control") }}
+                </div>
+            </form>
+        </div>
     </div>
 {% endblock %}
