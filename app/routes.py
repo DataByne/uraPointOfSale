@@ -47,6 +47,12 @@ def login():
 
 @app.route('/logout')
 def logout():
+    """Exits out of the user context
+
+    Returns:
+        Redirects to home page.
+    """
+    
     logout_user()
     return redirect(url_for('index'))
 
