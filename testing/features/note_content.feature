@@ -30,7 +30,7 @@ Feature: Checking the contents of a file
 
     Scenario: A note is created without a body
         Given we have a note 
-        And the note the note has a title
+        And the note has a title
         And the note has a body
         When we create a note
         Then a note without a body is created 
