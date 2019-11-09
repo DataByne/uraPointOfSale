@@ -65,5 +65,5 @@ def addnote():
         newnote = Note(title = form.title.data, note=form.note.data, user_id=current_user.id)
         db.session.add(newnote)
         db.session.commit()
-        return redirect(url_for('index'))#may need to be changed depending on things
+        return redirect(url_for('notes'))#may need to be changed depending on things
     return render_template('addnote.html', title='Add A Note', form=form)
