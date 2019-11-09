@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, validators
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, validators
 from app.models import User
 
 class LoginForm(FlaskForm):
@@ -26,6 +26,6 @@ class RegisterForm(FlaskForm):
             raise validators.ValidationError('Please use a different email address.')
 
 class NoteForm(FlaskForm):
-    title = StringField('Title', validators=[validators.InputRequired()])
-    note = StringField('Note', validators=[validators.InputRequired()])
+    title = StringField('Title', validators=[validators.InputRequired(), validators.DataRequired()])
+    note = TextAreaField('Note', validators=[validators.InputRequired(), validators.DataRequired()])
     submit = SubmitField('Create Note')

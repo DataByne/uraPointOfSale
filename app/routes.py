@@ -65,3 +65,4 @@ def addnote():
         db.session.commit()
         return redirect(url_for('index'))#may need to be changed depending on things
     return render_template('addnote.html', title='Add A Note', form=form)
+
