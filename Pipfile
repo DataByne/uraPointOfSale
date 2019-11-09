@@ -12,6 +12,8 @@ flask-login = "*"
 flask-sqlalchemy = "*"
 flask-migrate = "*"
 pylint = "*"
+behave = "*"
+python-dotenv = "*"
 
 [requires]
 python_version = "3.7"
