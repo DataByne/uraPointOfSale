@@ -28,7 +28,7 @@ def register():
         db.session.add(user)
         db.session.commit()
         return redirect(url_for('login'))
-    return render_template('register.html', title="Register", form=RegisterForm())
+    return render_template('register.html', title="Register", form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -68,3 +68,10 @@ def addnote():
         return redirect(url_for('notes'))#may need to be changed depending on things
     return render_template('addnote.html', title='Add A Note', form=form)
 
+@app.route('/singlenote/<NoteID>')
+@login_required
+def singlenote(NoteID):
+    note = Note.query.filter_by(id = int(NoteID)).first()
+    if note.user_id != current_user.id:
+        return redirect(url_for('notes'))
+    return render_template('singlenote.html', title = 'Your Note', note = note)
