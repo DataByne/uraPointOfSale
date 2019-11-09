@@ -53,7 +53,9 @@ def logout():
 @app.route('/notes')
 @login_required
 def notes():
-    return render_template('notes.html', title='Your Notes')
+    #for title, note in Note.query.filter_by(user_id = current_user.id):
+    userNotes = Note.query.filter_by(user_id = current_user.id)
+    return render_template('notes.html', title='Your Notes', notes = userNotes)
 
 @app.route('/addnote', methods=['GET', 'POST'])
 @login_required
