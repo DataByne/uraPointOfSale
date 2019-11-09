@@ -3,5 +3,11 @@
 {% block content %}
     <div align="center">
           <h1>These are your notes, {{ current_user.username }}!</h1>
+          {% for note in notes %}
+            <div>
+              <h4><b>{{ note.title }}</b></h3>
+              <p>{{ note.note }}</p>
+            </div>
+          {% endfor %}
     </div>
 {% endblock %}
