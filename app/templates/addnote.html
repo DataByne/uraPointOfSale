@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div align="center">
+      {% if current_user.is_anonymous %}
+          <h1>This is where users add notes!</h1>
+          <p>Create an account or log in to start adding yours!</p>
+      {% else %}
+          <h1>Go ahead, add a note, {{ current_user.username }}!</h1>
+          <form action="" method="post" novalidate>
+              {{ form.hidden_tag() }}
+              {{ form.title.label }}<br />
+              {{ form.title }} <br />
+              {{ form.note.label }}<br />
+              {{ form.note }} <br />
+              {{ form.submit() }}
+          </form>
+      {% endif %}
+    </div>
+{% endblock %}

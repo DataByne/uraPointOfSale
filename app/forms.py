@@ -24,3 +24,8 @@ class RegisterForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
             raise validators.ValidationError('Please use a different email address.')
+
+class NoteForm(FlaskForm):
+    title = StringField('Title', validators=[validators.InputRequired()])
+    note = StringField('Note', validators=[validators.InputRequired()])
+    submit = SubmitField('Create Note')
