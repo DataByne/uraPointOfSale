@@ -5,6 +5,7 @@
         <div class="offset-0 offset-xs-1 offset-lg-1 col-lg-10 text-center">
             {% if notes.count() == 0 %}
                 <h1>You currently have no notes, {{ current_user.username }}.</h1>
+                <button class="btn btn-primary mt-4 mb-5" onclick="window.location.href = '{{ url_for('addnote') }}';">Add Note</button>
             {% else %}
                 <h1>These are your notes, {{ current_user.username }}!</h1>
                 <button class="btn btn-primary my-4 float-right" onclick="window.location.href = '{{ url_for('addnote') }}';">Add Note</button>
