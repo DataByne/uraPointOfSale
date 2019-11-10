@@ -21,7 +21,7 @@
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('addnote') }}">Add A Note</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('addnote') }}">Add Note</a></li>
                     {% if current_user.is_anonymous %}
                         <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">Register</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Login</a></li>
@@ -39,6 +39,13 @@
     <main role="main" class="container">
         <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o" crossorigin="anonymous"></script>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-success" role="alert">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
         {% block content %}{% endblock %}
     </main>
     <footer class="footer">

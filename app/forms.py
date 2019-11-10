@@ -83,3 +83,18 @@ class NoteForm(FlaskForm):
     note = TextAreaField('Note:', validators=[InputRequired('Note contents is required'), DataRequired()])
     submit = SubmitField('Create Note')
 
+class EditNoteForm(FlaskForm):
+    """Form for editing a note
+    
+    Flask form
+    
+    Attributes:
+        title:	Note's title field
+        note:	The body text of a note
+        submit: Submit action
+    """
+    title = StringField('Title:', validators=[InputRequired('Title is required'), DataRequired()])
+    note = TextAreaField('Note:', validators=[InputRequired('Note contents is required'), DataRequired()])
+    submit = SubmitField('Save')
+    delete = SubmitField('Delete');
+

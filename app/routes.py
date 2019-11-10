@@ -1,6 +1,7 @@
 from app import app, db
+from datetime import datetime
 from flask import render_template, send_from_directory, flash, redirect, url_for, request, jsonify
-from app.forms import LoginForm, RegisterForm, NoteForm
+from app.forms import LoginForm, RegisterForm, NoteForm, EditNoteForm
 from flask_login import current_user, logout_user, login_required
 from app.models import User, Note
 from pytz import all_timezones, country_names, country_timezones
@@ -94,17 +95,46 @@ def addnote():
         newnote = Note(title = form.title.data, note=form.note.data, user_id=current_user.id)
         db.session.add(newnote)
         db.session.commit()
-        return redirect(url_for('notes'))#may need to be changed depending on things
+        return redirect(url_for('notes'))
     return render_template('addnote.html', title='Add A Note', form=form)
 
+@app.route('/notes/edit/<NoteID>', methods=['GET', 'POST'])
+@login_required
+def editnote(NoteID):
+    note = Note.query.filter_by(id=int(NoteID)).first()
+    if note is None or note.user_id != current_user.id:
+       return redirect(url_for('notes'))
+    form = EditNoteForm();
+    if form.validate_on_submit():
+        if form.delete.data:
+          return redirect(url_for('deletenote', NoteID=NoteID))
+        note.title = form.title.data
+        note.note = form.note.data
+        note.last_edited = datetime.utcnow()
+        db.session.commit();
+        return redirect(url_for('singlenote', NoteID=NoteID))
+    form.title.data = note.title
+    form.note.data = note.note
+    return render_template('editnote.html', title='Edit', form=form);
+
+@app.route('/notes/delete/<NoteID>')
+@login_required
+def deletenote(NoteID):
+    note = Note.query.filter_by(id=int(NoteID)).first()
+    if note is not None and note.user_id == current_user.id:
+        title = note.title;
+        db.session.delete(note)
+        db.session.commit()
+        flash("Deleted note '" + title + "'.")
+    return redirect(url_for('notes'))
 
 @app.route('/notes/<NoteID>')
 @login_required
 def singlenote(NoteID):
     note = Note.query.filter_by(id=int(NoteID)).first()
-    if note.user_id != current_user.id:
+    if note is None or note.user_id != current_user.id:
         return redirect(url_for('notes'))
-    return render_template('singlenote.html', title=note.title, note = note)
+    return render_template('singlenote.html', title=note.title, note=note)
 
 @app.route('/api/timezones')
 @app.route('/api/timezones/<CountryID>')
