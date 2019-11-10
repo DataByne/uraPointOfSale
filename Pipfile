@@ -15,6 +15,7 @@ pylint = "*"
 behave = "*"
 python-dotenv = "*"
 selenium = "*"
+splinter = "*"
 
 [requires]
 python_version = "3.7"

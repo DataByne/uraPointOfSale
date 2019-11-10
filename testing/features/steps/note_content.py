@@ -1,3 +1,6 @@
+from behave import given, when, then
+
+
 @given(u'We have a note')
 def step_impl(context):
     raise NotImplementedError(u'STEP: Given We have a note')
