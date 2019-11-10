@@ -23,7 +23,7 @@ def send_images(path):
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     """Route for registration action
-    
+
     Returns:
         Rendering of registration page or redirect to home.
     """
@@ -42,7 +42,7 @@ def register():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     """Route for login action
-    
+
     Returns:
         Renderingg of login page.
     """
@@ -75,7 +75,7 @@ def logout():
 @login_required
 def notes():
     """Route to note directory
-    
+
     Returns:
         Rendering of notes page.
     """
@@ -86,7 +86,7 @@ def notes():
 
 @app.route('/addnote', methods=['GET', 'POST'])
 @login_required
-def add_note():
+def addnote():
     form = NoteForm()
     if form.validate_on_submit():
         newnote = Note(title = form.title.data, note=form.note.data, user_id=current_user.id)
@@ -98,7 +98,7 @@ def add_note():
 
 @app.route('/singlenote/<NoteID>')
 @login_required
-def single_note( NoteID ):
+def singlenote( NoteID ):
     note = Note.query.filter_by(id = int(NoteID)).first()
     if note.user_id != current_user.id:
         return redirect(url_for('notes'))
