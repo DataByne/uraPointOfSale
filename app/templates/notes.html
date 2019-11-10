@@ -1,13 +1,30 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div align="center">
-          <h1>These are your notes, {{ current_user.username }}!</h1>
-          {% for note in notes %}
-            <div>
-              <h4><a href="{{ url_for('singlenote', NoteID = note.id )}}"><b>{{ note.title }}</b></a></h4>
-              <p>{{ note.note }}</p>
-            </div>
-          {% endfor %}
-    </div>
+
+  <table class="table-bordered">
+    <h1>These are your notes, {{ current_user.username }}!</h1>
+
+      <thead class="table table-dark">
+          <th scope="col">Title</th>
+          <th scope="col">Your notes</th>
+          <th scope="col">Date</th>
+          <th scope="col">Actions</th>
+      </thead>
+      <tbody>
+        {% for note in notes %}
+          <tr class="table table-hover table-info">
+              <td><a href="{{ url_for('singlenote', NoteID = note.id )}}">{{ note.title }}</a></td>
+              <td>{{ note.note}}</td>
+              <td>{{ note.note_date }}</td>
+              <td>
+                  <button class="btn btn-primary">edit</button> 
+                  <button class="btn btn-danger">delete</button>       
+              </td>
+          </tr>
+        {% endfor %}
+      </tbody>  
+
+  </table>
+
 {% endblock %}
