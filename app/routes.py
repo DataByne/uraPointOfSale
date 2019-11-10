@@ -22,6 +22,11 @@ def send_images(path):
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    """Route for registration action
+    
+    Returns:
+        Rendering of registration page or redirect to home.
+    """
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     form = RegisterForm()
@@ -36,6 +41,11 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    """Route for login action
+    
+    Returns:
+        Renderingg of login page.
+    """
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     form = LoginForm()
@@ -64,6 +74,11 @@ def logout():
 @app.route('/notes')
 @login_required
 def notes():
+    """Route to note directory
+    
+    Returns:
+        Rendering of notes page.
+    """
     #for title, note in Note.query.filter_by(user_id = current_user.id):
     userNotes = Note.query.filter_by(user_id = current_user.id)
     return render_template('notes.html', title='Your Notes', notes = userNotes)
