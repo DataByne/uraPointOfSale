@@ -9,13 +9,16 @@ from app.models import User, Note
 def index():
     return render_template('index.html', title='Home')
 
+
 @app.route('/css/<path:path>')
 def send_css(path):
     return send_from_directory('css', path)
 
+
 @app.route('/images/<path:path>')
 def send_images(path):
     return send_from_directory('images', path)
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -29,6 +32,7 @@ def register():
         db.session.commit()
         return redirect(url_for('login'))
     return render_template('register.html', title="Register", form=form)
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -45,6 +49,7 @@ def login():
         return redirect(url_for('index'))
     return render_template('login.html', title="Login", form=form)
 
+
 @app.route('/logout')
 def logout():
     """Exits out of the user context
@@ -52,9 +57,9 @@ def logout():
     Returns:
         Redirects to home page.
     """
-    
     logout_user()
     return redirect(url_for('index'))
+
 
 @app.route('/notes')
 @login_required
@@ -63,9 +68,10 @@ def notes():
     userNotes = Note.query.filter_by(user_id = current_user.id)
     return render_template('notes.html', title='Your Notes', notes = userNotes)
 
+
 @app.route('/addnote', methods=['GET', 'POST'])
 @login_required
-def addnote():
+def add_note():
     form = NoteForm()
     if form.validate_on_submit():
         newnote = Note(title = form.title.data, note=form.note.data, user_id=current_user.id)
@@ -74,9 +80,10 @@ def addnote():
         return redirect(url_for('notes'))#may need to be changed depending on things
     return render_template('addnote.html', title='Add A Note', form=form)
 
+
 @app.route('/singlenote/<NoteID>')
 @login_required
-def singlenote(NoteID):
+def single_note( NoteID ):
     note = Note.query.filter_by(id = int(NoteID)).first()
     if note.user_id != current_user.id:
         return redirect(url_for('notes'))

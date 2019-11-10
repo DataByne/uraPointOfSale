@@ -5,10 +5,10 @@ from flask_login import UserMixin
 from app import login
 
 @login.user_loader
-def load_user(id):
+def load_user( id ):
     return User.query.get(int(id))
 
-class User(UserMixin, db.Model):
+class User( UserMixin, db.Model ):
     id = db.Column(db.Integer, primary_key = True)
     username = db.Column(db.String(64), index = True, unique = True)
     email = db.Column(db.String(150), index = True, unique = True)
@@ -26,7 +26,7 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-class Note(db.Model):
+class Note( db.Model ):
     id = db.Column(db.Integer, primary_key = True)
     title = db.Column(db.String(50), index = True)
     note = db.Column(db.String(500), index = True)
