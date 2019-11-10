@@ -1,21 +1,39 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="row">
-        <div class="offset-1 offset-sm-3 text-center">
+    <div class="row my-5">
+        <div class="offset-1 offset-sm-2 offset-lg-3 text-center">
             <h1>Go ahead, add a note, {{ current_user.username }}!</h1>
-            <form class="justify-content-center" action="" method="post" novalidate>
+            <form class="justify-content-center mt-4" action="" method="post" novalidate>
                 {{ form.hidden_tag() }}
                 <div class="form-group row col-sm-12">
                     {{ form.title.label(class="col-sm-2 col-form-label") }}
-                    {{ form.title(autofocus=true, class="col-sm-10 form-control") }}
+                    {% set title_isvalid = "" %}
+                    {% if form.title.errors %}
+                      {% set title_isvalid = " is-invalid" %}
+                    {% endif %}
+                    {{ form.title(autofocus=true, class="col-sm-10 form-control" + title_isvalid) }}
+                    {% for error in form.title.errors %}
+                        <div class="invalid-feedback">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
                 </div>
                 <div class="form-group row col-sm-12">
                     {{ form.note.label(class="col-sm-2 col-form-label") }}
-                    {{ form.note(class="col-sm-10 form-control") }}
+                    {% set note_isvalid = "" %}
+                    {% if form.note.errors %}
+                      {% set note_isvalid = " is-invalid" %}
+                    {% endif %}
+                    {{ form.note(class="col-sm-10 form-control" + note_isvalid) }}
+                    {% for error in form.note.errors %}
+                        <div class="invalid-feedback">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
                 </div>
                 <div class="form-group row col-sm-4 offset-sm-4">
-                    {{ form.submit(class="form-control") }}
+                    {{ form.submit(class="form-control btn btn-primary") }}
                 </div>
             </form>
         </div>

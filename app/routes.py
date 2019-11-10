@@ -1,11 +1,12 @@
 from app import app, db
-from flask import render_template, send_from_directory, flash, redirect, url_for, request
+from flask import render_template, send_from_directory, flash, redirect, url_for, request, jsonify
 from app.forms import LoginForm, RegisterForm, NoteForm
-from flask_login import current_user, login_user, logout_user, login_required
+from flask_login import current_user, logout_user, login_required
 from app.models import User, Note
+from pytz import all_timezones, country_names, country_timezones
 
-@app.route( '/' )
-@app.route( '/index' )
+@app.route('/')
+@app.route('/index')
 def index():
     return render_template('index.html', title='Home')
 
@@ -21,7 +22,8 @@ def send_images(path):
 
 
 @app.route('/register', methods=['GET', 'POST'])
-def register():
+@app.route('/register/<CountryID>', methods=['GET', 'POST'])
+def register(CountryID=None):
     """Route for registration action
 
     Returns:
@@ -30,13 +32,20 @@ def register():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     form = RegisterForm()
+    form.country.choices = [(country_id, country_names[country_id]) for country_id in country_names]
+    if CountryID in country_timezones:
+      form.country.data = CountryID
+    else:
+      form.country.data = 'US'
+    form.time_zone.choices = [(tz, tz) for tz in country_timezones[form.country.data]]
+    form.time_zone.data = country_timezones[form.country.data][0]
     if form.validate_on_submit():
-        user = User(username = form.username.data, email = form.email.data)
+        user = User(username=form.username.data, email=form.email.data, country=form.country.data, time_zone=form.time_zone.data)
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
         return redirect(url_for('login'))
-    return render_template('register.html', title="Register", form=form)
+    return render_template('register.html', title="Register", form=form, country_names=country_names)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -44,18 +53,12 @@ def login():
     """Route for login action
 
     Returns:
-        Renderingg of login page.
+        Rendering of login page.
     """
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
-        if user is None:
-            user = User.query.filter_by(email=form.username.data).first()
-        if user is None or not user.check_password(form.password.data):
-            return redirect(url_for('login'))
-        login_user(user, remember=form.rememberMe.data)
         return redirect(url_for('index'))
     return render_template('login.html', title="Login", form=form)
 
@@ -79,12 +82,11 @@ def notes():
     Returns:
         Rendering of notes page.
     """
-    #for title, note in Note.query.filter_by(user_id = current_user.id):
-    userNotes = Note.query.filter_by(user_id = current_user.id)
-    return render_template('notes.html', title='Your Notes', notes = userNotes)
+    userNotes = Note.query.filter_by(user_id=current_user.id)
+    return render_template('notes.html', title='Your Notes', notes=userNotes)
 
 
-@app.route('/addnote', methods=['GET', 'POST'])
+@app.route('/notes/add', methods=['GET', 'POST'])
 @login_required
 def addnote():
     form = NoteForm()
@@ -96,10 +98,20 @@ def addnote():
     return render_template('addnote.html', title='Add A Note', form=form)
 
 
-@app.route('/singlenote/<NoteID>')
+@app.route('/notes/<NoteID>')
 @login_required
-def singlenote( NoteID ):
-    note = Note.query.filter_by(id = int(NoteID)).first()
+def singlenote(NoteID):
+    note = Note.query.filter_by(id=int(NoteID)).first()
     if note.user_id != current_user.id:
         return redirect(url_for('notes'))
-    return render_template('singlenote.html', title = 'Your Note', note = note)
+    return render_template('singlenote.html', title=note.title, note = note)
+
+@app.route('/api/timezones')
+@app.route('/api/timezones/<CountryID>')
+def gettimezones(CountryID=None):
+    if CountryID in country_timezones:
+        timezones = country_timezones[CountryID]
+    else:
+        timezones = all_timezones
+    return jsonify([(tz, tz) for tz in timezones])
+

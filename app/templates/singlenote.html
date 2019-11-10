@@ -1,8 +1,16 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div align="center">
-          <h1>{{ note.title }}</h1>
-          <p>{{ note.note }}</p>
+    <div class="row my-5">
+        <div class="offset-1 col-10 offset-lg-3 col-lg-6 text-center">
+            <h1>{{ note.title }}</h1>
+            <div class="mt-4">{{ note.note }}</div>
+            <div class="mt-3">
+                <small>Created: {{ note.note_date | user_datetime(current_user.time_zone) }}</small>
+            </div>
+            <div>
+                <small>Edited: {{ note.last_edited | user_datetime(current_user.time_zone) }}</small>
+            </div>
+        </div>
     </div>
 {% endblock %}
