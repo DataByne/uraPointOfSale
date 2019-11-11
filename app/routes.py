@@ -90,54 +90,96 @@ def register(CountryID=None):
 @app.route("/user/<UserID>", methods=['GET', 'POST'])
 @login_required
 def user(UserID):
+    """Route for user page
+
+    Parameters:
+        UserID: self explanatory, passed by the html page
+
+    Returns:
+        Rendering of user page, redirect to index if the current user is not the user of UserID
+    """
+    #gets the user from the user table
     user = User.query.filter_by(id = int(UserID)).first()
+    #gets the count of total notes
     count = Note.query.filter_by(user_id = int(UserID)).count()
+    #checks user is valid
     if user is None or user.id != current_user.id:
         return redirect(url_for('index'))
-
+    #renders page
     return render_template('user.html', title=user.username, count=count)
 
 
 @app.route('/user/edit/<UserID>', methods=['GET', 'POST'])
 @login_required
 def edituser(UserID):
+    """Route for user edits
+
+    Parameters:
+        UserID: used to find the user tuple and passed by html page
+
+    Returns:
+        redicret to user page if not rigth user or user edit page render
+    """
+    #finds user
     user = User.query.filter_by(id=int(UserID)).first()
+    #redirects if not the valid user
     if user is None or user.id != current_user.id:
         return redirect(url_for('user', UserID=current_user.id))
     form = EditUserForm()
     # Add country codes to the country code select field
+    #This works for reasons, do not touch it or it will break
     CountryID = form.country.data
     if CountryID is None or CountryID == "" or CountryID.upper() == "NONE":
         CountryID = user.country
         if CountryID is None:
             CountryID = 'US'
+    #sets choices for country and time zone fields
     form.country.choices = [(country_id, country_names[country_id]) for country_id in country_names]
     form.time_zone.choices = [(tz, tz) for tz in country_timezones[CountryID]]
+    #updates user information, commits the changes and redirects back to the user page
     if form.validate_on_submit():
         user.username = form.username.data
         user.email = form.email.data
         user.country = form.country.data
         user.time_zone = form.time_zone.data
+        #password fields are set to empty and passwords are only changed if they are modified in any way
         if form.password.data != "":
             user.set_password(form.password.data)
         db.session.commit()
         return redirect(url_for('user', UserID=UserID))
+    #sets the fields to the current user information
     form.username.data = user.username
     form.email.data = user.email
     form.country.data = user.country
     form.time_zone.data = user.time_zone
+    #renders the page
     return render_template('edituser.html', title='Edit ' + current_user.username, form=form)
 
 @app.route('/deleteuser/<UserID>', methods=['GET', 'POST'])
 @login_required
 def deleteuser(UserID):
+    """Route for deleting a user
+
+    Parameters:
+        UserID: used to find the user tuple and all user notes as well as veryify the correct user is deleting themself
+
+    Returns:
+        redicret to logout that redirects to index
+    """
+    #redirects user if they are trying to delete another users account
+    if current_user.id != UserID:
+        return redicret(url_for('user', UserID = current_user.id))
+    #finds user tuple
     user = User.query.filter_by(id = int(UserID)).first()
+    #finds all notes of the user and deletes them
     note = Note.query.filter_by(user_id = int(UserID)).first()
     while note is not None:
         db.session.delete(note)
         note = Note.query.filter_by(user_id = int(UserID)).first()
+    #deletes user and commits the changes
     db.session.delete(user)
     db.session.commit()
+    #logs the user out
     return redirect(url_for('logout'))
 
 
