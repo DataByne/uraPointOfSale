@@ -13,9 +13,11 @@
             <div class="mt-3">
                 <small>Created: {{ note.note_date | user_datetime(current_user.time_zone) }}</small>
             </div>
-            <div>
-                <small>Edited: {{ note.last_edited | user_datetime(current_user.time_zone) }}</small>
-            </div>
+            {% if note.note_date | user_datetime(current_user.time_zone) != note.last_edited | user_datetime(current_user.time_zone) %}
+                <div>
+                    <small>Edited: {{ note.last_edited | user_datetime(current_user.time_zone) }}</small>
+                </div>
+            {% endif %}
         </div>
     </div>
 {% endblock %}
