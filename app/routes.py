@@ -93,8 +93,8 @@ def user(UserID):
     user = User.query.filter_by(id = int(UserID)).first()
     if user is None or user.id != current_user.id:
         return redirect(url_for('index'))
-
-    return render_template('user.html', title=user.username)
+    count = Note.query.filter_by(user_id = int(UserID)).count()
+    return render_template('user.html', title=user.username, count=count)
 
 
 @app.route('/user/edit/<UserID>', methods=['GET', 'POST'])
@@ -106,20 +106,11 @@ def edituser(UserID):
 
     form = EditUserForm()
 
+#    if user.country is None:
+#        user.country = 'US'
 
 
-    form.username.data = user.username
-    form.email.data = user.email
-    if user.country is None:
-        user.country = 'US'
-    form.country.data = user.country
-    form.time_zone.data = user.time_zone
 
-    # Add country codes to the country code select field
-
-
-    form.country.choices = [(country_id, country_names[country_id]) for country_id in country_names]
-    form.time_zone.choices = [(tz, tz) for tz in country_timezones[form.country.data]]
 
     if form.validate_on_submit():
         user.username = form.username.data
@@ -128,8 +119,19 @@ def edituser(UserID):
         user.time_zone = form.time_zone.data
         if form.password.data != "":
             user.set_password(form.password.data)
-        db.sesson.commit()
+        db.session.commit()
         return redirect(url_for('user', UserID=UserID))
+
+    form.country.data = user.country
+    form.time_zone.data = user.time_zone
+
+    form.country.choices = [(country_id, country_names[country_id]) for country_id in country_names]
+    form.time_zone.choices = [(tz, tz) for tz in country_timezones[form.country.data]]
+
+    form.username.data = user.username
+    form.email.data = user.email
+
+        # Add country codes to the country code select field
 
     return render_template('edituser.html', title='Edit ' + current_user.username, form=form)
 

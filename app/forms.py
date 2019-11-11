@@ -166,7 +166,7 @@ class EditUserForm(FlaskForm):
 
             """
         user = User.query.filter_by(email=email.data).first()
-        if user is not None and current_user.email != user.email:
+        if user is not None and current_user.id != user.id:
             raise ValidationError('Please use a different email address.')
 
     def validate_country(self, country):
