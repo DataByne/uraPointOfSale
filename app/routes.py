@@ -2,7 +2,7 @@ from app import app, db
 from datetime import datetime
 from flask import render_template, send_from_directory, flash, redirect, url_for, request, jsonify
 from app.forms import LoginForm, RegisterForm, NoteForm, EditNoteForm, EditUserForm
-from flask_login import current_user, login_user, logout_user, login_required
+from flask_login import current_user, logout_user, login_required
 from app.models import User, Note
 from pytz import all_timezones, country_names, country_timezones
 from werkzeug.urls import url_parse
@@ -169,7 +169,7 @@ def deleteuser(UserID):
     """
     #redirects user if they are trying to delete another users account
     if current_user.id != UserID:
-        return redicret(url_for('user', UserID = current_user.id))
+        return redirect(url_for('user', UserID = current_user.id))
     #finds user tuple
     user = User.query.filter_by(id = int(UserID)).first()
     #finds all notes of the user and deletes them
@@ -199,7 +199,7 @@ def login():
     form = LoginForm()
     # Validate the form
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()    
+       # user = User.query.filter_by(username=form.username.data).first()    
         #store url user was trying to access    
         next_page = request.args.get('next')        
         #if there is no next argument or if next arg is set to a full url, redirect to index
