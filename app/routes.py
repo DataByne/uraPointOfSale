@@ -2,9 +2,10 @@ from app import app, db
 from datetime import datetime
 from flask import render_template, send_from_directory, flash, redirect, url_for, request, jsonify
 from app.forms import LoginForm, RegisterForm, NoteForm, EditNoteForm, EditUserForm
-from flask_login import current_user, logout_user, login_required
+from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Note
 from pytz import all_timezones, country_names, country_timezones
+from werkzeug.urls import url_parse
 
 @app.route('/')
 @app.route('/index')
@@ -198,8 +199,13 @@ def login():
     form = LoginForm()
     # Validate the form
     if form.validate_on_submit():
-        # Redirect to landing page on successful authenticatation
-        return redirect(url_for('index'))
+        user = User.query.filter_by(username=form.username.data).first()    
+        #store url user was trying to access    
+        next_page = request.args.get('next')        
+        #if there is no next argument or if next arg is set to a full url, redirect to index
+        if not next_page or url_parse(next_page).netloc != '':
+            next_page = url_for('index')
+        return redirect(next_page)
     # Render the login page from the template and form
     return render_template('login.html', title="Login", form=form)
 
