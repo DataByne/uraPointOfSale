@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from flask_login import login_user
+from flask_login import login_user, current_user
 from wtforms import BooleanField, PasswordField, SelectField, StringField, SubmitField, TextAreaField
 from wtforms.validators import InputRequired, DataRequired, Email, EqualTo, ValidationError
 from pytz import all_timezones, country_names, country_timezones
@@ -137,7 +137,7 @@ class EditUserForm(FlaskForm):
     password_confirm = PasswordField('Confirm Password:', validators=[EqualTo('password', 'Passwords must match.')])
     country = SelectField('Country:', validators=[InputRequired('Country is required.'), DataRequired()])
     time_zone = SelectField('Time Zone:', validators=[InputRequired('Time Zone is required'), DataRequired()])
-    submit = SubmitField('Register')
+    submit = SubmitField('Update')
 
     def validate_username(self, username):
         """Validate form username field

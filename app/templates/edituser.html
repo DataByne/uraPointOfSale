@@ -7,12 +7,12 @@
             <form class="justify-content-center mt-4" action="" method="post" novalidate>
                 {{ form.hidden_tag() }}
                 <div class="form-group row col-sm-12">
-                    {{ form.username.label(class="col-sm-2 col-form-label") }}
+                    {{ form.username.label(class="col-sm-5 col-form-label") }}
                     {% set username_isvalid = "" %}
                     {% if form.username.errors %}
                       {% set username_isvalid = " is-invalid" %}
                     {% endif %}
-                    {{ form.username(class="col-sm-10 form-control" + username_isvalid) }}
+                    {{ form.username(class="col-sm-7 form-control" + username_isvalid) }}
                     {% for error in form.username.errors %}
                         <div class="invalid-feedback">
                             {{ error }}
@@ -34,7 +34,7 @@
                 </div>
                 <div class="form-group row col-sm-12">
                     {{ form.password.label(class="col-sm-5 col-form-label") }}
-                    <!--{% set password_isvalid = "" %}
+                    {% set password_isvalid = "" %}
                     {% if form.password.errors or form.password_confirm.errors %}
                         {% set password_isvalid = " is-invalid" %}
                     {% endif %}
@@ -43,7 +43,7 @@
                         <div class="invalid-feedback">
                             {{ error }}
                         </div>
-                    {% endfor %}-->
+                    {% endfor %}
                 </div>
                 <div class="form-group row col-sm-12">
                     {{ form.password_confirm.label(class="col-sm-5 col-form-label") }}
@@ -90,4 +90,29 @@
             </form>
         </div>
     </div>
+    <script charset="utf-8" type="text/javascript">
+        $(function() {
+            // Update timezones select
+            function updateTimezones() {
+                var time_zone = $('#time_zone');
+                time_zone.attr('disabled', 'disabled');
+                time_zone.empty();
+                $.getJSON("{{ url_for('gettimezones') }}" + '/' + $('#country').val(), function(data) {
+                    data.forEach(function(item) {
+                        time_zone.append(
+                            $('<option>', {
+                                value: item[0],
+                                text: item[1]
+                            })
+                        );
+                    });
+                    time_zone.removeAttr('disabled');
+                });
+            }
+            // On country select change
+            $('#country').change(function() {
+                updateTimezones();
+            });
+        });
+    </script>
 {% endblock %}
