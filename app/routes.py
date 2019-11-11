@@ -1,7 +1,7 @@
 from app import app, db
 from datetime import datetime
 from flask import render_template, send_from_directory, flash, redirect, url_for, request, jsonify
-from app.forms import LoginForm, RegisterForm, NoteForm, EditNoteForm
+from app.forms import LoginForm, RegisterForm, NoteForm, EditNoteForm, EditUserForm
 from flask_login import current_user, logout_user, login_required
 from app.models import User, Note
 from pytz import all_timezones, country_names, country_timezones
@@ -10,7 +10,7 @@ from pytz import all_timezones, country_names, country_timezones
 @app.route('/index')
 def index():
     """Route for landing page
-    
+
     Returns:
         Rendering of the landing page
     """
@@ -20,10 +20,10 @@ def index():
 @app.route('/css/<path:path>')
 def send_css(path):
     """Route for static CSS files
-    
+
     Parameters:
         path: The path of the static CSS file
-    
+
     Returns:
         Static content from the 'css' directory
     """
@@ -33,10 +33,10 @@ def send_css(path):
 @app.route('/images/<path:path>')
 def send_images(path):
     """Route for static image files
-    
+
     Parameters:
         path: The path of the static image file
-    
+
     Returns:
         Static content from the 'images' directory
     """
@@ -47,7 +47,7 @@ def send_images(path):
 @app.route('/register/<CountryID>', methods=['GET', 'POST'])
 def register(CountryID=None):
     """Route for registration
-    
+
     Parameters:
         CountryID: The country code to assume is default
 
@@ -85,6 +85,47 @@ def register(CountryID=None):
         return redirect(url_for('login'))
     # Render the registration page from the template and form
     return render_template('register.html', title="Register", form=form, country_names=country_names)
+
+
+@app.route("/user/<UserID>", methods=['GET', 'POST'])
+@login_required
+def user(UserID):
+    user = User.query.filter_by(id = int(UserID)).first()
+    if user is None or user.id != current_user.id:
+        return redirect(url_for('index'))
+
+    return render_template('user.html', title=user.username)
+
+
+@app.route('/user/edituser/<UserID>', methods=['GET', 'POST'])
+@login_required
+def edituser(UserID,CountryID=None):
+    user = User.query.filter_by(id = int(UserID)).first()
+    if user is None or user.id != current_user.id:
+        return redirect(url_for('user', UserID = current_user.id))
+
+    form = EditUserForm()
+
+    # Add country codes to the country code select field
+    form.country.choices = [(country_id, country_names[country_id]) for country_id in country_names]
+    form.time_zone.choices = [(tz, tz) for tz in country_timezones[user.country]]
+
+    if form.validate_on_submit():
+        user.username = form.username.data
+        user.email = form.email.data
+        user.country = form.country.data
+        user.time_zone = form.time_zone.data
+        if form.password.data != "":
+            user.set_password(form.password.data)
+        db.sesson.commit()
+        return redirect(url_for('user', UserID=UserID))
+
+    form.username.data = user.username
+    form.email.data = user.email
+    form.country.data = user.country
+    form.time_zone.data = user.time_zone
+
+    return render_template('edituser.html', title='Edit ' + current_user.username, form=form)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -138,7 +179,7 @@ def notes():
 @login_required
 def addnote():
     """Route to add a note
-    
+
     Returns:
         Rendering of add note page or redirect to notes list page when note is added
     """
@@ -160,10 +201,10 @@ def addnote():
 @login_required
 def editnote(NoteID):
     """Route to edit a note
-    
+
     Parameters:
         NoteID: The unique identifier of the note to edit
-        
+
     Returns:
         Rendering of the edit note page, redirect to delete the note, redirect to note detail page, or redirect to the notes list page if note can not be found
     """
@@ -200,10 +241,10 @@ def editnote(NoteID):
 @login_required
 def deletenote(NoteID):
     """Route to delete a note
-    
+
     Parameters:
         NoteID: The unique identifier of the note to delete
-        
+
     Returns:
         Redirect to the notes list page
     """
@@ -225,10 +266,10 @@ def deletenote(NoteID):
 @login_required
 def singlenote(NoteID):
     """Route for note detail
-    
+
     Parameters:
         NoteID: The unique identifier of the note
-        
+
     Returns:
         Rendering of the note detail page or redirects to notes list page if the note can not be found
     """
@@ -245,7 +286,7 @@ def singlenote(NoteID):
 @app.route('/api/timezones/<CountryID>')
 def gettimezones(CountryID=None):
     """Get time zone names by country code
-    
+
     Parameters:
         CountryID: The country code for which to get the time zones
 
@@ -261,4 +302,3 @@ def gettimezones(CountryID=None):
         timezones = all_timezones
     # Convert timezones to JSON
     return jsonify([(tz, tz) for tz in timezones])
-

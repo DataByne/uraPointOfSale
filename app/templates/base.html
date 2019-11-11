@@ -31,7 +31,7 @@
                     {% endif %}
                 </ul>
                 {% if not current_user.is_anonymous %}
-                    <div class="d-none d-md-inline">{{ current_user.username }}</span>
+                    <div class="d-none d-md-inline"><a href = "{{ url_for('user', UserID = current_user.id)}}">{{ current_user.username }}</a></span>
                 {% endif %}
             </div>
         </nav>

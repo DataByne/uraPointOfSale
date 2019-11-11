@@ -17,6 +17,7 @@ behave = "*"
 python-dotenv = "*"
 selenium = "*"
 splinter = "*"
+pytz = "*"
 
 [requires]
 python_version = "3.7"
