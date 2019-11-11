@@ -3,22 +3,9 @@
 {% block content %}
     <div class="row my-5">
         <div class="offset-1 offset-sm-2 offset-lg-3 text-center">
-            <h1>Register to start taking notes!</h1>
-            <form class="needs-validation justify-content-center mt-4" action="" method="post" novalidate>
+            <h1>Edit your profile, {{ current_user.username }}!</h1>
+            <form class="justify-content-center mt-4" action="" method="post" novalidate>
                 {{ form.hidden_tag() }}
-                <div class="form-group row col-sm-12">
-                    {{ form.email.label(class="col-sm-5 col-form-label") }}
-                    {% set email_isvalid = "" %}
-                    {% if form.email.errors %}
-                      {% set email_isvalid = " is-invalid" %}
-                    {% endif %}
-                    {{ form.email(autofocus=true, class="col-sm-7 form-control" + email_isvalid) }}
-                    {% for error in form.email.errors %}
-                        <div class="invalid-feedback">
-                            {{ error }}
-                        </div>
-                    {% endfor %}
-                </div>
                 <div class="form-group row col-sm-12">
                     {{ form.username.label(class="col-sm-5 col-form-label") }}
                     {% set username_isvalid = "" %}
@@ -27,6 +14,19 @@
                     {% endif %}
                     {{ form.username(class="col-sm-7 form-control" + username_isvalid) }}
                     {% for error in form.username.errors %}
+                        <div class="invalid-feedback">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="form-group row col-sm-12">
+                    {{ form.email.label(class="col-sm-5 col-form-label") }}
+                    {% set email_isvalid = "" %}
+                    {% if form.email.errors %}
+                      {% set email_isvalid = " is-invalid" %}
+                    {% endif %}
+                    {{ form.email(class="col-sm-7 form-control" + email_isvalid) }}
+                    {% for error in form.email.errors %}
                         <div class="invalid-feedback">
                             {{ error }}
                         </div>
@@ -84,8 +84,8 @@
                         </div>
                     {% endfor %}
                 </div>
-                <div class="form-group row offset-sm-4 col-sm-4">
-                    {{ form.submit(class="form-control btn btn-primary") }}
+                <div class="form-group">
+                    {{ form.submit(class="form-control btn btn-primary col-3") }}
                 </div>
             </form>
         </div>
@@ -116,4 +116,3 @@
         });
     </script>
 {% endblock %}
-

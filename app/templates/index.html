@@ -1,11 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div align="center">
-      {% if current_user.is_anonymous %}
-          <h1>Welcome to Note Weaver!</h1>
-      {% else %}
-          <h1>Welcome back to Note Weaver, {{ current_user.username }}!</h1>
-      {% endif %}
+    <div class="row my-5">
+        <div class="offset-1 col-10 text-center">
+            {% if current_user.is_anonymous %}
+                <h1>Welcome to Note Weaver!</h1>
+            {% else %}
+                <h1>Welcome back to Note Weaver, {{ current_user.username }}!</h1>
+            {% endif %}
+        </div>
     </div>
 {% endblock %}
