@@ -91,10 +91,11 @@ def register(CountryID=None):
 @login_required
 def user(UserID):
     user = User.query.filter_by(id = int(UserID)).first()
+    count = Note.query.filter_by(user_id = int(UserID)).count()
     if user is None or user.id != current_user.id:
         return redirect(url_for('index'))
 
-    return render_template('user.html', title=user.username)
+    return render_template('user.html', title=user.username, count=count)
 
 
 @app.route('/user/edit/<UserID>', methods=['GET', 'POST'])
@@ -126,6 +127,19 @@ def edituser(UserID):
     form.country.data = user.country
     form.time_zone.data = user.time_zone
     return render_template('edituser.html', title='Edit ' + current_user.username, form=form)
+
+@app.route('/deleteuser/<UserID>', methods=['GET', 'POST'])
+@login_required
+def deleteuser(UserID):
+    user = User.query.filter_by(id = int(UserID)).first()
+    note = Note.query.filter_by(user_id = int(UserID)).first()
+    while note is not None:
+        db.session.delete(note)
+        note = Note.query.filter_by(user_id = int(UserID)).first()
+    db.session.delete(user)
+    db.session.commit()
+    return redirect(url_for('logout'))
+
 
 
 @app.route('/login', methods=['GET', 'POST'])
