@@ -142,14 +142,14 @@ class EditUserForm(FlaskForm):
     def validate_username(self, username):
         """Validate form username field
 
-            Parameters:
-                self:     The RegisterForm form to validate
-                username: The username to validate does not exist
+        Parameters:
+            self:     The RegisterForm form to validate
+            username: The username to validate does not exist
 
-            Raises:
-                ValidationError: A validation error if the username is already in use
+        Raises:
+            ValidationError: A validation error if the username is already in use
 
-            """
+        """
         user = User.query.filter_by(username=username.data).first()
         if user is not None and current_user.id != user.id:
             raise ValidationError('Please use a different username.')
@@ -157,14 +157,14 @@ class EditUserForm(FlaskForm):
     def validate_email(self, email):
         """Validate form email address field
 
-            Parameters:
-                self:     The RegisterForm form to validate
-                username: The email address to validate does not exist
+        Parameters:
+            self:     The RegisterForm form to validate
+            username: The email address to validate does not exist
 
-            Raises:
-                ValidationError: A validation error if the email address is already in use
+        Raises:
+            ValidationError: A validation error if the email address is already in use
 
-            """
+        """
         user = User.query.filter_by(email=email.data).first()
         if user is not None and current_user.email != user.email:
             raise ValidationError('Please use a different email address.')
@@ -172,26 +172,26 @@ class EditUserForm(FlaskForm):
     def validate_country(self, country):
         """Validate form country field
 
-            Parameters:
-                self:    The RegisterForm form to validate
-                country: The country code to validate exists
+        Parameters:
+            self:    The RegisterForm form to validate
+            country: The country code to validate exists
 
-            Raises:
-                ValidationError: A validation error if the country code does not exist
-            """
+        Raises:
+            ValidationError: A validation error if the country code does not exist
+        """
         if not country.data in country_timezones:
             raise ValidationError('Invalid country.')
 
     def validate_timezone(self, time_zone):
         """Validate form time zone field
 
-            Parameters:
-                self:      The RegisterForm form to validate
-                time_zone: The time zone to validate exists
+        Parameters:
+            self:      The RegisterForm form to validate
+            time_zone: The time zone to validate exists
 
-            Raises:
-                ValidationError: A validation error if the time zone does not exist
-            """
+        Raises:
+            ValidationError: A validation error if the time zone does not exist
+        """
         if not time_zone.data in all_timezones:
             raise ValidationError('Invalid time zone.')
 
@@ -224,3 +224,4 @@ class EditNoteForm(FlaskForm):
     note = TextAreaField('Note:', validators=[InputRequired('Note contents is required'), DataRequired()])
     submit = SubmitField('Save')
     delete = SubmitField('Delete');
+
