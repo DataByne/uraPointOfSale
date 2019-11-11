@@ -81,7 +81,7 @@ def register(CountryID=None):
         db.session.add(user)
         db.session.commit()
         # Flash a successfully register message
-        flash("Succesfully registered new user '" + user.username + "'.");
+        flash("Succesfully registered new user '" + user.username + "'.")
         # Redirect to the login page
         return redirect(url_for('login'))
     # Render the registration page from the template and form
@@ -277,7 +277,7 @@ def editnote(NoteID):
         # Redirect to notes list page
        return redirect(url_for('notes'))
     # Create the edit note form
-    form = EditNoteForm();
+    form = EditNoteForm()
     # Validate the form
     if form.validate_on_submit():
         # Check if deleting note
@@ -290,14 +290,14 @@ def editnote(NoteID):
         # Update note last edited timestamp to now
         note.last_edited = datetime.utcnow()
         # Save the changes
-        db.session.commit();
+        db.session.commit()
         # Redirect to the note detail page
         return redirect(url_for('singlenote', NoteID=NoteID))
     # Set the form data from the note
     form.title.data = note.title
     form.note.data = note.note
     # Render the edit not page from the template and form
-    return render_template('editnote.html', title='Edit', form=form);
+    return render_template('editnote.html', title='Edit', form=form)
 
 @app.route('/notes/delete/<NoteID>')
 @login_required
@@ -315,7 +315,7 @@ def deletenote(NoteID):
     # Check note exists and is authored by current user
     if note is not None and note.user_id == current_user.id:
         # Save the note title
-        title = note.title;
+        title = note.title
         # Delete the note
         db.session.delete(note)
         db.session.commit()
