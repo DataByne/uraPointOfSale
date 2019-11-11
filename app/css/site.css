@@ -43,6 +43,12 @@ img {
 }
 
 .navbar-dark .navbar-toggler,
+.navbar-dark .nav-link,
+.navbar-dark .nav-link:active,
+.navbar-dark .nav-link:focus,
+.navbar-dark .nav-link:hover,
+.navbar-dark .nav-link:link,
+.navbar-dark .nav-link:visited,
 .navbar-dark .navbar-nav .nav-link,
 .navbar-dark .navbar-nav .nav-link:active,
 .navbar-dark .navbar-nav .nav-link:focus,
