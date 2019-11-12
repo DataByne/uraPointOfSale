@@ -31,7 +31,7 @@
                     {% endif %}
                 </ul>
                 {% if not current_user.is_anonymous %}
-                    <div class="d-none d-md-inline"><a class="nav-item" href="{{ url_for('user', UserID = current_user.id)}}">{{ current_user.username }}</a></span>
+                    <div class="nav-item d-none d-md-inline"><a class="nav-link" href="{{ url_for('user', UserID = current_user.id)}}">{{ current_user.username }}</a></span>
                 {% endif %}
             </div>
         </nav>
@@ -39,6 +39,35 @@
     <main role="main" class="container">
         <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o" crossorigin="anonymous"></script>
+        <script>
+            function submitForm(url, data="", method="GET") {
+                $.ajax({
+                    method: method,
+                    url: url,
+                    data: data,
+                    statusCode: {
+                        205: function(data) {
+                            alert(JSON.stringify(data));
+                            window.history.back();
+                            window.location.replace(data.responseText);
+                        },
+                        303: function(data) {
+                            window.location.replace(data.responseText);
+                        }
+                    },
+                    success: function(data) {
+                        document.body.innerHTML = data;
+                    }
+                });
+            }
+            function goBack(url, referrer=document.referrer) {
+                if ((referrer !== undefined) && (referrer != "")) {
+                    window.location.replace(referrer);
+                } else {
+                    window.location.replace(url);
+                }
+            }
+        </script>
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 {% for message in messages %}

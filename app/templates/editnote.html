@@ -4,7 +4,7 @@
     <div class="row my-5">
         <div class="offset-1 offset-sm-2 offset-lg-3 text-center">
             <h1>Edit your note, {{ current_user.username }}!</h1>
-            <form class="justify-content-center mt-4" action="" method="post" novalidate>
+            <form id="editnote" class="justify-content-center mt-4" action="" method="post" novalidate>
                 {{ form.hidden_tag() }}
                 <div class="form-group row col-sm-12">
                     {{ form.title.label(class="col-sm-2 col-form-label") }}
@@ -34,10 +34,28 @@
                 </div>
                 <div class="form-group">
                     {{ form.submit(class="form-control btn btn-primary col-3") }}
-                    {{ form.delete(class="form-control btn btn-danger col-3 mx-2", onclick="return confirm(\'Are you sure you want to delete the note \\'" + form.title.data + "\\'?\');") }}
-                    <button type="button" class="form-control btn btn-secondary col-3" onclick="window.history.back();">Cancel</button>
+                    {{ form.delete(class="form-control btn btn-danger col-3 mx-2") }}
+                    <button type="button" class="form-control btn btn-secondary col-3" id="cancel">Cancel</button>
                 </div>
             </form>
         </div>
     </div>
+    <script>
+        $('#submit').click(function (e) {
+            e.preventDefault();
+            submitForm("{{ url_for('editnote', NoteID=NoteID) }}", $('#editnote').serialize(), 'POST');
+            return false;
+        });
+        $('#delete').click(function (e) {
+            e.preventDefault();
+            if (confirm("Are you sure you want to delete the note '{{ form.title.data }}'?")) {
+                submitForm("{{ url_for('deletenote', NoteID=NoteID) }}", $('#editnote').serialize());
+            }
+            return false;
+        });
+        $('#cancel').click(function (e) {
+            e.preventDefault();
+            goBack("{{ url_for('notes') }}");
+        });
+    </script>
 {% endblock %}

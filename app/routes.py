@@ -119,7 +119,7 @@ def edituser(UserID):
         UserID: used to find the user tuple and passed by html page
 
     Returns:
-        redicret to user page if not rigth user or user edit page render
+        redicret to user page if not right user or user edit page render
     """
     #finds user
     user = User.query.filter_by(id=int(UserID)).first()
@@ -275,15 +275,15 @@ def editnote(NoteID):
     # Check note exists and is authored by current user
     if note is None or note.user_id != current_user.id:
         # Redirect to notes list page
-       return redirect(url_for('notes'))
+       return redirect(url_for('notes'), 303)
     # Create the edit note form
     form = EditNoteForm()
     # Validate the form
     if form.validate_on_submit():
         # Check if deleting note
         if form.delete.data:
-          # Redirect to delete note
-          return redirect(url_for('deletenote', NoteID=NoteID))
+          # Delete note
+          return deletenote(NoteID)
         # Set note to form data
         note.title = form.title.data
         note.note = form.note.data
@@ -292,12 +292,13 @@ def editnote(NoteID):
         # Save the changes
         db.session.commit()
         # Redirect to the note detail page
-        return redirect(url_for('singlenote', NoteID=NoteID))
+        # return redirect(url_for('singlenote', NoteID=NoteID))
+        return url_for('singlenote', NoteID=NoteID), 303, {'ContentType': 'text/html'}
     # Set the form data from the note
     form.title.data = note.title
     form.note.data = note.note
     # Render the edit not page from the template and form
-    return render_template('editnote.html', title='Edit', form=form)
+    return render_template('editnote.html', title='Edit', form=form, NoteID=NoteID)
 
 @app.route('/notes/delete/<NoteID>')
 @login_required
@@ -314,15 +315,13 @@ def deletenote(NoteID):
     note = Note.query.filter_by(id=int(NoteID)).first()
     # Check note exists and is authored by current user
     if note is not None and note.user_id == current_user.id:
-        # Save the note title
-        title = note.title
+        # Flash a successful delete message
+        flash("Deleted note '" + note.title + "'.")
         # Delete the note
         db.session.delete(note)
         db.session.commit()
-        # Flash a successful delete message
-        flash("Deleted note '" + title + "'.")
     # Redirect to notes list page
-    return redirect(url_for('notes'))
+    return redirect(url_for('notes'), 303)
 
 @app.route('/notes/<NoteID>')
 @login_required
