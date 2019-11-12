@@ -22,16 +22,26 @@
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('addnote') }}">Add Note</a></li>
-                    {% if current_user.is_anonymous %}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">Register</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Login</a></li>
-                    {% else %}
+                    {% if not current_user.is_anonymous %}
                         <li class="nav-item"><a class="nav-link" href="{{ url_for('notes') }}">Your Notes</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
                     {% endif %}
                 </ul>
-                {% if not current_user.is_anonymous %}
-                    <div class="d-none d-md-inline"><a class="nav-item" href="{{ url_for('user', UserID = current_user.id)}}">{{ current_user.username }}</a></span>
+                {% if current_user.is_anonymous %}
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">Register</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Login</a></li>
+                {% else %}
+                    <ul class="btn-group dropleft">
+                        <div class="dropdown">
+                            <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {{ current_user.username}}
+                            </a>
+                                
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                    <span><a class="dropdown-item" href="{{ url_for('user', UserID = current_user.id)}}">Your profile</a></span>
+                                    <a class="dropdown-item"  href="{{ url_for('logout') }}">Logout</a>
+                                </div>
+                            </div>
+                    </ul>                                      
                 {% endif %}
             </div>
         </nav>
