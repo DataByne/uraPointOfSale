@@ -86,33 +86,38 @@
                 </div>
                 <div class="form-group">
                     {{ form.submit(class="form-control btn btn-primary col-3") }}
+                    <button class="btn btn-danger col-3 ml-4" id="deleteuser">Delete</button>
                 </div>
             </form>
         </div>
     </div>
     <script charset="utf-8" type="text/javascript">
-        $(function() {
-            // Update timezones select
-            function updateTimezones() {
-                var time_zone = $('#time_zone');
-                time_zone.attr('disabled', 'disabled');
-                time_zone.empty();
-                $.getJSON("{{ url_for('gettimezones') }}" + '/' + $('#country').val(), function(data) {
-                    data.forEach(function(item) {
-                        time_zone.append(
-                            $('<option>', {
-                                value: item[0],
-                                text: item[1]
-                            })
-                        );
-                    });
-                    time_zone.removeAttr('disabled');
+        // Update timezones select
+        function updateTimezones() {
+            var time_zone = $('#time_zone');
+            time_zone.attr('disabled', 'disabled');
+            time_zone.empty();
+            $.getJSON("{{ url_for('gettimezones') }}" + '/' + $('#country').val(), function(data) {
+                data.forEach(function(item) {
+                    time_zone.append(
+                        $('<option>', {
+                            value: item[0],
+                            text: item[1]
+                        })
+                    );
                 });
-            }
-            // On country select change
-            $('#country').change(function() {
-                updateTimezones();
+                time_zone.removeAttr('disabled');
             });
+        }
+        // On country select change
+        $('#country').change(function() {
+            updateTimezones();
+        });
+        $('#deleteuser').click(function (e) {
+            e.preventDefault();
+            if (confirm("Are you sure you want to permanatly delete your account and all notes associated with it '{{ current_user.username }}'?")) {
+                window.location.replace("{{ url_for('deleteuser', UserID=current_user.id) }}");
+            }
         });
     </script>
 {% endblock %}
