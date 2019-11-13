@@ -6,6 +6,8 @@ from flask_login import current_user, logout_user, login_required
 from app.models import User, Note
 from pytz import all_timezones, country_names, country_timezones
 from werkzeug.urls import url_parse
+from sqlalchemy import or_
+
 
 @app.route('/')
 @app.route('/index')
@@ -200,9 +202,9 @@ def login():
     form = LoginForm()
     # Validate the form
     if form.validate_on_submit():
-       # user = User.query.filter_by(username=form.username.data).first()    
-        #store url user was trying to access    
-        next_page = request.args.get('next')        
+       # user = User.query.filter_by(username=form.username.data).first()
+        #store url user was trying to access
+        next_page = request.args.get('next')
         #if there is no next argument or if next arg is set to a full url, redirect to index
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('index')
@@ -344,6 +346,14 @@ def singlenote(NoteID):
         return redirect(url_for('notes'))
     # Render note detail from the template and note
     return render_template('singlenote.html', title=note.title, note=note)
+
+@app.route('/notes/search/<Query>')
+@login_required
+def searchnote(Query):
+    notes = Note.query.filter(or_(Note.title.ilike('%'+ Query+ '%'), Note.note.ilike('%'+ Query+ '%')), Note.user_id==current_user.id)
+
+    return render_template('notesearch.html', title='Search Results', notes=notes)
+
 
 @app.route('/api/timezones')
 @app.route('/api/timezones/<CountryID>')
