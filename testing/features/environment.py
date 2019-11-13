@@ -9,11 +9,16 @@ from app import app
 def splinter_browser( context, type='chrome' ):
 	"""Sets up a splinter browser session
 
-	Defaults to a Chrome webdriver
+	Generator function that provides a web driver browser object for use in
+	testing. The browser defaults to a Chrome web driver.
 	
 	Args:
 		context:	Behave testing context
 		type:		Specific webdriver to run
+
+	Yields:
+		A browser object attribute to the Behave testing module's context. The
+		type of the browser is set to whichever the generator is provided.
 	"""
 	context.browser = Browser( driver_name=type )
 	yield context.browser
@@ -23,6 +28,11 @@ def splinter_browser( context, type='chrome' ):
 @fixture
 def flask_client( context, *args, **kwargs ):
 	"""Sets up temporary flask context
+
+	Generator function.
+
+	Yields:
+		A flask testing client attribute to Behave's context.
 	"""
 	# temporary db file code here
 	app.testing = True

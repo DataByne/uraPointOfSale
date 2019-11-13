@@ -88,7 +88,7 @@ def register(CountryID=None):
     return render_template('register.html', title="Register", form=form, country_names=country_names)
 
 
-@app.route("/user/<UserID>", methods=['GET', 'POST'])
+@app.route("/user/<UserID>")
 @login_required
 def user(UserID):
     """Route for user page
@@ -156,7 +156,7 @@ def edituser(UserID):
     #renders the page
     return render_template('edituser.html', title='Edit ' + current_user.username, form=form)
 
-@app.route('/deleteuser/<UserID>', methods=['GET', 'POST'])
+@app.route('/user/delete/<UserID>')
 @login_required
 def deleteuser(UserID):
     """Route for deleting a user
@@ -168,20 +168,21 @@ def deleteuser(UserID):
         redicret to logout that redirects to index
     """
     #redirects user if they are trying to delete another users account
-    if current_user.id != UserID:
-        return redirect(url_for('user', UserID = current_user.id))
+    if UserID is None or current_user.id != int(UserID):
+        return redirect(url_for('user', UserID=current_user.id))
     #finds user tuple
     user = User.query.filter_by(id = int(UserID)).first()
+    flash("Successfully deleted the user '" + user.username + "' and all authored notes.");
     #finds all notes of the user and deletes them
-    note = Note.query.filter_by(user_id = int(UserID)).first()
+    note = Note.query.filter_by(user_id=int(UserID)).first()
     while note is not None:
         db.session.delete(note)
-        note = Note.query.filter_by(user_id = int(UserID)).first()
+        note = Note.query.filter_by(user_id=int(UserID)).first()
     #deletes user and commits the changes
     db.session.delete(user)
     db.session.commit()
     #logs the user out
-    return redirect(url_for('logout'))
+    return logout()
 
 
 
