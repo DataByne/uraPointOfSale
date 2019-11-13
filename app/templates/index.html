@@ -2,12 +2,8 @@
 
 {% block content %}
     <div class="row my-5">
-        <div class="offset-1 col-10 text-center">
-            {% if current_user.is_anonymous %}
-                <h1>Welcome to Note Weaver!</h1>
-            {% else %}
-                <h1>Welcome back to Note Weaver, {{ current_user.username }}!</h1>
-            {% endif %}
+        <div class="offset-1 col-10 text-center justify-content-center">
+            <img src="/images/logo-dark.png" alt="Note Weaver" width="320" height="160">
         </div>
     </div>
 {% endblock %}
