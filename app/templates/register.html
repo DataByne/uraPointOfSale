@@ -43,8 +43,11 @@
                         <div class="invalid-feedback">
                             {{ error }}
                         </div>
-                    {% endfor %}
+		    {% endfor %}
                 </div>
+		<div class="form-group row col-sm-12"><font size="0.5">
+		      Password must have one upper and lower case letter, one number, one special character, and be at least 8 characters long
+		</font></div>
                 <div class="form-group row col-sm-12">
                     {{ form.password_confirm.label(class="col-sm-5 col-form-label") }}
                     {% set password_confirm_isvalid = "" %}
@@ -56,7 +59,7 @@
                         <div class="invalid-feedback">
                             {{ error }}
                         </div>
-                    {% endfor %}
+		    {% endfor %}
                 </div>
                 <div class="form-group row col-sm-12">
                     {{ form.country.label(class="col-sm-5 col-form-label") }}
