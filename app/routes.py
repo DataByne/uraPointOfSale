@@ -44,6 +44,10 @@ def send_images(path):
     return send_from_directory('images', path)
 
 
+@app.route('/about')
+def about():
+    return render_template('about.html', title = 'About Us')
+
 @app.route('/register', methods=['GET', 'POST'])
 @app.route('/register/<CountryID>', methods=['GET', 'POST'])
 def register(CountryID=None):
@@ -200,9 +204,9 @@ def login():
     form = LoginForm()
     # Validate the form
     if form.validate_on_submit():
-       # user = User.query.filter_by(username=form.username.data).first()    
-        #store url user was trying to access    
-        next_page = request.args.get('next')        
+       # user = User.query.filter_by(username=form.username.data).first()
+        #store url user was trying to access
+        next_page = request.args.get('next')
         #if there is no next argument or if next arg is set to a full url, redirect to index
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('index')
