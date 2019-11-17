@@ -237,7 +237,7 @@ def notes():
     # Query notes of current user
     userNotes = Note.query.filter_by(user_id=current_user.id)
     # Render notes list page from the template and user notes
-    return render_template('notes.html', title='Your Notes', notes=userNotes)
+    return render_template('notes.html', title='Your Notes', notes=userNotes, search= False)
 
 
 @app.route('/notes/add', methods=['GET', 'POST'])
@@ -347,13 +347,14 @@ def singlenote(NoteID):
     # Render note detail from the template and note
     return render_template('singlenote.html', title=note.title, note=note)
 
+@app.route('/notes/search')
 @app.route('/notes/search/<Query>')
 @login_required
-def searchnote(Query):
-    notes = Note.query.filter(or_(Note.title.ilike('%'+ Query+ '%'), Note.note.ilike('%'+ Query+ '%')), Note.user_id==current_user.id)
-
-    return render_template('notesearch.html', title='Search Results', notes=notes)
-
+def searchnote(Query=None):
+    notes = None
+    if Query is not None and Query != '':
+        notes = Note.query.filter(or_(Note.title.ilike('%'+ Query+ '%'), Note.note.ilike('%'+ Query+ '%')), Note.user_id==current_user.id)
+    return render_template('notes.html', title='Search Results', notes=notes, search=True)
 
 @app.route('/api/timezones')
 @app.route('/api/timezones/<CountryID>')
