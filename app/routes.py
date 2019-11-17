@@ -15,6 +15,9 @@ def index():
     Returns:
         Rendering of the landing page
     """
+    userNotes = None
+    numNotes = None
+    time = None
     if not current_user.is_anonymous:
         userNotes = Note.query.filter_by(user_id=current_user.id).limit(5).all()
         numNotes = Note.query.filter_by(user_id=current_user.id).count()
