@@ -6,7 +6,7 @@ from flask_login import current_user, logout_user, login_required
 from app.models import User, Note
 from pytz import all_timezones, country_names, country_timezones
 from werkzeug.urls import url_parse
-from sqlalchemy import or_
+from sqlalchemy import or_, desc
 
 
 @app.route('/')
@@ -21,7 +21,7 @@ def index():
     numNotes = None
     time = None
     if not current_user.is_anonymous:
-        userNotes = Note.query.filter_by(user_id=current_user.id).limit(5).all()
+        userNotes = Note.query.order_by(desc(Note.note_date)).filter_by(user_id=current_user.id).limit(5).all()
         numNotes = Note.query.filter_by(user_id=current_user.id).count()
         time = datetime.utcnow() - userNotes[0].note_date
     return render_template('index.html', title='Home', notes=userNotes, num=numNotes, time=time)
