@@ -47,7 +47,7 @@
                         <button class="btn btn-primary float-right" onclick="window.location.href = '{{ url_for('addnote') }}';">Add Note</button>
                     </div>
                 </div>
-                <table class="table-bordered mb-5 col-sm-12">
+                <table id="noteTable" class="table-bordered mb-5 col-sm-12">
                     <thead class="table table-dark">
                         <th scope="col">Title</th>
                         <th scope="col">Note</th>
@@ -92,7 +92,10 @@
     </script>
     <script>
         $(document).ready(function () {
-        $('#noteTable').DataTable();
+        $('#noteTable').DataTable({
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "pagingType": "full_numbers"
+        });
         $('.dataTables_length').addClass('bs-select');
         });
     </script>
