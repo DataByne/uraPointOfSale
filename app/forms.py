@@ -4,6 +4,7 @@ from wtforms import BooleanField, PasswordField, SelectField, StringField, Submi
 from wtforms.validators import InputRequired, DataRequired, Email, EqualTo, ValidationError
 from pytz import all_timezones, country_names, country_timezones
 from app.models import User
+import re
 
 class LoginForm(FlaskForm):
     """Form for logging into the site
@@ -82,6 +83,21 @@ class RegisterForm(FlaskForm):
         if user is not None:
             raise ValidationError('Please use a different username.')
 
+    def validate_password(self, password):
+        """Validate form password field
+
+        Parameters:
+            self:     The RegisterForm form to validate
+            password: The password to validate must meet required metrics
+
+        Raises:
+            ValidationError: A validation error if the password does not meet required metrics
+
+        """
+        password = password.data
+        if not (re.match(r'[A-Za-z0-9@#$%^&+=!]{8,}', password)):
+            raise ValidationError('Password does not meet required criteria.')
+        
     def validate_email(self, email):
         """Validate form email address field
 
@@ -153,6 +169,21 @@ class EditUserForm(FlaskForm):
         user = User.query.filter_by(username=username.data).first()
         if user is not None and current_user.id != user.id:
             raise ValidationError('Please use a different username.')
+
+    def validate_password(self, password):
+        """Validate form password field
+
+        Parameters:
+            self:     The RegisterForm form to validate
+            password: The password to validate must meet required metrics
+
+        Raises:
+            ValidationError: A validation error if the password does not meet required metrics
+
+        """
+        password = password.data
+        if not (re.match(r'[A-Za-z0-9@#$%^&+=!]{8,}', password)):
+            raise ValidationError('Password does not meet required criteria.')
 
     def validate_email(self, email):
         """Validate form email address field

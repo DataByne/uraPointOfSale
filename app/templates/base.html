@@ -14,7 +14,7 @@
   <body>
     <header>
         <nav role="navigation" class="navbar navbar-expand-md navbar-fixed-top navbar-dark bg-dark">
-            <span class="navbar-brand">Note Weaver:</span>
+            <span class="navbar-brand"><img src="/images/logo-light.png" width="80" height="40"></span>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -25,6 +25,7 @@
                     {% if current_user.is_anonymous %}
                         </ul>
                         <ul class="navbar-nav">
+                            <li class="nav-item{%- if request.path == url_for('about') %} active {% endif %}"><a class="nav-link" href="{{ url_for('about') }}">About Us</a></li>
                             <li class="nav-item{%- if request.path == url_for('register') %} active {% endif %}"><a class="nav-link" href="{{ url_for('register') }}">Register</a></li>
                             <li class="nav-item{%- if request.path == url_for('login') %} active {% endif %}"><a class="nav-link" href="{{ url_for('login') }}">Login</a></li>
                         </ul>
@@ -32,6 +33,7 @@
                             <li class="nav-item{%- if request.path == url_for('notes') %} active {% endif %}"><a class="nav-link" href="{{ url_for('notes') }}">Your Notes</a></li>
                         </ul>
                         <ul class="navbar-nav">
+                          <li class="nav-item{%- if request.path == url_for('about') %} active {% endif %}"><a class="nav-link" href="{{ url_for('about') }}">About Us</a></li>
                             <li class="nav-item dropdown dropbottom">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ current_user.username}}</a>
                                 <div class="dropdown-menu dropdown-menu-right dropdown-dark bg-dark border-secondary" aria-labelledby="navbarDropdown">

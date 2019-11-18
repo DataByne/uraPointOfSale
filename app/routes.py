@@ -17,7 +17,14 @@ def index():
     Returns:
         Rendering of the landing page
     """
-    return render_template('index.html', title='Home')
+    userNotes = None
+    numNotes = None
+    time = None
+    if not current_user.is_anonymous:
+        userNotes = Note.query.filter_by(user_id=current_user.id).limit(5).all()
+        numNotes = Note.query.filter_by(user_id=current_user.id).count()
+        time = datetime.utcnow() - userNotes[0].note_date
+    return render_template('index.html', title='Home', notes=userNotes, num=numNotes, time=time)
 
 
 @app.route('/css/<path:path>')
@@ -45,6 +52,10 @@ def send_images(path):
     """
     return send_from_directory('images', path)
 
+
+@app.route('/about')
+def about():
+    return render_template('about.html', title = 'About Us')
 
 @app.route('/register', methods=['GET', 'POST'])
 @app.route('/register/<CountryID>', methods=['GET', 'POST'])
