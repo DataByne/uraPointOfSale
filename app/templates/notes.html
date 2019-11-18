@@ -71,6 +71,8 @@
             {% endif %}
         </div>
     </div>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js" ></script>
     <script>
         function editNote(url) {
             window.location.href = url;
@@ -87,5 +89,11 @@
                 window.location.href  = "{{ url_for('searchnote') }}/" + ( (par.length==0)? None : par);
             });
 
+    </script>
+    <script>
+        $(document).ready(function () {
+        $('#noteTable').DataTable();
+        $('.dataTables_length').addClass('bs-select');
+        });
     </script>
 {% endblock %}
