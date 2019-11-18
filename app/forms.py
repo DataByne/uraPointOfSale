@@ -97,7 +97,7 @@ class RegisterForm(FlaskForm):
         password = password.data
         if not (re.match(r'[A-Za-z0-9@#$%^&+=!]{8,}', password)):
             raise ValidationError('Password does not meet required criteria.')
-        
+
     def validate_email(self, email):
         """Validate form email address field
 
@@ -182,6 +182,8 @@ class EditUserForm(FlaskForm):
 
         """
         password = password.data
+        if password == "":
+            return
         if not (re.match(r'[A-Za-z0-9@#$%^&+=!]{8,}', password)):
             raise ValidationError('Password does not meet required criteria.')
 
@@ -255,4 +257,3 @@ class EditNoteForm(FlaskForm):
     note = TextAreaField('Note:', validators=[InputRequired('Note contents is required'), DataRequired()])
     submit = SubmitField('Save')
     delete = SubmitField('Delete');
-
