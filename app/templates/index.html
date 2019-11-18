@@ -28,10 +28,25 @@
               <img src="/images/example-screenshots/note-page.png" alt="Note Page" class="col-8">
               <br><br>
             <h4>Your Account</h4>
-              <p>Your saftey is always important to us, which is why we hash you passwords and are always working on adding even more saftey to our website</p>
+              <p>Your safety is always important to us, which is why we hash you passwords and are always working on adding even more saftey to our website</p>
               <p>You can view and chage your user information using the dropdown menue in the top right hand corner of the page and delete your account at any time for any reason.</p>
           {% else %}
             <h1>Welcome back to Note Weaver!</h1>
+            <div>
+              <h2>Most Recent Notes</h2>
+                <ul>
+                  {% for note in notes %}
+                    <li><a href="{{ url_for('singlenote', NoteID=note.id) }}">{{ note.title }}</a></li>
+                    {% endfor %}
+                  </ul>
+            </div>
+            <div class="offset-1 col-10">
+              <h2>Statistics</h2>
+                <p><b>Number of Notes: </b>{{ num }}</p>
+                <p><b>User Since: </b>{{ current_user.creation_date | user_datetime(current_user.time_zone) }}</p>
+                <p><b>Time Since Last Note: </b>{{ time.days }} days</p>
+                <p><b>Most Used Tag: </b></p>
+            </div>
             <img src="/images/logo-dark.png" alt="Note Weaver" width="320" height="160">
           {% endif %}
         </div>
