@@ -12,7 +12,7 @@ migrate = Migrate(app, db)
 login = LoginManager(app)
 login.login_view = 'login'
 
-from app import routes, models
+from app import routes, models, errors
 
 def user_datetime_filter(value, time_zone, format='%Y-%m-%d %I:%M:%S%p %Z'):
     """ Filters a date and time for the user's timezone
