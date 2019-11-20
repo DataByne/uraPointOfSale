@@ -46,8 +46,37 @@
                     <div class="col-lg-2">
                         <button id="addnotebutton" class="btn btn-primary float-right">Add Note</button>
                     </div>
-                </div>
-                <table class="table-bordered mb-5 col-sm-12">
+                
+                <!-- switch to dif views-->
+                <button id="btnShowCard">Cards</button>
+                <button id="btnShowTable">Table</button>
+                <!-- Note-Cards -->
+                </div class="container">
+                    <div id="noteCards" class="row">
+                        {% for note in notes %}
+                        <div class="col-md-6 col-sm-12">
+                            <div class="card">
+                                <div class="card-block">
+                                    <div class="card-header">
+                                        <b><a href="{{ url_for('singlenote', NoteID=note.id) }}">{{ note.title }}</a></b>
+                                    </div>
+                                    <div class="card-text">
+                                        {{ note.note | truncate(32, True) }}
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-primary col-12 col-xl-5" id="editnote" onclick="editNote('{{ url_for('editnote', NoteID=note.id) }}');">Edit</button>
+                                        <button class="btn btn-danger col-12 col-xl-6 ml-xl-1" id="deletenote" onclick="deleteNote('{{ note.title }}', '{{ url_for('deletenote', NoteID=note.id) }}');">Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                <div>
+
+                <div class="col-md-6 col-sm-12"></div>
+                <!-- list of notes - Table -->
+                <table id="noteTable" class="table-bordered mb-5 col-sm-12">
                     <thead class="table table-dark">
                         <th scope="col">Title</th>
                         <th scope="col">Note</th>
@@ -62,7 +91,7 @@
                                 <td>{{ note.note_date | user_datetime(current_user.time_zone) }}</td>
                                 <td>
                                     <button class="btn btn-primary col-12 col-xl-5" id="editnote" onclick="editNote('{{ url_for('editnote', NoteID=note.id) }}');">Edit</button>
-                                    <button class="btn btn-danger col-12 col-xl-5 ml-xl-1" id="deletenote" onclick="deleteNote('{{ note.title }}', '{{ url_for('deletenote', NoteID=note.id) }}');">Delete</button>
+                                    <button class="btn btn-danger col-12 col-xl-6 ml-xl-1" id="deletenote" onclick="deleteNote('{{ note.title }}', '{{ url_for('deletenote', NoteID=note.id) }}');">Delete</button>
                                 </td>
                             </tr>
                         {% endfor %}
@@ -71,8 +100,7 @@
             {% endif %}
         </div>
     </div>
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
-    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js" ></script>
+
     <script>
         function editNote(url) {
             $.navigateTo(url);
@@ -97,9 +125,27 @@
             }
             $.navigateTo(url);
         });
+        
         $(document).ready(function () {
-            $('#noteTable').DataTable();
-            $('.dataTables_length').addClass('bs-select');
+            $("#noteCards").addClass("d-none");
+
+            $("#btnShowCard").click(function(){
+                $("#noteCards").removeClass("d-none");
+                $("#noteTable").addClass("d-none");
+            });
+
+            $("#btnShowTable").click(function(){
+                $("#noteCards").addClass("d-none");
+                $("#noteTable").removeClass("d-none");
+            });
+
+            $('#noteTable').DataTable({
+                "searching": false,
+                "pagingType": "full_numbers",
+                "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]]
+            });
         });
     </script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js" ></script>
 {% endblock %}
