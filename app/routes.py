@@ -6,6 +6,8 @@ from flask_login import current_user, logout_user, login_required
 from app.models import User, Note
 from pytz import all_timezones, country_names, country_timezones
 from werkzeug.urls import url_parse
+from sqlalchemy import or_, desc
+
 
 @app.route('/')
 @app.route('/index')
@@ -15,7 +17,14 @@ def index():
     Returns:
         Rendering of the landing page
     """
-    return render_template('index.html', title='Home')
+    userNotes = None
+    numNotes = None
+    time = None
+    if not current_user.is_anonymous:
+        userNotes = Note.query.order_by(desc(Note.note_date)).filter_by(user_id=current_user.id).limit(5).all()
+        numNotes = Note.query.filter_by(user_id=current_user.id).count()
+        time = datetime.utcnow() - userNotes[0].note_date
+    return render_template('index.html', title='Home', notes=userNotes, num=numNotes, time=time)
 
 
 @app.route('/css/<path:path>')
@@ -43,6 +52,10 @@ def send_images(path):
     """
     return send_from_directory('images', path)
 
+
+@app.route('/about')
+def about():
+    return render_template('about.html', title = 'About Us')
 
 @app.route('/register', methods=['GET', 'POST'])
 @app.route('/register/<CountryID>', methods=['GET', 'POST'])
@@ -200,9 +213,9 @@ def login():
     form = LoginForm()
     # Validate the form
     if form.validate_on_submit():
-       # user = User.query.filter_by(username=form.username.data).first()    
-        #store url user was trying to access    
-        next_page = request.args.get('next')        
+       # user = User.query.filter_by(username=form.username.data).first()
+        #store url user was trying to access
+        next_page = request.args.get('next')
         #if there is no next argument or if next arg is set to a full url, redirect to index
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('index')
@@ -235,7 +248,7 @@ def notes():
     # Query notes of current user
     userNotes = Note.query.filter_by(user_id=current_user.id)
     # Render notes list page from the template and user notes
-    return render_template('notes.html', title='Your Notes', notes=userNotes)
+    return render_template('notes.html', title='Your Notes', notes=userNotes, search= False)
 
 
 @app.route('/notes/add', methods=['GET', 'POST'])
@@ -343,6 +356,15 @@ def singlenote(NoteID):
         return redirect(url_for('notes'))
     # Render note detail from the template and note
     return render_template('singlenote.html', title=note.title, note=note)
+
+@app.route('/notes/search')
+@app.route('/notes/search/<Query>')
+@login_required
+def searchnote(Query=None):
+    notes = None
+    if Query is not None and Query != '':
+        notes = Note.query.filter(or_(Note.title.ilike('%'+ Query+ '%'), Note.note.ilike('%'+ Query+ '%')), Note.user_id==current_user.id)
+    return render_template('notes.html', title='Search Results', notes=notes, search=True)
 
 @app.route('/api/timezones')
 @app.route('/api/timezones/<CountryID>')
