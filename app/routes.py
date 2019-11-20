@@ -1,5 +1,5 @@
 from app import app, db
-from datetime import datetime
+from datetime import datetime, timezone
 from flask import render_template, send_from_directory, flash, redirect, url_for, request, jsonify
 from app.forms import LoginForm, RegisterForm, NoteForm, EditNoteForm, EditUserForm
 from flask_login import current_user, logout_user, login_required
@@ -23,7 +23,8 @@ def index():
     if not current_user.is_anonymous:
         userNotes = Note.query.order_by(desc(Note.note_date)).filter_by(user_id=current_user.id).limit(5).all()
         numNotes = Note.query.filter_by(user_id=current_user.id).count()
-        time = datetime.utcnow() - userNotes[0].note_date
+        if (numNotes > 0):
+            time = datetime.utcnow() - userNotes[0].note_date
     return render_template('index.html', title='Home', notes=userNotes, num=numNotes, time=time)
 
 
@@ -51,6 +52,18 @@ def send_images(path):
         Static content from the 'images' directory
     """
     return send_from_directory('images', path)
+
+@app.route('/scripts/<path:path>')
+def send_scripts(path):
+    """Route for static script files
+
+    Parameters:
+        path: The path of the static script file
+
+    Returns:
+        Static content from the 'scripts' directory
+    """
+    return send_from_directory('scripts', path)
 
 
 @app.route('/about')
@@ -132,7 +145,7 @@ def edituser(UserID):
         UserID: used to find the user tuple and passed by html page
 
     Returns:
-        redicret to user page if not right user or user edit page render
+        redirect to user page if not right user or user edit page render
     """
     #finds user
     user = User.query.filter_by(id=int(UserID)).first()
@@ -357,6 +370,7 @@ def singlenote(NoteID):
     # Render note detail from the template and note
     return render_template('singlenote.html', title=note.title, note=note)
 
+@app.route('/notes/search/')
 @app.route('/notes/search')
 @app.route('/notes/search/<Query>')
 @login_required
@@ -364,7 +378,7 @@ def searchnote(Query=None):
     notes = None
     if Query is not None and Query != '':
         notes = Note.query.filter(or_(Note.title.ilike('%'+ Query+ '%'), Note.note.ilike('%'+ Query+ '%')), Note.user_id==current_user.id)
-    return render_template('notes.html', title='Search Results', notes=notes, search=True)
+    return render_template('notes.html', title='Search Results', notes=notes, search=Query)
 
 @app.route('/api/timezones')
 @app.route('/api/timezones/<CountryID>')
@@ -386,3 +400,4 @@ def gettimezones(CountryID=None):
         timezones = all_timezones
     # Convert timezones to JSON
     return jsonify([(tz, tz) for tz in timezones])
+

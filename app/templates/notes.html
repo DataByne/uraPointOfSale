@@ -3,25 +3,26 @@
 {% block content %}
     <div class="row mt-5">
         <div class="offset-0 offset-xs-1 offset-lg-1 col-lg-10 text-center">
-            {% if not search and notes.count() == 0 %}
-                <h1>You currently have no notes, {{ current_user.username }}.</h1>
-                <button class="btn btn-primary mt-4 mb-5" onclick="window.location.href = '{{ url_for('addnote') }}';">Add Note</button>
-            {% elif search and (notes.count() ==0 or notes==None or not notes)%}
-                <h1>You currently have no notes matching your search, {{ current_user.username }}.</h1>
-                <div class="row mt-4 mb-5 justify-content-center">
-                    <div class="col-lg-5">
-                        <button class="btn btn-primary" onclick="window.location.href = '{{ url_for('notes') }}';">Go Back to Your Notes</button>
+            {% if not notes or notes.count() == 0 %}
+                {% if search %}
+                    <h1>You currently have no notes matching your search, {{ current_user.username }}.</h1>
+                    <div class="row mt-4 mb-5 justify-content-center">
+                        <div class="col-lg-5">
+                            <button id="notesbutton" class="btn btn-primary">Go Back to Your Notes</button>
+                        </div>
                     </div>
-                </div>
-                <div class="row justify-content-center">
-                    <div class="col-lg-7 offset-lg-1">
-                        <input id="query" class="form-control form-control-sm my-1 w-100" type="text" placeholder="Search Again"
-                            aria-label="Search" name="query">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-7 offset-lg-1">
+                            <input id="query" class="form-control form-control-sm my-1 w-100" type="text" placeholder="Search Again" aria-label="Search" name="query" value="{{ search }}" required>
+                        </div>
+                        <div class="col-lg-1">
+                            <button id="searchbutton" class="btn btn-primary">Search</button>
+                        </div>
                     </div>
-                    <div class="col-lg-1">
-                        <button id="searchbutton" class="btn btn-primary">Search</button>
-                    </div>
-                </div>
+                {% else %}
+                    <h1>You currently have no notes, {{ current_user.username }}.</h1>
+                    <button id="addnotebutton" class="btn btn-primary mt-4 mb-5">Add Note</button>
+                {% endif %}
             {% else %}
                 {% if search %}
                     <h1>These are the notes matching your search, {{ current_user.username }}!</h1>
@@ -30,21 +31,20 @@
                 {% endif %}
                 <div class="row my-4">
                     <div class="col-lg-4">
-                        <input id="query" class="form-control form-control-sm w-100" type="text" placeholder="Search"
-                                          aria-label="Search" name="query" required></input>
+                        <input id="query" class="form-control form-control-sm w-100" type="text" placeholder="Search" aria-label="Search" name="query"  value="{%if search %}{{ search }}{% endif %}" required>
                     </div>
                     <div class="col-lg-1">
                         <button id="searchbutton" class="btn btn-primary">Search</button>
                     </div>
 
                     <div class="col-lg-5">
-                         {% if search %}
-                        <button class="btn btn-primary" onclick="window.location.href = '{{ url_for('notes') }}';">Go Back to Your Notes</button>
+                        {% if search %}
+                            <button id="notesbutton" class="btn btn-primary">Go Back to Your Notes</button>
                         {% endif %}
                     </div>
 
                     <div class="col-lg-2">
-                        <button class="btn btn-primary float-right" onclick="window.location.href = '{{ url_for('addnote') }}';">Add Note</button>
+                        <button id="addnotebutton" class="btn btn-primary float-right">Add Note</button>
                     </div>
                 </div>
                 <table class="table-bordered mb-5 col-sm-12">
@@ -75,25 +75,31 @@
     <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js" ></script>
     <script>
         function editNote(url) {
-            window.location.href = url;
+            $.navigateTo(url);
         }
-
         function deleteNote(title, url) {
             if (confirm("Are you sure you want to delete the note '" + title + "'?")) {
-                window.location.href = url;
+                $.navigateTo(url, {}, "GET", false);
             }
         }
+        $('#addnotebutton').click(function () {
+            $.navigateTo("{{ url_for('addnote') }}");
+        });
+        $('#notesbutton').click(function () {
+            $.goBack();
+        });
         $('#searchbutton').click(function (e) {
-                e.preventDefault();
-                var par = encodeURIComponent($('#query').val());
-                window.location.href  = "{{ url_for('searchnote') }}/" + ( (par.length==0)? None : par);
-            });
-
-    </script>
-    <script>
+            e.preventDefault();
+            var url = "{{ url_for('searchnote') }}"
+            var par = encodeURIComponent($('#query').val());
+            if (par.length > 0) {
+              url += "/" + par;
+            }
+            $.navigateTo(url);
+        });
         $(document).ready(function () {
-        $('#noteTable').DataTable();
-        $('.dataTables_length').addClass('bs-select');
+            $('#noteTable').DataTable();
+            $('.dataTables_length').addClass('bs-select');
         });
     </script>
 {% endblock %}
