@@ -58,7 +58,7 @@
                         {% for note in notes %}
                             <tr class="table table-hover table-info">
                                 <td><a href="{{ url_for('singlenote', NoteID=note.id) }}">{{ note.title }}</a></td>
-                                <td>{{ note.note | truncate(32, True) }}</td>
+                                <td>{{ note.note | truncate(32, True) |markup(note.note) }}</td>
                                 <td>{{ note.note_date | user_datetime(current_user.time_zone) }}</td>
                                 <td>
                                     <button class="btn btn-primary col-12 col-xl-5" id="editnote" onclick="editNote('{{ url_for('editnote', NoteID=note.id) }}');">Edit</button>

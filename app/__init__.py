@@ -1,10 +1,11 @@
 from flask import Flask
+from flask import Markup
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager, current_user
 import pytz
-    
+
 app = Flask(__name__)
 app.config.from_object(Config)
 db = SQLAlchemy(app)
@@ -36,3 +37,13 @@ def user_datetime_filter(value, time_zone, format='%Y-%m-%d %I:%M:%S%p %Z'):
 # Set the user time zone filter
 app.jinja_env.filters['user_datetime'] = user_datetime_filter
 
+def markup_text(text,unknown):
+    """ Filters the contents of note content to mark as html safe to convert tags on webpages
+
+    Returns:
+        String markedup
+    """
+
+    return Markup(text)
+# Set the markup filter
+app.jinja_env.filters['markup'] = markup_text
