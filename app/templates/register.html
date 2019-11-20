@@ -4,7 +4,7 @@
     <div class="row my-5">
         <div class="offset-1 offset-sm-2 offset-lg-3 text-center">
             <h1>Register to start taking notes!</h1>
-            <form class="needs-validation justify-content-center mt-4" action="" method="post" novalidate>
+            <form id="registerform" name="registerform" class="needs-validation justify-content-center mt-4" action="" method="post" novalidate>
                 {{ form.hidden_tag() }}
                 <div class="form-group row col-sm-12">
                     {{ form.email.label(class="col-sm-5 col-form-label") }}
@@ -94,27 +94,26 @@
         </div>
     </div>
     <script charset="utf-8" type="text/javascript">
-        $(function() {
+        $('#registerform').submit(function (e) {
+            e.preventDefault();
+            $.submitForm("{{ url_for('register') }}", $(this).serialize(), 'POST', false);
+        });
+        // On country select change
+        $('#country').change(function() {
             // Update timezones select
-            function updateTimezones() {
-                var time_zone = $('#time_zone');
-                time_zone.attr('disabled', 'disabled');
-                time_zone.empty();
-                $.getJSON("{{ url_for('gettimezones') }}" + '/' + $('#country').val(), function(data) {
-                    data.forEach(function(item) {
-                        time_zone.append(
-                            $('<option>', {
-                                value: item[0],
-                                text: item[1]
-                            })
-                        );
-                    });
-                    time_zone.removeAttr('disabled');
+            var time_zone = $('#time_zone');
+            time_zone.attr('disabled', 'disabled');
+            time_zone.empty();
+            $.getJSON("{{ url_for('gettimezones') }}" + '/' + $('#country').val(), function(data) {
+                data.forEach(function(item) {
+                    time_zone.append(
+                        $('<option>', {
+                            value: item[0],
+                            text: item[1]
+                        })
+                    );
                 });
-            }
-            // On country select change
-            $('#country').change(function() {
-                updateTimezones();
+                time_zone.removeAttr('disabled');
             });
         });
     </script>

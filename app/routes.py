@@ -356,7 +356,7 @@ def editnote(NoteID):
         # Save the changes
         db.session.commit()
         # Redirect to the note detail page
-        return redirect(url_for('singlenote', NoteID=NoteID))
+        return redirect(url_for('notes'))
     # Set the form data from the note
     form.title.data = note.title
     form.note.data = note.note

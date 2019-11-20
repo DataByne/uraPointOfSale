@@ -116,7 +116,7 @@ $.extend({
      * @param parameters The query parameters
      * @param method     The method of the query, POST by default
      */
-    submitForm: function submitForm(url, parameters={}, method="POST", changeHistory=false) {
+    submitForm: function submitForm(url, parameters=null, method="POST", changeHistory=false, referrer=null) {
         /* Perform an AJAX form action */
         $.ajax({
             // The form action method
@@ -128,10 +128,13 @@ $.extend({
             // Successful action
             success: function(data) {
                 // Push the history state if needed
+                if (referrer === undefined) {
+                    referrer = url;
+                }
                 if (changeHistory) {
-                    window.history.pushState(null, "", url);
+                    window.history.pushState(null, "", referrer);
                 } else {
-                    window.history.replaceState(null, "", url);
+                    window.history.replaceState(null, "", referrer);
                 }
                 // Open a new HTML document and change the navigation history if needed
                 document.open("text/html", changeHistory ? null : "replace");
@@ -148,9 +151,9 @@ $.extend({
      * @param parameters The query parameters
      * @param method     The method of the query, GET by default
      */
-    navigateTo: function (url, parameters={}, method="GET", changeHistory=true) {
+    navigateTo: function (url, parameters=null, method="GET", changeHistory=true, referrer=null) {
         // Navigate to the page through an AJAX query
-        $.submitForm(url, parameters, method, changeHistory);
+        $.submitForm(url, parameters, method, changeHistory, referrer);
     },
     /**
      * Go back in the history falling back to the landing page
@@ -162,6 +165,6 @@ $.extend({
 
 // On window history popstate
 $(window).on('popstate', function (e) {
-    $.navigateTo($(location).attr('href'), (e.state === undefined) ? {} : e.state, method="GET", false);
+    $.navigateTo($(location).attr('href'), null, 'GET', false);
 });
 

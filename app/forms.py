@@ -70,8 +70,7 @@ class RegisterForm(FlaskForm):
             ValidationError: A validation error if the password does not meet required metrics
 
         """
-        password = password.data
-        if not (re.match(r'[A-Za-z0-9@#$%^&+=!]{8,}', password)):
+        if not re.match(r'[A-Za-z0-9@#$%^&+=!]{8,}', password.data):
             raise ValidationError('Password does not meet required criteria.')
 
     def validate_email(self, email):
@@ -157,11 +156,9 @@ class EditUserForm(FlaskForm):
             ValidationError: A validation error if the password does not meet required metrics
 
         """
-        password = password.data
-        if password == "":
-            return
-        if not (re.match(r'[A-Za-z0-9@#$%^&+=!]{8,}', password)):
-            raise ValidationError('Password does not meet required criteria.')
+        if password is not None and password.data is not None and password.data != "":
+            if not re.match(r'[A-Za-z0-9@#$%^&+=!]{8,}', password.data):
+                raise ValidationError('Password does not meet required criteria.')
 
     def validate_email(self, email):
         """Validate form email address field

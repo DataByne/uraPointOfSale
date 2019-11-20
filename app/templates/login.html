@@ -4,7 +4,7 @@
     <div class="row my-5">
         <div class="offset-1 offset-sm-2 offset-lg-3 text-center">
             <h1>Please login to start writing notes!</h1>
-            <form class="needs-validation justify-content-center mt-4" action="" method="post" novalidate>
+            <form id="loginform" name="loginform" class="needs-validation justify-content-center mt-4" action="" method="post" novalidate>
                 {{ form.hidden_tag() }}
                 {% set login_isvalid = "" %}
                 {% if form.submit.errors %}
@@ -53,4 +53,10 @@
             <div class="mt-3">Not signed up yet? <a href="{{ url_for('register') }}">Register Here!</a></div>
         </div>
     </div>
+    <script>
+        $('#loginform').submit(function (e) {
+            e.preventDefault();
+            $.submitForm("{{ url_for('login') }}", $(this).serialize(), 'POST', false);
+        });
+    </script>
 {% endblock %}

@@ -20,7 +20,7 @@
     <script>
         $('#edituser').click(function (e) {
             e.preventDefault();
-            window.location.replace("{{ url_for('edituser', UserID = current_user.id) }}");
+            $.navigateTo("{{ url_for('edituser', UserID=current_user.id) }}");
         });
     </script>
 {% endblock %}

@@ -4,7 +4,7 @@
     <div class="row my-5">
         <div class="offset-1 offset-sm-2 offset-lg-3 text-center">
             <h1>Edit your profile, {{ current_user.username }}!</h1>
-            <form class="justify-content-center mt-4" action="" method="post" novalidate>
+            <form id="edituserform" name="edituserform" class="justify-content-center mt-4" action="" method="post" novalidate>
                 {{ form.hidden_tag() }}
                 <div class="form-group row col-sm-12">
                     {{ form.username.label(class="col-sm-5 col-form-label") }}
@@ -116,8 +116,12 @@
         $('#deleteuser').click(function (e) {
             e.preventDefault();
             if (confirm("Are you sure you want to permanatly delete your account and all notes associated with it '{{ current_user.username }}'?")) {
-                window.location.replace("{{ url_for('deleteuser', UserID=current_user.id) }}");
+                $.navigateTo("{{ url_for('deleteuser', UserID=current_user.id) }}", null, 'GET', false);
             }
+        });
+        $('#edituserform').submit(function (e) {
+            e.preventDefault();
+            $.submitForm("{{ url_for('edituser', UserID=current_user.id) }}", $(this).serialize, 'POST', false);
         });
     </script>
 {% endblock %}

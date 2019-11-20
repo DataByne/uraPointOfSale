@@ -4,7 +4,7 @@
     <div class="row my-5">
         <div class="offset-1 offset-sm-2 offset-lg-3 text-center">
             <h1>Edit your note!</h1>
-            <form class="justify-content-center mt-4" action="" method="post" novalidate>
+            <form id="editnoteform" name="editnoteform" class="justify-content-center mt-4" action="" method="post" novalidate>
                 {{ form.hidden_tag() }}
                 <div class="form-group row col-sm-12">
                     {{ form.title.label(class="col-sm-3 col-form-label") }}
@@ -43,19 +43,17 @@
     <script>
         $('#submit').click(function (e) {
             e.preventDefault();
-            submitForm("{{ url_for('editnote', NoteID=NoteID) }}", $('#editnote').serialize(), 'POST');
-            return false;
+            $.submitForm("{{ url_for('editnote', NoteID=NoteID) }}", $('#editnoteform').serialize());
         });
         $('#delete').click(function (e) {
             e.preventDefault();
             if (confirm("Are you sure you want to delete the note '{{ form.title.data }}'?")) {
-                submitForm("{{ url_for('deletenote', NoteID=NoteID) }}", $('#editnote').serialize());
+                $.submitForm("{{ url_for('deletenote', NoteID=NoteID) }}", $('#editnoteform').serialize());
             }
-            return false;
         });
         $('#cancel').click(function (e) {
             e.preventDefault();
-            goBack("{{ url_for('notes') }}");
+            $.goBack();
         });
     </script>
 {% endblock %}

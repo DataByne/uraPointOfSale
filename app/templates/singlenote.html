@@ -23,18 +23,17 @@
     <script>
         $('#edit').click(function (e) {
             e.preventDefault();
-            submitForm("{{ url_for('editnote', NoteID=note.id) }}");
+            $.navigateTo("{{ url_for('editnote', NoteID=note.id) }}");
         });
         $('#delete').click(function (e) {
             e.preventDefault();
             if (confirm("Are you sure you want to delete the note '{{ note.title }}'?")) {
-                submitForm("{{ url_for('deletenote', NoteID=NoteID) }}", $('#editnote').serialize());
+                $.navigateTo("{{ url_for('deletenote', NoteID=note.id) }}", null, 'GET', false);
             }
-            return false;
         });
         $('#back').click(function (e) {
             e.preventDefault();
-            goBack("{{ url_for('notes') }}");
+            $.goBack();
         });
     </script>
 {% endblock %}

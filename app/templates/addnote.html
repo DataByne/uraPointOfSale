@@ -43,7 +43,7 @@
     <script>
         $('#addnoteform').submit(function (e) {
             e.preventDefault();
-            $.submitForm("{{ url_for('addnote') }}");
+            $.submitForm("{{ url_for('addnote') }}", $(this).serialize());
         });
     </script>
 {% endblock %}
