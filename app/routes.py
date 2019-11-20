@@ -1,12 +1,15 @@
 from app import app, db
 from datetime import datetime, timezone
-from flask import render_template, send_from_directory, flash, redirect, url_for, request, jsonify
+from flask import render_template, send_from_directory, flash, redirect, url_for, request, jsonify, Response
 from app.forms import LoginForm, RegisterForm, NoteForm, EditNoteForm, EditUserForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Note
 from pytz import all_timezones, country_names, country_timezones
 from werkzeug.urls import url_parse
 from sqlalchemy import or_, desc
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from matplotlib.figure import Figure
+import io
 
 
 @app.route('/')
@@ -26,6 +29,26 @@ def index():
         if (numNotes > 0):
             time = datetime.utcnow() - userNotes[0].note_date
     return render_template('index.html', title='Home', notes=userNotes, num=numNotes, time=time)
+
+@app.route('/user_activity_by_weekday.png')
+def user_activity_by_weekday_png():
+    #This is the figure to modify
+    fig = Figure(figsize=(9,5))
+    #This is the stuff the makes the images
+    weekdata = [0,0,0,0,0,0,0]
+    weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    dates = Note.query.filter_by(user_id=current_user.id).all()
+    for date in dates:
+        weekdata[date.note_date.weekday()] = weekdata[date.note_date.weekday()] + 1
+    axis = fig.add_subplot(1,1,1)
+    axis.bar(weekdays,weekdata)
+    axis.set_xlabel('Days of the Week')
+    axis.set_ylabel('Notes Made on that Day')
+    axis.set_title('Notes Made on Each Day of the Week')
+    #This just displays it
+    output = io.BytesIO()
+    FigureCanvas(fig).print_png(output)
+    return Response(output.getvalue(), mimetype='image/png')
 
 
 @app.route('/css/<path:path>')
@@ -413,4 +436,3 @@ def gettimezones(CountryID=None):
         timezones = all_timezones
     # Convert timezones to JSON
     return jsonify([(tz, tz) for tz in timezones])
-

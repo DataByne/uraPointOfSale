@@ -19,6 +19,7 @@ python-dotenv = "*"
 selenium = "*"
 splinter = "*"
 pytz = "*"
+matplotlib = "*"
 
 [requires]
 python_version = "3.7"
