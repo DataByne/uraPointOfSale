@@ -121,7 +121,7 @@
         });
         $('#edituserform').submit(function (e) {
             e.preventDefault();
-            $.submitForm("{{ url_for('edituser', UserID=current_user.id) }}", $(this).serialize, 'POST', false);
+            $.submitForm("{{ url_for('edituser', UserID=current_user.id) }}", $(this).serialize(), 'POST', false);
         });
     </script>
 {% endblock %}
