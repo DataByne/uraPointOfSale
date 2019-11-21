@@ -1,4 +1,4 @@
-from app import app, db
+from app import app, db, mail
 from datetime import datetime, timezone
 from flask import render_template, send_from_directory, flash, redirect, url_for, request, jsonify, Response
 from app.forms import LoginForm, RegisterForm, NoteForm, EditNoteForm, EditUserForm
@@ -10,6 +10,7 @@ from sqlalchemy import or_, desc
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 import io
+from flask_mail import Mail, Message
 
 
 @app.route('/')
@@ -436,4 +437,3 @@ def gettimezones(CountryID=None):
         timezones = all_timezones
     # Convert timezones to JSON
     return jsonify([(tz, tz) for tz in timezones])
-
