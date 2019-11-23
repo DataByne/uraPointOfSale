@@ -32,26 +32,32 @@
                   <p>You can view and chage your user information using the dropdown menue in the top right hand corner of the page and delete your account at any time for any reason.</p>
             {% else %}
                 <h1>Welcome back to Note Weaver!</h1>
+                <img src="/images/logo-dark.png" alt="Note Weaver" width="320" height="160">
+                <br><br>
                 <div>
                   <h2>Most Recent Notes</h2>
-                  <ul>
                       {% for note in notes %}
-                          <li><a href="{{ url_for('singlenote', NoteID=note.id) }}">{{ note.title }}</a></li>
+                          <h5 style="margin:0;"><a href="{{ url_for('singlenote', NoteID=note.id) }}">{{ note.title }}</a></h5>
                       {% endfor %}
-                  </ul>
                 </div>
-                <div class="offset-1 col-10">
+                <br>
+                <div>
                     <h2>Statistics</h2>
+                    <br>
                     <p><b>Number of Notes: </b>{{ num }}</p>
                     <p><b>User Since: </b>{{ current_user.creation_date | user_datetime(current_user.time_zone) }}</p>
                     {% if num > 0 %}
                         <p><b>Time Since Last Note: </b>
-                        {% if time.days > 0 %}
+                        {% if time.days > 1 %}
                             {{ time.day }} days
+                        {% elif time.days == 1 %}
+                            1 day
                         {% elif time.seconds > 0 %}
                             {% set t = (time.seconds / 3600) | int %}
-                            {% if t > 0 %}
+                            {% if t > 1 %}
                                 {{ t }} hours
+                            {% elif t == 1 %}
+                                1 hour
                             {% else %}
                                 {% set t = (time.seconds / 60) | int %}
                                 {% if t > 0 %}
@@ -63,9 +69,10 @@
                         {% endif %}
                         </p>
                     {% endif %}
-                    <p><b>Most Used Tag: </b></p>
+                    <!--<p><b>Most Used Tag: </b></p>-->
+                    <img src="/images/user_activity_by_weekday.png" alt="User Activity By Week">
+                    <br><br>
                 </div>
-                <img src="/images/logo-dark.png" alt="Note Weaver" width="320" height="160">
             {% endif %}
         </div>
     </div>

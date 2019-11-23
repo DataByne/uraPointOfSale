@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from flask_login import login_user, current_user
+from flask_login import current_user
 from wtforms import BooleanField, PasswordField, SelectField, StringField, SubmitField, TextAreaField
 from wtforms.validators import InputRequired, DataRequired, Email, EqualTo, ValidationError
 from pytz import all_timezones, country_names, country_timezones
@@ -21,30 +21,6 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password:', validators=[InputRequired('Password is required.'), DataRequired()])
     rememberMe = BooleanField('Remember Me')
     submit = SubmitField('Login')
-
-    def validate_submit(self, submit):
-        """Validate the login form on submit
-
-        Parameters:
-            self:   The login form
-            submit: The submit button
-
-        Raises:
-            ValidationError: The user could not be authenticated
-        """
-        # Query the user by user name
-        user = User.query.filter_by(username=self.username.data).first()
-        # Check if the user was found
-        if user is None:
-            # Query the user by email address
-            user = User.query.filter_by(email=self.username.data).first()
-        # Check user exists and the password hash matches
-        if user is None or not user.check_password(self.password.data):
-            # Raise validation error that user could not be authenicated
-            raise ValidationError('Login authentication failed.')
-        else:
-            # Login user
-            login_user(user, remember=self.rememberMe.data)
 
 class RegisterForm(FlaskForm):
     """Form for registering on site
@@ -94,8 +70,7 @@ class RegisterForm(FlaskForm):
             ValidationError: A validation error if the password does not meet required metrics
 
         """
-        password = password.data
-        if not (re.match(r'[A-Za-z0-9@#$%^&+=!]{8,}', password)):
+        if not re.match(r'[A-Za-z0-9@#$%^&+=!]{8,}', password.data):
             raise ValidationError('Password does not meet required criteria.')
 
     def validate_email(self, email):
@@ -181,10 +156,7 @@ class EditUserForm(FlaskForm):
             ValidationError: A validation error if the password does not meet required metrics
 
         """
-        password = password.data
-        if password == "":
-            return
-        if not (re.match(r'[A-Za-z0-9@#$%^&+=!]{8,}', password)):
+        if password.data != "" and not re.match(r'[A-Za-z0-9@#$%^&+=!]{8,}', password.data):
             raise ValidationError('Password does not meet required criteria.')
 
     def validate_email(self, email):

@@ -3,53 +3,35 @@
 {% block content %}
     <div class="row mt-5">
         <div class="offset-0 offset-xs-1 offset-lg-1 col-lg-10 text-center">
-            {% if not notes or notes.count() == 0 %}
-                {% if search %}
-                    <h1>You currently have no notes matching your search, {{ current_user.username }}.</h1>
-                    <div class="row mt-4 mb-5 justify-content-center">
-                        <div class="col-lg-5">
-                            <button id="notesbutton" class="btn btn-primary">Go Back to Your Notes</button>
-                        </div>
-                    </div>
-                    <div class="row justify-content-center">
-                        <div class="col-lg-7 offset-lg-1">
-                            <input id="query" class="form-control form-control-sm my-1 w-100" type="text" placeholder="Search Again" aria-label="Search" name="query" value="{{ search }}" required>
-                        </div>
-                        <div class="col-lg-1">
-                            <button id="searchbutton" class="btn btn-primary">Search</button>
-                        </div>
-                    </div>
+            {% set haveNotes = false %}
+            {% set searching = false %}
+            {% if search or request.path.startswith(url_for('searchnote')) %}
+                {% set searching = true %}
+            {% endif %}
+            {% if notes and notes.count() > 0 %}
+                {% set haveNotes = true %}
+            {% endif %}
+            {% if not haveNotes %}
+                {% if searching and search %}
+                    <h1>You currently have no notes matching your search.</h1>
                 {% else %}
-                    <h1>You currently have no notes, {{ current_user.username }}.</h1>
-                    <button id="addnotebutton" class="btn btn-primary mt-4 mb-5">Add Note</button>
+                    <h1>You currently have no notes.</h1>
                 {% endif %}
             {% else %}
-                {% if search %}
-                    <h1>These are the notes matching your search, {{ current_user.username }}!</h1>
+                {% if searching %}
+                    <h1>These are the notes matching your search.</h1>
                 {% else %}
-                    <h1>{{ current_user.username }}, has weaved these notes!</h1>
+                    <h1>You have weaved these notes!</h1>
                 {% endif %}
-                <div class="row my-4">
-                    <div class="col-lg-4">
-                        <input id="query" class="form-control form-control-sm w-100" type="text" placeholder="Search" aria-label="Search" name="query"  value="{%if search %}{{ search }}{% endif %}" required>
-                    </div>
-                    <div class="col-lg-1">
-                        <button id="searchbutton" class="btn btn-primary">Search</button>
-                    </div>
+            {% endif %}
+            <div class="row my-4">
+                {% if searching and search or haveNotes %}
+                    <form id="searchform" class="col-12 col-lg-6 col-md-5" onsubmit="event.preventDefault(); $.submitForm($.joinUrl('{{ url_for('searchnote') }}', encodeURIComponent($('#query').val())), $(this).serialize(), 'GET');">
+                        <input id="query" class="form-control col-lg-7 col-md-7 d-inline" type="text" placeholder="Search" aria-label="Search" value="{% if search %}{{ search }}{% endif %}" autofocus="autofocus" required>
+                        <button type="submit" class="form-control btn btn-primary ml-md-2 my-2 my-md-0 col-lg-4 col-md-4 d-inline">Search</button>
+                    </form>
+                {% endif %}
 
-                    <div class="col-lg-5">
-                        {% if search %}
-                            <button id="notesbutton" class="btn btn-primary">Go Back to Your Notes</button>
-                        {% endif %}
-                    </div>
-
-                    <div class="col-lg-2">
-                        <button id="addnotebutton" class="btn btn-primary float-right">Add Note</button>
-                    </div>
-                
-                <!-- switch to dif views-->
-                <button id="btnShowCard">Cards</button>
-                <button id="btnShowTable">Table</button>
                 <!-- Note-Cards -->
             </div class="container">
             <div id="noteCards" class="cards">
@@ -67,11 +49,23 @@
                 {% endfor %}
                 <ul id="pagination"></ul>
             </div>
-        <div>
-
-                <div class="col-md-6 col-sm-12"></div>
-                <!-- list of notes-Table -->
-                <table id="noteTable" class="table-bordered mb-5 col-sm-12">
+            <div>
+                {% if searching %}
+                    <button class="btn btn-secondary mx-3 ml-md-2 mr-md-0 col-lg-3 col-md-4 mb-2 mb-md-0 d-inline float-right" onclick="$.navigateTo('{{ url_for('notes') }}');">Go Back to Your Notes</button>
+                {% else %}
+                    {% if haveNotes %}
+                        <div class="mx-3 ml-md-2 mr-md-0 col-lg-3 col-md-4 d-inline float-right"></div>
+                    {% else %}
+                        <div class="mx-3 ml-md-2 mr-md-0 col-lg-7 col-md-8 d-inline"></div>
+                    {% endif %}
+                {% endif %}
+                <button id="addnotebutton" class="btn btn-info mx-3 ml-md-2 mr-md-0 col-lg-2 col-md-2 d-inline float-right" onclick="$.navigateTo('{{ url_for('addnote') }}');">Add Note</button>
+            </div>
+            {% if haveNotes %}
+                <!-- switch to dif views-->
+                <button id="btnShowCard">Cards</button>
+                <button id="btnShowTable">Table</button>
+                <table class="table-bordered mb-5 col-sm-12">
                     <thead class="table table-dark">
                         <th scope="col">Title</th>
                         <th scope="col">Note</th>
@@ -81,12 +75,12 @@
                     <tbody>
                         {% for note in notes %}
                             <tr class="table table-hover table-info">
-                                <td><a href="{{ url_for('singlenote', NoteID=note.id) }}">{{ note.title }}</a></td>
-                                <td>{{ note.note | truncate(32, True) }}</td>
+                                <td><a href="{{ url_for('singlenote', NoteID=note.id) }}">{{ note.title | truncate(64, True) }}</a></td>
+                                <td>{{ note.note | truncate(128, True) }}</td>
                                 <td>{{ note.note_date | user_datetime(current_user.time_zone) }}</td>
                                 <td>
-                                    <button class="btn btn-primary col-12 col-xl-5" id="editnote" onclick="editNote('{{ url_for('editnote', NoteID=note.id) }}');">Edit</button>
-                                    <button class="btn btn-danger col-12 col-xl-6 ml-xl-1" id="deletenote" onclick="deleteNote('{{ note.title }}', '{{ url_for('deletenote', NoteID=note.id) }}');">Delete</button>
+                                    <button class="btn btn-primary col-12" id="editnote" onclick="$.navigateTo('{{ url_for('editnote', NoteID=note.id) }}');">Edit</button>
+                                    <button class="btn btn-danger col-12 mt-2" id="deletenote" onclick="$.deleteNote('{{ note.title }}', '{{ url_for('deletenote', NoteID=note.id) }}');">Delete</button>
                                 </td>
                             </tr>
                         {% endfor %}

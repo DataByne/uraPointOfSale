@@ -19,6 +19,8 @@ python-dotenv = "*"
 selenium = "*"
 splinter = "*"
 pytz = "*"
+matplotlib = "*"
+flask-mail = "*"
 
 [requires]
 python_version = "3.7"

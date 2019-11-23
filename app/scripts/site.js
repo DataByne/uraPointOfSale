@@ -79,6 +79,26 @@ $.extend({
         return referrer;
     },
     /**
+     * Join an URL by component parts
+     *
+     * @param base     The base component
+     * @param relative The relative component to base
+     *
+     * @returns The joined URL
+     */
+    joinUrl: function (base, relative) {
+        if (base == undefined) {
+            base = '/';
+        }
+        if (relative == undefined) {
+            relative = '';
+        }
+        if ((base[-1] == '/') || (relative[0] == '/')) {
+          return base + relative;
+        }
+        return base + '/' + relative;
+    },
+    /**
      * Make a full URL from a strict URL and query parameters
      *
      * @param url        The strict URL
@@ -116,8 +136,7 @@ $.extend({
      * @param parameters The query parameters
      * @param method     The method of the query, POST by default
      */
-    submitForm: function submitForm(url, parameters={}, method="POST", changeHistory=false) {
-        var referrer = $(location).attr('href');
+    submitForm: function submitForm(url, parameters=null, method="POST", changeHistory=false) {
         /* Perform an AJAX form action */
         $.ajax({
             // The form action method
@@ -130,9 +149,9 @@ $.extend({
             success: function(data) {
                 // Push the history state if needed
                 if (changeHistory) {
-                    window.history.pushState({'referrer': referrer }, "", url);
+                    window.history.pushState(null, "", url);
                 } else {
-                    window.history.replaceState({ 'referrer': referrer }, "", url);
+                    window.history.replaceState(null, "", url);
                 }
                 // Open a new HTML document and change the navigation history if needed
                 document.open("text/html", changeHistory ? null : "replace");
@@ -149,7 +168,7 @@ $.extend({
      * @param parameters The query parameters
      * @param method     The method of the query, GET by default
      */
-    navigateTo: function (url, parameters={}, method="GET", changeHistory=true) {
+    navigateTo: function (url, parameters=null, method="GET", changeHistory=true) {
         // Navigate to the page through an AJAX query
         $.submitForm(url, parameters, method, changeHistory);
     },
@@ -158,11 +177,43 @@ $.extend({
      */
     goBack: function () {
         window.history.back();
+    },
+    /**
+     * Delete the current user
+     */
+    deleteUser: function (username, url) {
+        if (confirm("Are you sure you want to permanatly delete the account and all notes associated with the user '" + username + "'?")) {
+            $.navigateTo(url);
+        }
+    },
+    /**
+     * Delete a note
+     */
+     deleteNote: function (title, url) {
+        if (confirm("Are you sure you want to permanatly delete the note '" + title + "'?")) {
+            $.navigateTo(url);
+        }
+     },
+    /**
+     * Populate a time zone selector
+     *
+     * @param country    The country code for the time zones
+     * @param time_zones The time zone selector to populate
+     */
+     populateTimeZones: function (country, time_zones) {
+        time_zones.attr('disabled', 'disabled');
+        time_zones.empty();
+        $.getJSON("{{ url_for('gettimezones') }}" + '/' + country, function(data) {
+            data.forEach(function(item) {
+                time_zones.append($('<option>', { value: item[0], text: item[1] }));
+            });
+            time_zones.removeAttr('disabled');
+        });
     }
 });
 
 // On window history popstate
 $(window).on('popstate', function (e) {
-    $.navigateTo($(location).attr('href'), (e.State !== undefined) ? e.State : {}, method="GET", false);
+    $.navigateTo($(location).attr('href'), null, 'GET', false);
 });
 

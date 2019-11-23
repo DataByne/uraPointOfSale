@@ -1,13 +1,16 @@
-from app import app, db
+from app import app, db, mail
 from datetime import datetime, timezone
-from flask import render_template, send_from_directory, flash, redirect, url_for, request, jsonify
+from flask import render_template, send_from_directory, flash, redirect, url_for, request, jsonify, Response
 from app.forms import LoginForm, RegisterForm, NoteForm, EditNoteForm, EditUserForm
-from flask_login import current_user, logout_user, login_required
+from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Note
 from pytz import all_timezones, country_names, country_timezones
 from werkzeug.urls import url_parse
 from sqlalchemy import or_, desc
-
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from matplotlib.figure import Figure
+import io
+from flask_mail import Mail, Message
 
 @app.route('/')
 @app.route('/index')
@@ -27,7 +30,6 @@ def index():
             time = datetime.utcnow() - userNotes[0].note_date
     return render_template('index.html', title='Home', notes=userNotes, num=numNotes, time=time)
 
-
 @app.route('/css/<path:path>')
 def send_css(path):
     """Route for static CSS files
@@ -39,7 +41,6 @@ def send_css(path):
         Static content from the 'css' directory
     """
     return send_from_directory('css', path)
-
 
 @app.route('/images/<path:path>')
 def send_images(path):
@@ -53,6 +54,26 @@ def send_images(path):
     """
     return send_from_directory('images', path)
 
+@app.route('/images/user_activity_by_weekday.png')
+def user_activity_by_weekday_png():
+    #This is the figure to modify
+    fig = Figure(figsize=(9,5))
+    #This is the stuff the makes the images
+    weekdata = [0,0,0,0,0,0,0]
+    weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    dates = Note.query.filter_by(user_id=current_user.id).all()
+    for date in dates:
+        weekdata[date.note_date.weekday()] = weekdata[date.note_date.weekday()] + 1
+    axis = fig.add_subplot(1,1,1)
+    axis.bar(weekdays,weekdata)
+    axis.set_xlabel('Days of the Week')
+    axis.set_ylabel('Notes Made on that Day')
+    axis.set_title('Notes Made on Each Day of the Week')
+    #This just displays it
+    output = io.BytesIO()
+    FigureCanvas(fig).print_png(output)
+    return Response(output.getvalue(), mimetype='image/png')
+
 @app.route('/scripts/<path:path>')
 def send_scripts(path):
     """Route for static script files
@@ -64,7 +85,6 @@ def send_scripts(path):
         Static content from the 'scripts' directory
     """
     return send_from_directory('scripts', path)
-
 
 @app.route('/about')
 def about():
@@ -98,7 +118,7 @@ def register(CountryID=None):
     # Set the default time zone to the first
     form.time_zone.data = country_timezones[form.country.data][0]
     # Validate the form
-    if form.validate_on_submit():
+    if request.method == 'POST' and form.validate_on_submit():
         # Create a new user model from the form data
         user = User(username=form.username.data, email=form.email.data, country=form.country.data, time_zone=form.time_zone.data)
         # Set the user model password hash
@@ -107,12 +127,11 @@ def register(CountryID=None):
         db.session.add(user)
         db.session.commit()
         # Flash a successfully register message
-        flash("Succesfully registered new user '" + user.username + "'.")
+        flash("Succesfully registered new user '" + user.username + "'.", 'success')
         # Redirect to the login page
         return redirect(url_for('login'))
     # Render the registration page from the template and form
     return render_template('register.html', title="Register", form=form, country_names=country_names)
-
 
 @app.route("/user/<UserID>")
 @login_required
@@ -134,7 +153,6 @@ def user(UserID):
         return redirect(url_for('index'))
     #renders page
     return render_template('user.html', title=user.username, count=count)
-
 
 @app.route('/user/edit/<UserID>', methods=['GET', 'POST'])
 @login_required
@@ -164,7 +182,7 @@ def edituser(UserID):
     form.country.choices = [(country_id, country_names[country_id]) for country_id in country_names]
     form.time_zone.choices = [(tz, tz) for tz in country_timezones[CountryID]]
     #updates user information, commits the changes and redirects back to the user page
-    if form.validate_on_submit():
+    if request.method == 'POST' and form.validate_on_submit():
         user.username = form.username.data
         user.email = form.email.data
         user.country = form.country.data
@@ -191,14 +209,14 @@ def deleteuser(UserID):
         UserID: used to find the user tuple and all user notes as well as veryify the correct user is deleting themself
 
     Returns:
-        redicret to logout that redirects to index
+        Redirect to logout
     """
     #redirects user if they are trying to delete another users account
     if UserID is None or current_user.id != int(UserID):
         return redirect(url_for('user', UserID=current_user.id))
     #finds user tuple
     user = User.query.filter_by(id = int(UserID)).first()
-    flash("Successfully deleted the user '" + user.username + "' and all authored notes.");
+    flash("Successfully deleted the user '" + user.username + "' and all authored notes.", 'success');
     #finds all notes of the user and deletes them
     note = Note.query.filter_by(user_id=int(UserID)).first()
     while note is not None:
@@ -209,8 +227,6 @@ def deleteuser(UserID):
     db.session.commit()
     #logs the user out
     return logout()
-
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -225,17 +241,28 @@ def login():
     # Create login form
     form = LoginForm()
     # Validate the form
-    if form.validate_on_submit():
-       # user = User.query.filter_by(username=form.username.data).first()
-        #store url user was trying to access
-        next_page = request.args.get('next')
-        #if there is no next argument or if next arg is set to a full url, redirect to index
-        if not next_page or url_parse(next_page).netloc != '':
-            next_page = url_for('index')
-        return redirect(next_page)
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            # Query the user by user name
+            user = User.query.filter_by(username=form.username.data).first()
+            # Check if the user was found
+            if user is None:
+                # Query the user by email address
+                user = User.query.filter_by(email=form.username.data).first()
+            # Check user exists and the password hash matches
+            if user is not None and user.check_password(form.password.data):
+                # Login user
+                login_user(user, remember=form.rememberMe.data)
+                #store url user was trying to access
+                next_page = request.args.get('next')
+                #if there is no next argument or if next arg is set to a full url, redirect to index
+                if not next_page or url_parse(next_page).netloc != '':
+                    next_page = url_for('index')
+                return redirect(next_page)
+        # Flash error that user could not be authenicated
+        flash('Login authentication failed.', 'danger')
     # Render the login page from the template and form
     return render_template('login.html', title="Login", form=form)
-
 
 @app.route('/logout')
 def logout():
@@ -246,9 +273,10 @@ def logout():
     """
     # Logout user
     logout_user()
+    # Flash message that user logged out
+    flash('Successfully logged out.', 'success')
     # Redirect to landing page
     return redirect(url_for('index'))
-
 
 @app.route('/notes')
 @login_required
@@ -261,8 +289,7 @@ def notes():
     # Query notes of current user
     userNotes = Note.query.filter_by(user_id=current_user.id)
     # Render notes list page from the template and user notes
-    return render_template('notes.html', title='Your Notes', notes=userNotes, search= False)
-
+    return render_template('notes.html', title='Your Notes', notes=userNotes, search=False)
 
 @app.route('/notes/add', methods=['GET', 'POST'])
 @login_required
@@ -275,7 +302,7 @@ def addnote():
     # Create a note form
     form = NoteForm()
     # Validate the form
-    if form.validate_on_submit():
+    if request.method == 'POST' and form.validate_on_submit():
         # Create a new note from the form data
         newnote = Note(title = form.title.data, note=form.note.data, user_id=current_user.id)
         # Add the note to the database
@@ -302,11 +329,11 @@ def editnote(NoteID):
     # Check note exists and is authored by current user
     if note is None or note.user_id != current_user.id:
         # Redirect to notes list page
-       return redirect(url_for('notes'), 303)
+       return redirect(url_for('notes'))
     # Create the edit note form
     form = EditNoteForm()
     # Validate the form
-    if form.validate_on_submit():
+    if request.method == 'POST' and form.validate_on_submit():
         # Check if deleting note
         if form.delete.data:
           # Delete note
@@ -319,15 +346,14 @@ def editnote(NoteID):
         # Save the changes
         db.session.commit()
         # Redirect to the note detail page
-        # return redirect(url_for('singlenote', NoteID=NoteID))
-        return url_for('singlenote', NoteID=NoteID), 303, {'ContentType': 'text/html'}
+        return redirect(url_for('notes'))
     # Set the form data from the note
     form.title.data = note.title
     form.note.data = note.note
     # Render the edit not page from the template and form
     return render_template('editnote.html', title='Edit', form=form, NoteID=NoteID)
 
-@app.route('/notes/delete/<NoteID>')
+@app.route('/notes/delete/<NoteID>', methods=['GET', 'POST', 'DELETE'])
 @login_required
 def deletenote(NoteID):
     """Route to delete a note
@@ -343,12 +369,12 @@ def deletenote(NoteID):
     # Check note exists and is authored by current user
     if note is not None and note.user_id == current_user.id:
         # Flash a successful delete message
-        flash("Deleted note '" + note.title + "'.")
+        flash("Deleted note '" + note.title + "'.", 'success')
         # Delete the note
         db.session.delete(note)
         db.session.commit()
     # Redirect to notes list page
-    return redirect(url_for('notes'), 303)
+    return redirect(url_for('notes'))
 
 @app.route('/notes/<NoteID>')
 @login_required
@@ -374,7 +400,7 @@ def singlenote(NoteID):
 @app.route('/notes/search')
 @app.route('/notes/search/<Query>')
 @login_required
-def searchnote(Query=None):
+def searchnote(Query=''):
     notes = None
     if Query is not None and Query != '':
         notes = Note.query.filter(or_(Note.title.ilike('%'+ Query+ '%'), Note.note.ilike('%'+ Query+ '%')), Note.user_id==current_user.id)
