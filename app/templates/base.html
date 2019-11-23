@@ -3,13 +3,21 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="/css/bootstrap-3.4.1.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T">
     <link href="/css/site.css" rel="stylesheet" />
     {% if title %}
         <title>{{ title }} - Note Weaver</title>
     {% else %}
         <title>Welcome to Note Weaver</title>
     {% endif %}
+    <script src="/scripts/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="></script>
+    <script src="/scripts/bootstrap-3.4.1.bundle.min.js" integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o"></script>
+    <script src="/scripts/site.js"></script>
+    <script>
+        if (window.location.pathname != '{{ request.path }}') {
+            window.history.replaceState(null, "", '{{ request.path }}');
+        }
+    </script>
   </head>
   <body>
     <header>
@@ -23,7 +31,7 @@
                     {% if request.path == url_for('index') or request.path == '/' %}
                         <li class="nav-item active"><a class="nav-link" href="">Home</a></li>
                     {% else %}
-                        <li class="nav-item{"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
                     {% endif %}
                     {% if request.path == url_for('addnote') %}
                         <li class="nav-item active"><a class="nav-link" href="">Add Note</a></li>
@@ -77,13 +85,10 @@
         </nav>
     </header>
     <main role="main" class="container">
-        <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o" crossorigin="anonymous"></script>
-        <script src="/scripts/site.js"></script>
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} justify-content-center" role="alert">{{ message }}</div>
+                    <div class="alert alert-{{ category }} justify-content-center text-center" role="alert">{{ message }}</div>
                 {% endfor %}
             {% endif %}
         {% endwith %}

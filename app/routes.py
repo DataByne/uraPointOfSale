@@ -12,7 +12,6 @@ from matplotlib.figure import Figure
 import io
 from flask_mail import Mail, Message
 
-
 @app.route('/')
 @app.route('/index')
 def index():
@@ -31,7 +30,31 @@ def index():
             time = datetime.utcnow() - userNotes[0].note_date
     return render_template('index.html', title='Home', notes=userNotes, num=numNotes, time=time)
 
-@app.route('/user_activity_by_weekday.png')
+@app.route('/css/<path:path>')
+def send_css(path):
+    """Route for static CSS files
+
+    Parameters:
+        path: The path of the static CSS file
+
+    Returns:
+        Static content from the 'css' directory
+    """
+    return send_from_directory('css', path)
+
+@app.route('/images/<path:path>')
+def send_images(path):
+    """Route for static image files
+
+    Parameters:
+        path: The path of the static image file
+
+    Returns:
+        Static content from the 'images' directory
+    """
+    return send_from_directory('images', path)
+
+@app.route('/images/user_activity_by_weekday.png')
 def user_activity_by_weekday_png():
     #This is the figure to modify
     fig = Figure(figsize=(9,5))
@@ -51,32 +74,6 @@ def user_activity_by_weekday_png():
     FigureCanvas(fig).print_png(output)
     return Response(output.getvalue(), mimetype='image/png')
 
-
-@app.route('/css/<path:path>')
-def send_css(path):
-    """Route for static CSS files
-
-    Parameters:
-        path: The path of the static CSS file
-
-    Returns:
-        Static content from the 'css' directory
-    """
-    return send_from_directory('css', path)
-
-
-@app.route('/images/<path:path>')
-def send_images(path):
-    """Route for static image files
-
-    Parameters:
-        path: The path of the static image file
-
-    Returns:
-        Static content from the 'images' directory
-    """
-    return send_from_directory('images', path)
-
 @app.route('/scripts/<path:path>')
 def send_scripts(path):
     """Route for static script files
@@ -88,7 +85,6 @@ def send_scripts(path):
         Static content from the 'scripts' directory
     """
     return send_from_directory('scripts', path)
-
 
 @app.route('/about')
 def about():
@@ -137,7 +133,6 @@ def register(CountryID=None):
     # Render the registration page from the template and form
     return render_template('register.html', title="Register", form=form, country_names=country_names)
 
-
 @app.route("/user/<UserID>")
 @login_required
 def user(UserID):
@@ -158,7 +153,6 @@ def user(UserID):
         return redirect(url_for('index'))
     #renders page
     return render_template('user.html', title=user.username, count=count)
-
 
 @app.route('/user/edit/<UserID>', methods=['GET', 'POST'])
 @login_required
@@ -234,8 +228,6 @@ def deleteuser(UserID):
     #logs the user out
     return logout()
 
-
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     """Route for login
@@ -272,7 +264,6 @@ def login():
     # Render the login page from the template and form
     return render_template('login.html', title="Login", form=form)
 
-
 @app.route('/logout')
 def logout():
     """Route for logout
@@ -287,7 +278,6 @@ def logout():
     # Redirect to landing page
     return redirect(url_for('index'))
 
-
 @app.route('/notes')
 @login_required
 def notes():
@@ -300,7 +290,6 @@ def notes():
     userNotes = Note.query.filter_by(user_id=current_user.id)
     # Render notes list page from the template and user notes
     return render_template('notes.html', title='Your Notes', notes=userNotes, search=False)
-
 
 @app.route('/notes/add', methods=['GET', 'POST'])
 @login_required
@@ -364,7 +353,7 @@ def editnote(NoteID):
     # Render the edit not page from the template and form
     return render_template('editnote.html', title='Edit', form=form, NoteID=NoteID)
 
-@app.route('/notes/delete/<NoteID>')
+@app.route('/notes/delete/<NoteID>', methods=['GET', 'POST', 'DELETE'])
 @login_required
 def deletenote(NoteID):
     """Route to delete a note
@@ -411,7 +400,7 @@ def singlenote(NoteID):
 @app.route('/notes/search')
 @app.route('/notes/search/<Query>')
 @login_required
-def searchnote(Query=None):
+def searchnote(Query=''):
     notes = None
     if Query is not None and Query != '':
         notes = Note.query.filter(or_(Note.title.ilike('%'+ Query+ '%'), Note.note.ilike('%'+ Query+ '%')), Note.user_id==current_user.id)
@@ -437,3 +426,4 @@ def gettimezones(CountryID=None):
         timezones = all_timezones
     # Convert timezones to JSON
     return jsonify([(tz, tz) for tz in timezones])
+

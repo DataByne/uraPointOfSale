@@ -4,7 +4,7 @@
     <div class="row my-5">
         <div class="offset-1 offset-sm-2 offset-lg-3 text-center">
             <h1>Edit your profile, {{ current_user.username }}!</h1>
-            <form id="edituserform" name="edituserform" class="justify-content-center mt-4" action="" method="post" novalidate>
+            <form id="edituserform" name="edituserform" class="justify-content-center mt-4" action="" method="post" novalidate onsubmit="event.preventDefault(); $.submitForm('{{ url_for('edituser', UserID=current_user.id) }}', $(this).serialize());">
                 {{ form.hidden_tag() }}
                 <div class="form-group row col-sm-12">
                     {{ form.username.label(class="col-sm-5 col-form-label") }}
@@ -64,7 +64,7 @@
                     {% if form.country.errors %}
                         {% set country_isvalid = " is-invalid" %}
                     {% endif %}
-                    {{ form.country(class="col-sm-7 form-control" + country_isvalid) }}
+                    {{ form.country(class="col-sm-7 form-control" + country_isvalid, onchange="$.populateTimeZones($('#country').val(), $('#time_zone'));") }}
                     {% for error in form.country.errors %}
                         <div class="invalid-feedback">
                             {{ error }}
@@ -86,42 +86,9 @@
                 </div>
                 <div class="form-group">
                     {{ form.submit(class="form-control btn btn-primary col-3") }}
-                    <button class="btn btn-danger col-3 ml-4" id="deleteuser">Delete</button>
+                    <button type="button" class="btn btn-danger col-3 ml-4" onclick="$.deleteUser('{{ current_user.username }}', '{{ url_for('deleteuser', UserID=current_user.id) }}');">Delete</button>
                 </div>
             </form>
         </div>
     </div>
-    <script charset="utf-8" type="text/javascript">
-        // Update timezones select
-        function updateTimezones() {
-            var time_zone = $('#time_zone');
-            time_zone.attr('disabled', 'disabled');
-            time_zone.empty();
-            $.getJSON("{{ url_for('gettimezones') }}" + '/' + $('#country').val(), function(data) {
-                data.forEach(function(item) {
-                    time_zone.append(
-                        $('<option>', {
-                            value: item[0],
-                            text: item[1]
-                        })
-                    );
-                });
-                time_zone.removeAttr('disabled');
-            });
-        }
-        // On country select change
-        $('#country').change(function() {
-            updateTimezones();
-        });
-        $('#deleteuser').click(function (e) {
-            e.preventDefault();
-            if (confirm("Are you sure you want to permanatly delete your account and all notes associated with it '{{ current_user.username }}'?")) {
-                $.navigateTo("{{ url_for('deleteuser', UserID=current_user.id) }}", null, 'GET', false);
-            }
-        });
-        $('#edituserform').submit(function (e) {
-            e.preventDefault();
-            $.submitForm("{{ url_for('edituser', UserID=current_user.id) }}", $(this).serialize(), 'POST', false);
-        });
-    </script>
 {% endblock %}
