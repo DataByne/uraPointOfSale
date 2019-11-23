@@ -32,6 +32,9 @@
                     </form>
                 {% endif %}
 
+                <button id="btnShowCard" class="btn btn-info">Change View</button>
+                <button id="btnShowTable" class="btn btn-info">Change View</button>
+                <button id="addnotebutton" class="btn btn-info mx-3 ml-md-2 mr-md-0 col-lg-2 col-md-2 d-inline float-right" onclick="$.navigateTo('{{ url_for('addnote') }}');">Add Note</button>
                 <!-- Note-Cards -->
             </div class="container">
             <div id="noteCards" class="cards">
@@ -59,13 +62,12 @@
                         <div class="mx-3 ml-md-2 mr-md-0 col-lg-7 col-md-8 d-inline"></div>
                     {% endif %}
                 {% endif %}
-                <button id="addnotebutton" class="btn btn-info mx-3 ml-md-2 mr-md-0 col-lg-2 col-md-2 d-inline float-right" onclick="$.navigateTo('{{ url_for('addnote') }}');">Add Note</button>
+        
             </div>
             {% if haveNotes %}
                 <!-- switch to dif views-->
-                <button id="btnShowCard">Cards</button>
-                <button id="btnShowTable">Table</button>
-                <table class="table-bordered mb-5 col-sm-12">
+
+                <table id="noteTable" class="table-bordered mb-5 col-sm-12">
                     <thead class="table table-dark">
                         <th scope="col">Title</th>
                         <th scope="col">Note</th>
