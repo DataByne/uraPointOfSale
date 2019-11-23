@@ -15,7 +15,7 @@
                 {% endif %}
                 {{ form.title(autofocus=true, class="col-md-10 form-control" + title_isvalid) }}
                 {% for error in form.title.errors %}
-                    <div class="invalid-feedback">
+                    <div class="invalid-feedback text-center">
                         {{ error }}
                     </div>
                 {% endfor %}
@@ -28,12 +28,12 @@
                 {% endif %}
                 {{ form.note(class="col-md-10 form-control" + note_isvalid) }}
                 {% for error in form.note.errors %}
-                    <div class="invalid-feedback">
+                    <div class="invalid-feedback text-center">
                         {{ error }}
                     </div>
                 {% endfor %}
             </div>
-            <div class="form-group row offset-md-2">
+            <div class="form-group row offset-md-2 text-center">
                 {{ form.submit(class="form-control btn btn-primary col-12 col-md-5 my-2 my-md-0 mr-md-2") }}
                 <button type="button" class="form-control btn btn-secondary col-12 col-md-4" onclick="$.goBack();">Cancel</button>
             </div>
