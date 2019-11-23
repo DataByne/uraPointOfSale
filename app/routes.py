@@ -7,6 +7,7 @@ from app.models import User, Note
 from pytz import all_timezones, country_names, country_timezones
 from werkzeug.urls import url_parse
 from sqlalchemy import or_, desc
+from sqlalchemy.sql.functions import func
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 import io
@@ -401,9 +402,19 @@ def singlenote(NoteID):
 @app.route('/notes/search/<Query>')
 @login_required
 def searchnote(Query=''):
+    """Route for searching notes by query text
+    
+    Parameters:
+        Query The query text for searching
+
+    Returns:
+        Rendering of the notes list page filtered by the query text search
+    """
     notes = None
     if Query is not None and Query != '':
         notes = Note.query.filter(or_(Note.title.ilike('%'+ Query+ '%'), Note.note.ilike('%'+ Query+ '%')), Note.user_id==current_user.id)
+    elif Note.query.filter(Note.user_id==current_user.id).count() <= 0:
+        Query = False;
     return render_template('notes.html', title='Search Results', notes=notes, search=Query)
 
 @app.route('/api/timezones')
