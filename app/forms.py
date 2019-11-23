@@ -95,7 +95,16 @@ class RegisterForm(FlaskForm):
 
         """
         password = password.data
-        if not (re.match(r'[A-Za-z0-9@#$%^&+=!]{8,}', password)):
+        if len(password) < 7:
+            raise ValidationError('Password does not meet required criteria.')
+        if not any(x.isupper() for x in password):
+            raise ValidationError('Password does not meet required criteria.')
+        if not any(x.islower() for x in password):
+            raise ValidationError('Password does not meet required criteria.')
+        if not any(x.isdigit() for x in password):
+            raise ValidationError('Password does not meet required criteria.')
+        regex = re.compile('[@_!#$%^&*()<>?/\|}{~:]')
+        if(regex.search(password) == None):
             raise ValidationError('Password does not meet required criteria.')
         
     def validate_email(self, email):
