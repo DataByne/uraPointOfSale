@@ -21,6 +21,7 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password:', validators=[InputRequired('Password is required.'), DataRequired()])
     rememberMe = BooleanField('Remember Me')
     submit = SubmitField('Login')
+    next = StringField()
 
 class RegisterForm(FlaskForm):
     """Form for registering on site

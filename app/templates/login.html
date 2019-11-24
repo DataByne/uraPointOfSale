@@ -49,6 +49,7 @@
                 <div class="form-group row col-sm-4 offset-sm-4 text-center">
                     {{ form.submit(class="form-control btn btn-primary") }}
                 </div>
+                {{ form.next(hidden=True) }}
             </form>
             <div class="mt-3 text-center">Not signed up yet? <a href="{{ url_for('register') }}">Register Here!</a></div>
         </div>
