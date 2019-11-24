@@ -403,7 +403,7 @@ def singlenote(NoteID):
 @login_required
 def searchnote(Query=''):
     """Route for searching notes by query text
-    
+
     Parameters:
         Query The query text for searching
 
@@ -438,3 +438,21 @@ def gettimezones(CountryID=None):
     # Convert timezones to JSON
     return jsonify([(tz, tz) for tz in timezones])
 
+def getTags(NoteID):
+    links = Note_Tags.query.filter_by(note_id=NoteID).all()
+    tags = []
+    for link in links:
+        tmptag = Tag.query.filter_by(id=link.tag_id).first()
+        if tmptag != None:
+            tags.append(tmptag.tag)
+    return tags
+
+def setTag(NoteID, tag):
+    temp = Tag.query.filter_by(tag=tag).first()
+    if temp == None:
+        new_tag = Tag(tag=tag)
+        db.session.add(new_tag)
+        temp = Tag.query.filter_by(tag=tag).first()
+    new_note_tag = Note_Tags(note_id = NoteID, tag_id = temp.id)
+    db.session.add(new_note_tag)
+    db.session.commit()
