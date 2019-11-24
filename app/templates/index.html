@@ -3,37 +3,77 @@
 {% block content %}
     <div class="row my-5">
         <div class="offset-1 col-10 text-center justify-content-center">
-          {% if current_user.is_anonymous %}
-          <h1>Welcome to Note Weaver!</h1>
-            <p>A note taking app designed to making your life easier.</p>
-            <img src="/images/logo-dark.png" alt="Note Weaver" width="320" height="160">
-            <br><br>
-            <br><br>
-          <h2>About Us</h2>
-            <p>We're a small group of students developing an aplication for or Software Development class at Kent State Universiy.</p>
-            <p>With note weaver our mission is to help give every student the organizational tools they need to be successful inside and outside of the classroom.</p>
-          <br><br>
-          <h2>How it Works</h2>
-            <h4>Register for an Account</h4>
-              <p>Go to Register and create an account, setting your current country and time zone, then login.</p>
-              <img src="/images/example-screenshots/register.png" alt="Creating and Account">
-              <br><br>
-            <h4>Adding a Note</h4>
-              <p>Go to 'Add Note' and create your first note! Simply fill in the text boxes and hit the button.</p>
-              <img src="/images/example-screenshots/add-a-note.png" alt="Adding a Note">
-              <br><br>
-            <h4>Viewing your Notes</h4>
-              <p>Once you have created your note you can see all the notes you currently have on the 'Notes' page.</p>
-              <p>From there you can vew the notes in full by clicking on the title. You could also edit or delete them from the page as well!</p>
-              <img src="/images/example-screenshots/note-page.png" alt="Note Page" class="col-8">
-              <br><br>
-            <h4>Your Account</h4>
-              <p>Your safety is always important to us, which is why we hash you passwords and are always working on adding even more saftey to our website</p>
-              <p>You can view and chage your user information using the dropdown menue in the top right hand corner of the page and delete your account at any time for any reason.</p>
-          {% else %}
-            <h1>Welcome back to Note Weaver!</h1>
-            <img src="/images/logo-dark.png" alt="Note Weaver" width="320" height="160">
-          {% endif %}
+            {% if current_user.is_anonymous %}
+                <h1>Welcome to Note Weaver!</h1>
+                  <p>A note taking app designed to making your life easier.</p>
+                  <img src="/images/logo-dark.png" alt="Note Weaver" width="320" height="160">
+                  <br><br>
+                  <br><br>
+                  <h2>About Us</h2>
+                  <p>We're a small group of students developing an aplication for or Software Development class at Kent State Universiy.</p>
+                  <p>With note weaver our mission is to help give every student the organizational tools they need to be successful inside and outside of the classroom.</p>
+                  <br><br>
+                  <h2>How it Works</h2>
+                  <h4>Register for an Account</h4>
+                  <p>Go to Register and create an account, setting your current country and time zone, then login.</p>
+                  <img src="/images/example-screenshots/register.png" alt="Creating and Account">
+                  <br><br>
+                  <h4>Adding a Note</h4>
+                  <p>Go to 'Add Note' and create your first note! Simply fill in the text boxes and hit the button.</p>
+                  <img src="/images/example-screenshots/add-a-note.png" alt="Adding a Note">
+                  <br><br>
+                  <h4>Viewing your Notes</h4>
+                  <p>Once you have created your note you can see all the notes you currently have on the 'Notes' page.</p>
+                  <p>From there you can vew the notes in full by clicking on the title. You could also edit or delete them from the page as well!</p>
+                  <img src="/images/example-screenshots/note-page.png" alt="Note Page" class="col-8">
+                  <br><br>
+                  <h4>Your Account</h4>
+                  <p>Your safety is always important to us, which is why we hash you passwords and are always working on adding even more saftey to our website</p>
+                  <p>You can view and chage your user information using the dropdown menue in the top right hand corner of the page and delete your account at any time for any reason.</p>
+            {% else %}
+                <h1>Welcome back to Note Weaver!</h1>
+                <img src="/images/logo-dark.png" alt="Note Weaver" width="320" height="160">
+                <br><br>
+                <div>
+                  <h2>Most Recent Notes</h2>
+                      {% for note in notes %}
+                          <h5 style="margin:0;"><a href="{{ url_for('singlenote', NoteID=note.id) }}">{{ note.title }}</a></h5>
+                      {% endfor %}
+                </div>
+                <br>
+                <div>
+                    <h2>Statistics</h2>
+                    <br>
+                    <p><b>Number of Notes: </b>{{ num }}</p>
+                    <p><b>User Since: </b>{{ current_user.creation_date | user_datetime(current_user.time_zone) }}</p>
+                    {% if num > 0 %}
+                        <p><b>Time Since Last Note: </b>
+                        {% if time.days > 1 %}
+                            {{ time.day }} days
+                        {% elif time.days == 1 %}
+                            1 day
+                        {% elif time.seconds > 0 %}
+                            {% set t = (time.seconds / 3600) | int %}
+                            {% if t > 1 %}
+                                {{ t }} hours
+                            {% elif t == 1 %}
+                                1 hour
+                            {% else %}
+                                {% set t = (time.seconds / 60) | int %}
+                                {% if t > 0 %}
+                                    {{ t }} minutes
+                                {% else %}
+                                    {{ time.seconds }} seconds
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+                        </p>
+                    {% endif %}
+                    <!--<p><b>Most Used Tag: </b></p>-->
+                    <img src="/images/user_activity_by_weekday.png" alt="User Activity By Week">
+                    <br><br>
+                </div>
+            {% endif %}
         </div>
     </div>
 {% endblock %}
