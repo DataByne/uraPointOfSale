@@ -2,15 +2,15 @@ from datetime import datetime
 from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
-from app import login
+from app import login_manager
 
-@login.user_loader
+@login_manager.user_loader
 def load_user(id):
     """Query a user model by identifier
-    
+
     Parameters:
         id: The user model identifier to query
-    
+
     Returns:
         A user model
     """
@@ -18,10 +18,10 @@ def load_user(id):
 
 class User(UserMixin, db.Model):
     """User model
-    
+
     UserMixin
     db.Model
-    
+
     Attributes:
         id:            The unique user identifier
         username:      The user name
@@ -43,7 +43,7 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         """String representation of a user model
-        
+
         Parameters:
             self: The user model
 
@@ -54,7 +54,7 @@ class User(UserMixin, db.Model):
 
     def set_password(self, password):
         """Set the password hash generated with a plaintext password
-        
+
         Parameters:
             self:     The user model
             password: The plaintext password used to generate the password hash
@@ -63,22 +63,31 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password):
         """Check a plain text password generates the same password hash as the user model
-        
+
         Parameters:
             self:     The user model
             password: The plaintext password used to generate the password hash check
-            
+
         Returns:
             true:  The password hash generated from the plaintext password matches the user model password hash
             false: The password hash generated from the plaintext password does not match the user model password hash
         """
         return check_password_hash(self.password_hash, password)
 
+class Tag(db.Model):
+    """"""
+    id = db.Column(db.Integer, primary_key=True)
+    tag = db.Column(db.String, index=True)
+    tag_notes = db.relationship('Note_Tags', backref="Tag", lazy='dynamic')
+
+    def __repr__(self):
+        return '<Tag: {}>'.format(self.tag)
+
 class Note(db.Model):
     """Note model
-    
+
     db.Model
-    
+
     Attributes:
         id:          The unique note identifier
         title:       The note title
@@ -98,7 +107,7 @@ class Note(db.Model):
 
     def __repr__(self):
         """String representation of a note model
-        
+
         Parameters:
             self: The note model
 
@@ -107,3 +116,6 @@ class Note(db.Model):
         """
         return '<Note: {}>'.format(self.note)
 
+class Note_Tags(db.Model):
+    note_id = db.Column(db.Integer, db.ForeignKey('note.id'), primary_key=True)
+    tag_id = db.Column(db.Integer, db.ForeignKey('tag.id'), primary_key=True)

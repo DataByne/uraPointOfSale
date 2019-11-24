@@ -11,25 +11,27 @@
             {% if notes and notes.count() > 0 %}
                 {% set haveNotes = true %}
             {% endif %}
-            {% if not haveNotes %}
-                {% if searching and search %}
-                    <h1>You currently have no notes matching your search.</h1>
-                {% else %}
-                    <h1>You currently have no notes.</h1>
-                {% endif %}
-            {% else %}
-                {% if searching %}
+            {% if searching and search and search != '' %}
+                {% if haveNotes %}
                     <h1>These are the notes matching your search.</h1>
                 {% else %}
-                    <h1>You have weaved these notes!</h1>
+                    <h1>You currently have no notes matching your search.</h1>
                 {% endif %}
+            {% elif search == '' %}
+                 <h1>Search your notes.</h1>
+            {% elif haveNotes %}
+                <h1>You have weaved these notes!</h1>
+            {% else %}
+                <h1>You currently have no notes.</h1>
             {% endif %}
             <div class="row my-4">
-                {% if searching and search or haveNotes %}
+                {% if searching and search or search == '' or haveNotes %}
                     <form id="searchform" class="col-12 col-lg-6 col-md-5" onsubmit="event.preventDefault(); $.submitForm($.joinUrl('{{ url_for('searchnote') }}', encodeURIComponent($('#query').val())), $(this).serialize(), 'GET');">
                         <input id="query" class="form-control col-lg-7 col-md-7 d-inline" type="text" placeholder="Search" aria-label="Search" value="{% if search %}{{ search }}{% endif %}" autofocus="autofocus" required>
                         <button type="submit" class="form-control btn btn-primary ml-md-2 my-2 my-md-0 col-lg-4 col-md-4 d-inline">Search</button>
                     </form>
+                {% else %}
+                    <div class="col-12 col-lg-6 col-md-5"></div>    
                 {% endif %}
 
                 <button id="btnShowCard" class="btn btn-info">Change View</button>
@@ -54,13 +56,9 @@
             </div>
             <div>
                 {% if searching %}
-                    <button class="btn btn-secondary mx-3 ml-md-2 mr-md-0 col-lg-3 col-md-4 mb-2 mb-md-0 d-inline float-right" onclick="$.navigateTo('{{ url_for('notes') }}');">Go Back to Your Notes</button>
+                    <button class="btn btn-secondary mx-3 ml-md-3 mr-md-0 col-lg-3 col-md-4 mb-2 mb-md-0 d-inline float-right" onclick="$.navigateTo('{{ url_for('notes') }}');">Go Back to Your Notes</button>
                 {% else %}
-                    {% if haveNotes %}
-                        <div class="mx-3 ml-md-2 mr-md-0 col-lg-3 col-md-4 d-inline float-right"></div>
-                    {% else %}
-                        <div class="mx-3 ml-md-2 mr-md-0 col-lg-7 col-md-8 d-inline"></div>
-                    {% endif %}
+                    <div class="mx-3 ml-md-3 mr-md-0 col-lg-3 col-md-4 mb-2 mb-md-0 d-inline float-right"></div>
                 {% endif %}
         
             </div>

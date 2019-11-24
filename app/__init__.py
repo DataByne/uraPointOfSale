@@ -3,6 +3,7 @@ from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager, current_user
+from datetime import timedelta
 import pytz
 from flask_mail import Mail, Message
 
@@ -10,8 +11,11 @@ app = Flask(__name__)
 app.config.from_object(Config)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-login = LoginManager(app)
-login.login_view = 'login'
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+login_manager.refresh_view = 'login'
+login_manager.needs_refresh_message = "Do something";
+login_manager.needs_refresh_message_category = "info"
 mail = Mail(app)
 
 app.config['MAIL_SERVER']='smtp.gmail.com'
@@ -22,7 +26,7 @@ app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 mail = Mail(app)
 
-from app import routes, models
+from app import routes, models, errors
 
 def user_datetime_filter(value, time_zone, format='%Y-%m-%d %I:%M:%S%p %Z'):
     """ Filters a date and time for the user's timezone

@@ -1,16 +1,31 @@
-from app import app, db, mail
-from datetime import datetime, timezone
-from flask import render_template, send_from_directory, flash, redirect, url_for, request, jsonify, Response
+from app import app, db, mail, login_manager
+from datetime import datetime, timezone, timedelta
+from flask import render_template, send_from_directory, flash, redirect, session, url_for, request, jsonify, Response
 from app.forms import LoginForm, RegisterForm, NoteForm, EditNoteForm, EditUserForm
-from flask_login import current_user, login_user, logout_user, login_required
+from flask_login import current_user, login_user, logout_user, login_required, fresh_login_required
 from app.models import User, Note
 from pytz import all_timezones, country_names, country_timezones
 from werkzeug.urls import url_parse
 from sqlalchemy import or_, desc
+from sqlalchemy.sql.functions import func
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 import io
 from flask_mail import Mail, Message
+
+def login_expired(timeout=timedelta(minutes=1)):
+    """Check whether a login session expired by timing out after a specified interval
+
+    Returns:
+        Whether a login session is expired
+    """
+    # Check the session expired
+    if 'start' not in session or (datetime.utcnow() - session['start']) > timeout:
+        # clear the session
+        session.clear()
+        return True
+    # Session is still fresh enough
+    return False
 
 @app.route('/')
 @app.route('/index')
@@ -155,7 +170,7 @@ def user(UserID):
     return render_template('user.html', title=user.username, count=count)
 
 @app.route('/user/edit/<UserID>', methods=['GET', 'POST'])
-@login_required
+@fresh_login_required
 def edituser(UserID):
     """Route for user edits
 
@@ -170,6 +185,11 @@ def edituser(UserID):
     #redirects if not the valid user
     if user is None or user.id != current_user.id:
         return redirect(url_for('user', UserID=current_user.id))
+    # Check if the session expired
+    if login_expired():
+        # redirect to the login
+        flash('Please login to edit your profile.', 'info')
+        return redirect(url_for('login', next=url_for('edituser', UserID=UserID)))
     form = EditUserForm()
     # Add country codes to the country code select field
     #This works for reasons, do not touch it or it will break
@@ -201,7 +221,7 @@ def edituser(UserID):
     return render_template('edituser.html', title='Edit ' + current_user.username, form=form)
 
 @app.route('/user/delete/<UserID>')
-@login_required
+@fresh_login_required
 def deleteuser(UserID):
     """Route for deleting a user
 
@@ -214,6 +234,11 @@ def deleteuser(UserID):
     #redirects user if they are trying to delete another users account
     if UserID is None or current_user.id != int(UserID):
         return redirect(url_for('user', UserID=current_user.id))
+    # Check if the session expired
+    if login_expired(timedelta(seconds=2)):
+        # redirect to the login
+        flash('Please login to delete your account.', 'warning')
+        return redirect(url_for('login', next=url_for('deleteuser', UserID=UserID)))
     #finds user tuple
     user = User.query.filter_by(id = int(UserID)).first()
     flash("Successfully deleted the user '" + user.username + "' and all authored notes.", 'success');
@@ -253,14 +278,21 @@ def login():
             if user is not None and user.check_password(form.password.data):
                 # Login user
                 login_user(user, remember=form.rememberMe.data)
+                # set session information
+                app.permanent_session_lifetime = timedelta(days=1)
+                session.setdefault('start', datetime.utcnow())
+                session.permanent = True
+                session.modified = True
                 #store url user was trying to access
-                next_page = request.args.get('next')
+                next_page = request.values.get('next')
                 #if there is no next argument or if next arg is set to a full url, redirect to index
                 if not next_page or url_parse(next_page).netloc != '':
                     next_page = url_for('index')
                 return redirect(next_page)
         # Flash error that user could not be authenicated
         flash('Login authentication failed.', 'danger')
+    # Set the hidden form next so the correct next redirect will happen
+    form.next.data = request.values.get('next');
     # Render the login page from the template and form
     return render_template('login.html', title="Login", form=form)
 
@@ -401,9 +433,19 @@ def singlenote(NoteID):
 @app.route('/notes/search/<Query>')
 @login_required
 def searchnote(Query=''):
+    """Route for searching notes by query text
+
+    Parameters:
+        Query The query text for searching
+
+    Returns:
+        Rendering of the notes list page filtered by the query text search
+    """
     notes = None
     if Query is not None and Query != '':
         notes = Note.query.filter(or_(Note.title.ilike('%'+ Query+ '%'), Note.note.ilike('%'+ Query+ '%')), Note.user_id==current_user.id)
+    elif Note.query.filter(Note.user_id==current_user.id).count() <= 0:
+        Query = False;
     return render_template('notes.html', title='Search Results', notes=notes, search=Query)
 
 @app.route('/api/timezones')
@@ -427,3 +469,21 @@ def gettimezones(CountryID=None):
     # Convert timezones to JSON
     return jsonify([(tz, tz) for tz in timezones])
 
+def getTags(NoteID):
+    links = Note_Tags.query.filter_by(note_id=NoteID).all()
+    tags = []
+    for link in links:
+        tmptag = Tag.query.filter_by(id=link.tag_id).first()
+        if tmptag != None:
+            tags.append(tmptag.tag)
+    return tags
+
+def setTag(NoteID, tag):
+    temp = Tag.query.filter_by(tag=tag).first()
+    if temp == None:
+        new_tag = Tag(tag=tag)
+        db.session.add(new_tag)
+        temp = Tag.query.filter_by(tag=tag).first()
+    new_note_tag = Note_Tags(note_id = NoteID, tag_id = temp.id)
+    db.session.add(new_note_tag)
+    db.session.commit()
