@@ -3,7 +3,7 @@ from datetime import datetime, timezone, timedelta
 from flask import render_template, send_from_directory, flash, redirect, session, url_for, request, jsonify, Response
 from app.forms import LoginForm, RegisterForm, NoteForm, EditNoteForm, EditUserForm
 from flask_login import current_user, login_user, logout_user, login_required, fresh_login_required
-from app.models import User, Note
+from app.models import User, Note, Tag, Note_Tags
 from pytz import all_timezones, country_names, country_timezones
 from werkzeug.urls import url_parse
 from sqlalchemy import or_, desc
@@ -321,7 +321,17 @@ def notes():
     # Query notes of current user
     userNotes = Note.query.filter_by(user_id=current_user.id)
     # Render notes list page from the template and user notes
-    return render_template('notes.html', title='Your Notes', notes=userNotes, search=False)
+
+    #This gets all the tags of a note
+    tags = {}
+    for note in userNotes:
+        actual_tags = getTagsString(note.id)
+        if len(actual_tags) == 0:
+            tags[note.id] = ""
+        else:
+            tags[note.id] = actual_tags
+    #
+    return render_template('notes.html', title='Your Notes', notes=userNotes, search=False, taglist=tags)
 
 @app.route('/notes/add', methods=['GET', 'POST'])
 @login_required
@@ -339,6 +349,19 @@ def addnote():
         newnote = Note(title = form.title.data, note=form.note.data, user_id=current_user.id)
         # Add the note to the database
         db.session.add(newnote)
+
+        #This is the temporary stuff to add nots, if a better way is added this is the stuff to replace
+        str = form.tags.data
+        tags_list = str.split(',')
+        for tag in tags_list:
+            tag.strip()
+            tag.strip(',')
+        note = Note.query.order_by(desc(Note.note_date)).filter_by(user_id=current_user.id).first()
+        for tag in tags_list:
+            setTag(note.id, tag)
+
+        #So ends the hopeful temporary stuff
+
         db.session.commit()
         # Redirect to notes list page
         return redirect(url_for('notes'))
@@ -382,6 +405,7 @@ def editnote(NoteID):
     # Set the form data from the note
     form.title.data = note.title
     form.note.data = note.note
+    form.tags.data = getTagsString(NoteID)
     # Render the edit not page from the template and form
     return render_template('editnote.html', title='Edit', form=form, NoteID=NoteID)
 
@@ -469,7 +493,7 @@ def gettimezones(CountryID=None):
     # Convert timezones to JSON
     return jsonify([(tz, tz) for tz in timezones])
 
-def getTags(NoteID):
+def getTagsList(NoteID):
     links = Note_Tags.query.filter_by(note_id=NoteID).all()
     tags = []
     for link in links:
@@ -477,6 +501,16 @@ def getTags(NoteID):
         if tmptag != None:
             tags.append(tmptag.tag)
     return tags
+
+def getTagsString(NoteID):
+    links = Note_Tags.query.filter_by(note_id=NoteID).all()
+    tags = []
+    for link in links:
+        tmptag = Tag.query.filter_by(id=link.tag_id).first()
+        if tmptag != None:
+            tags.append(tmptag.tag)
+    return_string = str(tags).strip("[]").replace("'","")
+    return return_string
 
 def setTag(NoteID, tag):
     temp = Tag.query.filter_by(tag=tag).first()
