@@ -12,6 +12,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 import io
 from flask_mail import Mail, Message
+import operator
 
 def login_expired(timeout=timedelta(minutes=1)):
     """Check whether a login session expired by timing out after a specified interval
@@ -38,12 +39,20 @@ def index():
     userNotes = None
     numNotes = None
     time = None
+    average_count = 0
     if not current_user.is_anonymous:
         userNotes = Note.query.order_by(desc(Note.note_date)).filter_by(user_id=current_user.id).limit(5).all()
         numNotes = Note.query.filter_by(user_id=current_user.id).count()
         if (numNotes > 0):
             time = datetime.utcnow() - userNotes[0].note_date
-    return render_template('index.html', title='Home', notes=userNotes, num=numNotes, time=time)
+        notes = Note.query.filter_by(user_id=current_user.id).all()
+        temp = 0
+        for note in notes:
+            temp = temp + len(note.note)
+        if len(notes) != 0:
+            average_count = temp / len(notes)
+            average_count = int(average_count)
+    return render_template('index.html', title='Home', notes=userNotes, num=numNotes, time=time, average_count=average_count)
 
 @app.route('/css/<path:path>')
 def send_css(path):
@@ -84,6 +93,32 @@ def user_activity_by_weekday_png():
     axis.set_xlabel('Days of the Week')
     axis.set_ylabel('Notes Made on that Day')
     axis.set_title('Notes Made on Each Day of the Week')
+    #This just displays it
+    output = io.BytesIO()
+    FigureCanvas(fig).print_png(output)
+    return Response(output.getvalue(), mimetype='image/png')
+
+@app.route('/images/user_tag_useage.png')
+def user_tag_useage_png():
+    #This is the figure to modify
+    fig = Figure(figsize=(9,5))
+    #This is the stuff the makes the images
+    notes = Note.query.filter_by(user_id=current_user.id).all()
+    note_totals = {}
+    for note in notes:
+        tags = getTagsList(note.id)
+        for tag in tags:
+            if tag in note_totals:
+                note_totals[tag] = note_totals[tag] + 1
+            else:
+                note_totals[tag] = 1
+    axis = fig.add_subplot(1,1,1)
+    lists = sorted(note_totals.items(), key=operator.itemgetter(1), reverse=True)
+    x, y = zip(*lists)
+    axis.bar(x,y)
+    axis.set_xlabel('Tags')
+    axis.set_ylabel('Times Used')
+    axis.set_title('Most Used Tags')
     #This just displays it
     output = io.BytesIO()
     FigureCanvas(fig).print_png(output)
