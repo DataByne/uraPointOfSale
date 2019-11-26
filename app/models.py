@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
@@ -40,6 +40,7 @@ class User(UserMixin, db.Model):
     country = db.Column(db.String, default='United States')
     time_zone = db.Column(db.String, default='America/New_York')
     user_notes = db.relationship('Note', backref='author', lazy='dynamic')
+    user_reminders = db.relationship('Reminder', backref='author', lazy='dynamic')
 
     def __repr__(self):
         """String representation of a user model
@@ -73,6 +74,18 @@ class User(UserMixin, db.Model):
             false: The password hash generated from the plaintext password does not match the user model password hash
         """
         return check_password_hash(self.password_hash, password)
+
+class Reminder(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    creation_date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    title = db.Column(db.String, index=True)
+    reminder = db.Column(db.String, index=True)
+    reminder_date = db.Column(db.DateTime, index=True, default=(datetime.utcnow() + timedelta(days=1)))
+    already_reminded = db.Column(db.Boolean, index=True, default=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    def __repr__(self):
+        return '<Reminder: Title: {} Text: {}>'.format(self.title, self.reminder)
 
 class Tag(db.Model):
     """"""
