@@ -21,6 +21,7 @@ splinter = "*"
 pytz = "*"
 matplotlib = "*"
 flask-mail = "*"
+flask-caching = "*"
 
 [requires]
 python_version = "3.7"

@@ -1,4 +1,4 @@
-from app import app, db, mail, login_manager
+from app import app, db, mail, login_manager, cache
 from datetime import datetime, timezone, timedelta
 from flask import render_template, send_from_directory, flash, redirect, session, url_for, request, jsonify, Response
 from app.forms import LoginForm, RegisterForm, NoteForm, EditNoteForm, EditUserForm
@@ -13,6 +13,7 @@ from matplotlib.figure import Figure
 import io
 from flask_mail import Mail, Message
 import operator
+from flask_caching import Cache
 
 def login_expired(timeout=timedelta(minutes=1)):
     """Check whether a login session expired by timing out after a specified interval
@@ -80,6 +81,9 @@ def send_images(path):
 
 @app.route('/images/user_activity_by_weekday.png')
 def user_activity_by_weekday_png():
+    cached = cache.get("user_activity_key")
+    if cached:
+        return cached
     #This is the figure to modify
     fig = Figure(figsize=(9,5))
     #This is the stuff the makes the images
@@ -96,10 +100,14 @@ def user_activity_by_weekday_png():
     #This just displays it
     output = io.BytesIO()
     FigureCanvas(fig).print_png(output)
+    cache.set("user_activity_key", Response(output.getvalue(), mimetype='image/png'), timeout=1800)
     return Response(output.getvalue(), mimetype='image/png')
 
 @app.route('/images/user_tag_useage.png')
 def user_tag_useage_png():
+    cached = cache.get("user_tag_useage_key")
+    if cached:
+        return cached
     #This is the figure to modify
     fig = Figure(figsize=(9,5))
     #This is the stuff the makes the images
@@ -122,6 +130,7 @@ def user_tag_useage_png():
     #This just displays it
     output = io.BytesIO()
     FigureCanvas(fig).print_png(output)
+    cache.set("user_tag_useage_key", Response(output.getvalue(), mimetype='image/png'), timeout=1800)
     return Response(output.getvalue(), mimetype='image/png')
 
 @app.route('/scripts/<path:path>')
@@ -380,6 +389,7 @@ def addnote():
     form = NoteForm()
     # Validate the form
     if request.method == 'POST' and form.validate_on_submit():
+        cache.clear()
         # Create a new note from the form data
         newnote = Note(title = form.title.data, note=form.note.data, user_id=current_user.id)
         # Add the note to the database
@@ -424,6 +434,7 @@ def editnote(NoteID):
     form = EditNoteForm()
     # Validate the form
     if request.method == 'POST' and form.validate_on_submit():
+        cache.clear()
         # Check if deleting note
         if form.delete.data:
           # Delete note
