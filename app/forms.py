@@ -242,3 +242,14 @@ class EditNoteForm(FlaskForm):
     submit = SubmitField('Save')
     tags = StringField('Tags:')
     delete = SubmitField('Delete')
+
+class ReminderForm(FlaskForm):
+    title = StringField('Title:', validators=[InputRequired('Title is required'), DataRequired()])
+    reminder = TextAreaField('Reminder:', validators=[InputRequired('Note contents is required'), DataRequired()])
+    submit = SubmitField('Create Reminder')
+
+class EditReminderForm(FlaskForm):
+    title = StringField('Title:', validators=[InputRequired('Title is required'), DataRequired()])
+    reminder = TextAreaField('Note:', validators=[InputRequired('Note contents is required'), DataRequired()])
+    submit = SubmitField('Save')
+    delete = SubmitField('Delete')

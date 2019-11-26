@@ -37,6 +37,9 @@ def index():
     Returns:
         Rendering of the landing page
     """
+    mail.connect()
+    msg = Message("Hello", sender="noteweavermail@gmail.com", recipients=["ryan.yoak@gmail.com"])
+    mail.send(msg)
     userNotes = None
     numNotes = None
     time = None
@@ -353,6 +356,18 @@ def logout():
     flash('Successfully logged out.', 'success')
     # Redirect to landing page
     return redirect(url_for('index'))
+
+@app.route('/reminders')
+@login_required
+def reminders():
+    userreminders = Reminder.query.filter_by(user_id=current_user.id)
+    return render_template('reminders.html', title='Your Reminders', reminders=userreminders)
+
+@app.route('/reminder/add', methods=['GET', 'POST'])
+@login_required
+def addreminder():
+    form = ReminderForm()
+    return render_template('addreminder.html', title='Add Reminder', form=form)
 
 @app.route('/notes')
 @login_required

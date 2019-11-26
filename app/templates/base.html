@@ -38,6 +38,11 @@
                     {% else %}
                         <li class="nav-item"><a class="nav-link" href="{{ url_for('addnote') }}">Add Note</a></li>
                     {% endif %}
+                    {% if request.path == url_for('addreminder') %}
+                        <li class="nav-item active"><a class="nav-link" href="">Add Reminder</a></li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('addreminder') }}">Add Reminder</a></li>
+                    {% endif %}
                     {% if current_user.is_anonymous %}
                         </ul>
                         <ul class="navbar-nav">
@@ -62,6 +67,11 @@
                             <li class="nav-item active"><a class="nav-link" href="">Your Notes</a></li>
                         {% else %}
                             <li class="nav-item"><a class="nav-link" href="{{ url_for('notes') }}">Your Notes</a></li>
+                        {% endif %}
+                        {% if request.path == url_for('reminders') %}
+                            <li class="nav-item active"><a class="nav-link" href="">Your Reminders</a></li>
+                        {% else %}
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('reminders') }}">Your Reminders</a></li>
                         {% endif %}
                         </ul>
                         <ul class="navbar-nav">
