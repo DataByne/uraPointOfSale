@@ -20,12 +20,7 @@ login_manager.needs_refresh_message = "Do something";
 login_manager.needs_refresh_message_category = "info"
 mail = Mail(app)
 
-app.config['MAIL_SERVER']='smtp.gmail.com'
-app.config['MAIL_PORT'] = 465
-app.config['MAIL_USERNAME'] = 'noteweavermail@gmail.com'
-app.config['MAIL_PASSWORD'] = 'N6zLW790!eaver'
-app.config['MAIL_USE_TLS'] = False
-app.config['MAIL_USE_SSL'] = True
+from app import mail_setup
 mail = Mail(app)
 
 from app import routes, models, errors
