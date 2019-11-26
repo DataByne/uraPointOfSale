@@ -1,9 +1,9 @@
-from app import app, db, mail, login_manager
+from app import app, db, mail, login_manager, cache
 from datetime import datetime, timezone, timedelta
 from flask import render_template, send_from_directory, flash, redirect, session, url_for, request, jsonify, Response
 from app.forms import LoginForm, RegisterForm, NoteForm, EditNoteForm, EditUserForm
 from flask_login import current_user, login_user, logout_user, login_required, fresh_login_required
-from app.models import User, Note
+from app.models import User, Note, Tag, Note_Tags
 from pytz import all_timezones, country_names, country_timezones
 from werkzeug.urls import url_parse
 from sqlalchemy import or_, desc
@@ -12,6 +12,8 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 import io
 from flask_mail import Mail, Message
+import operator
+from flask_caching import Cache
 
 def login_expired(timeout=timedelta(minutes=1)):
     """Check whether a login session expired by timing out after a specified interval
@@ -38,12 +40,20 @@ def index():
     userNotes = None
     numNotes = None
     time = None
+    average_count = 0
     if not current_user.is_anonymous:
         userNotes = Note.query.order_by(desc(Note.note_date)).filter_by(user_id=current_user.id).limit(5).all()
         numNotes = Note.query.filter_by(user_id=current_user.id).count()
         if (numNotes > 0):
             time = datetime.utcnow() - userNotes[0].note_date
-    return render_template('index.html', title='Home', notes=userNotes, num=numNotes, time=time)
+        notes = Note.query.filter_by(user_id=current_user.id).all()
+        temp = 0
+        for note in notes:
+            temp = temp + len(note.note)
+        if len(notes) != 0:
+            average_count = temp / len(notes)
+            average_count = int(average_count)
+    return render_template('index.html', title='Home', notes=userNotes, num=numNotes, time=time, average_count=average_count)
 
 @app.route('/css/<path:path>')
 def send_css(path):
@@ -71,6 +81,9 @@ def send_images(path):
 
 @app.route('/images/user_activity_by_weekday.png')
 def user_activity_by_weekday_png():
+    cached = cache.get("user_activity_key")
+    if cached:
+        return cached
     #This is the figure to modify
     fig = Figure(figsize=(9,5))
     #This is the stuff the makes the images
@@ -87,6 +100,37 @@ def user_activity_by_weekday_png():
     #This just displays it
     output = io.BytesIO()
     FigureCanvas(fig).print_png(output)
+    cache.set("user_activity_key", Response(output.getvalue(), mimetype='image/png'), timeout=1800)
+    return Response(output.getvalue(), mimetype='image/png')
+
+@app.route('/images/user_tag_useage.png')
+def user_tag_useage_png():
+    cached = cache.get("user_tag_useage_key")
+    if cached:
+        return cached
+    #This is the figure to modify
+    fig = Figure(figsize=(9,5))
+    #This is the stuff the makes the images
+    notes = Note.query.filter_by(user_id=current_user.id).all()
+    note_totals = {}
+    for note in notes:
+        tags = getTagsList(note.id)
+        for tag in tags:
+            if tag in note_totals:
+                note_totals[tag] = note_totals[tag] + 1
+            else:
+                note_totals[tag] = 1
+    axis = fig.add_subplot(1,1,1)
+    lists = sorted(note_totals.items(), key=operator.itemgetter(1), reverse=True)
+    x, y = zip(*lists)
+    axis.bar(x,y)
+    axis.set_xlabel('Tags')
+    axis.set_ylabel('Times Used')
+    axis.set_title('Most Used Tags')
+    #This just displays it
+    output = io.BytesIO()
+    FigureCanvas(fig).print_png(output)
+    cache.set("user_tag_useage_key", Response(output.getvalue(), mimetype='image/png'), timeout=1800)
     return Response(output.getvalue(), mimetype='image/png')
 
 @app.route('/scripts/<path:path>')
@@ -321,7 +365,17 @@ def notes():
     # Query notes of current user
     userNotes = Note.query.filter_by(user_id=current_user.id)
     # Render notes list page from the template and user notes
-    return render_template('notes.html', title='Your Notes', notes=userNotes, search=False)
+
+    #This gets all the tags of a note
+    tags = {}
+    for note in userNotes:
+        actual_tags = getTagsString(note.id)
+        if len(actual_tags) == 0:
+            tags[note.id] = ""
+        else:
+            tags[note.id] = actual_tags
+    #
+    return render_template('notes.html', title='Your Notes', notes=userNotes, search=False, taglist=tags)
 
 @app.route('/notes/add', methods=['GET', 'POST'])
 @login_required
@@ -335,10 +389,24 @@ def addnote():
     form = NoteForm()
     # Validate the form
     if request.method == 'POST' and form.validate_on_submit():
+        cache.clear()
         # Create a new note from the form data
         newnote = Note(title = form.title.data, note=form.note.data, user_id=current_user.id)
         # Add the note to the database
         db.session.add(newnote)
+
+        #This is the temporary stuff to add nots, if a better way is added this is the stuff to replace
+        str = form.tags.data
+        tags_list = str.split(',')
+        for tag in tags_list:
+            tag.strip()
+            tag.strip(',')
+        note = Note.query.order_by(desc(Note.note_date)).filter_by(user_id=current_user.id).first()
+        for tag in tags_list:
+            setTag(note.id, tag)
+
+        #So ends the hopeful temporary stuff
+
         db.session.commit()
         # Redirect to notes list page
         return redirect(url_for('notes'))
@@ -366,6 +434,7 @@ def editnote(NoteID):
     form = EditNoteForm()
     # Validate the form
     if request.method == 'POST' and form.validate_on_submit():
+        cache.clear()
         # Check if deleting note
         if form.delete.data:
           # Delete note
@@ -382,6 +451,7 @@ def editnote(NoteID):
     # Set the form data from the note
     form.title.data = note.title
     form.note.data = note.note
+    form.tags.data = getTagsString(NoteID)
     # Render the edit not page from the template and form
     return render_template('editnote.html', title='Edit', form=form, NoteID=NoteID)
 
@@ -469,7 +539,7 @@ def gettimezones(CountryID=None):
     # Convert timezones to JSON
     return jsonify([(tz, tz) for tz in timezones])
 
-def getTags(NoteID):
+def getTagsList(NoteID):
     links = Note_Tags.query.filter_by(note_id=NoteID).all()
     tags = []
     for link in links:
@@ -477,6 +547,16 @@ def getTags(NoteID):
         if tmptag != None:
             tags.append(tmptag.tag)
     return tags
+
+def getTagsString(NoteID):
+    links = Note_Tags.query.filter_by(note_id=NoteID).all()
+    tags = []
+    for link in links:
+        tmptag = Tag.query.filter_by(id=link.tag_id).first()
+        if tmptag != None:
+            tags.append(tmptag.tag)
+    return_string = str(tags).strip("[]").replace("'","")
+    return return_string
 
 def setTag(NoteID, tag):
     temp = Tag.query.filter_by(tag=tag).first()

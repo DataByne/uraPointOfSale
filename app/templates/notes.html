@@ -31,7 +31,7 @@
                         <button type="submit" class="form-control btn btn-primary ml-md-2 my-2 my-md-0 col-lg-4 col-md-4 d-inline">Search</button>
                     </form>
                 {% else %}
-                    <div class="col-12 col-lg-6 col-md-5"></div>    
+                    <div class="col-12 col-lg-6 col-md-5"></div>
                 {% endif %}
 
                 <button id="btnShowCard" class="btn btn-info">Change View</button>
@@ -69,6 +69,7 @@
                     <thead class="table table-dark">
                         <th scope="col">Title</th>
                         <th scope="col">Note</th>
+                        <th scope="col">Tags</th>
                         <th scope="col">Date</th>
                         <th scope="col">Actions</th>
                     </thead>
@@ -77,6 +78,7 @@
                             <tr class="table table-hover table-info">
                                 <td><a href="{{ url_for('singlenote', NoteID=note.id) }}">{{ note.title | truncate(64, True) }}</a></td>
                                 <td>{{ note.note | truncate(128, True) }}</td>
+                                <td>{{ taglist[note.id]}}</td>
                                 <td>{{ note.note_date | user_datetime(current_user.time_zone) }}</td>
                                 <td>
                                     <button class="btn btn-primary col-12" id="editnote" onclick="$.navigateTo('{{ url_for('editnote', NoteID=note.id) }}');">Edit</button>

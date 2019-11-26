@@ -6,8 +6,10 @@ from flask_login import LoginManager, current_user
 from datetime import timedelta
 import pytz
 from flask_mail import Mail, Message
+from flask_caching import Cache
 
 app = Flask(__name__)
+cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 app.config.from_object(Config)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
