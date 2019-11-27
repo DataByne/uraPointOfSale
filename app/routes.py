@@ -516,7 +516,15 @@ def searchnote(Query=''):
         notes = Note.query.filter(or_(Note.title.ilike('%'+ Query+ '%'), Note.note.ilike('%'+ Query+ '%')), Note.user_id==current_user.id)
     elif Note.query.filter(Note.user_id==current_user.id).count() <= 0:
         Query = False;
-    return render_template('notes.html', title='Search Results', notes=notes, search=Query)
+    tags = {}
+    if notes != None:
+        for note in notes:
+            actual_tags = getTagsString(note.id)
+            if len(actual_tags) == 0:
+                tags[note.id] = ""
+            else:
+                tags[note.id] = actual_tags
+    return render_template('notes.html', title='Search Results', notes=notes, search=Query, taglist=tags)
 
 @app.route('/api/timezones')
 @app.route('/api/timezones/<CountryID>')

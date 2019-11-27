@@ -7,6 +7,7 @@ from datetime import timedelta
 import pytz
 from flask_mail import Mail, Message
 from flask_caching import Cache
+from werkzeug.exceptions import ServiceUnavailable
 
 app = Flask(__name__)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
@@ -18,14 +19,8 @@ login_manager.login_view = 'login'
 login_manager.refresh_view = 'login'
 login_manager.needs_refresh_message = "Do something";
 login_manager.needs_refresh_message_category = "info"
-mail = Mail(app)
-
-app.config['MAIL_SERVER']='smtp.gmail.com'
-app.config['MAIL_PORT'] = 465
-app.config['MAIL_USERNAME'] = 'noteweavermail@gmail.com'
-app.config['MAIL_PASSWORD'] = 'N6zLW790!eaver'
-app.config['MAIL_USE_TLS'] = False
-app.config['MAIL_USE_SSL'] = True
+if app.config['MAIL_USERNAME'] is None or app.config['MAIL_PASSWORD'] is None:
+    raise ServiceUnavailable('Mail service is not properly configured')
 mail = Mail(app)
 
 from app import routes, models, errors

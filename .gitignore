@@ -153,3 +153,4 @@ testem.log
 .DS_Store
 Thumbs.db
 
+app/mail_setup.py
