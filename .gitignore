@@ -83,7 +83,6 @@ celerybeat-schedule
 
 # Environments
 .env
-.flaskenv
 .venv
 env/
 venv/
