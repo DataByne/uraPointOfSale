@@ -1,9 +1,9 @@
 from app import app, db, mail, login_manager, cache
 from datetime import datetime, timezone, timedelta
 from flask import render_template, send_from_directory, flash, redirect, session, url_for, request, jsonify, Response
-from app.forms import LoginForm, RegisterForm, NoteForm, EditNoteForm, EditUserForm
+from app.forms import LoginForm, RegisterForm, NoteForm, EditNoteForm, EditUserForm, ReminderForm
 from flask_login import current_user, login_user, logout_user, login_required, fresh_login_required
-from app.models import User, Note, Tag, Note_Tags
+from app.models import User, Note, Tag, Note_Tags, Reminder
 from pytz import all_timezones, country_names, country_timezones
 from werkzeug.urls import url_parse
 from sqlalchemy import or_, desc
@@ -37,9 +37,6 @@ def index():
     Returns:
         Rendering of the landing page
     """
-    mail.connect()
-    msg = Message("Hello", sender="noteweavermail@gmail.com", recipients=["ryan.yoak@gmail.com"])
-    mail.send(msg)
     userNotes = None
     numNotes = None
     time = None
@@ -367,7 +364,30 @@ def reminders():
 @login_required
 def addreminder():
     form = ReminderForm()
+    if request.method == 'POST' and form.validate_on_submit():
+        newreminder = Reminder(title = form.title.data, reminder=form.reminder.data, user_id=current_user.id, reminder_date=form.reminder_date.data)
+        db.session.add(newreminder)
+        db.session.commit()
+        return redirect(url_for('reminders'))
     return render_template('addreminder.html', title='Add Reminder', form=form)
+
+@app.route('/reminder/<ReminderID>')
+@login_required
+def singlereminder(ReminderID):
+    reminder = Reminder.query.filter_by(id=int(ReminderID)).first()
+    if reminder is None or reminder.user_id != current_user.id:
+        return redirect(url_for('reminders'))
+    return render_template('singlereminder.html', title=reminder.title, reminder=reminder)
+
+@app.route('/reminders/edit/<ReminderID>', methods=['GET', 'POST'])
+@login_required
+def editreminder(ReminderID):
+    return render_template('editreminder.html', title=reminder.title)
+
+@app.route('/reminders/delete/<ReminderID>', methods=['GET', 'POST', 'DELETE'])
+@login_required
+def deletereminder(ReminderID):
+    return None
 
 @app.route('/notes')
 @login_required

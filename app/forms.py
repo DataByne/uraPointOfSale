@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_login import current_user
-from wtforms import BooleanField, PasswordField, SelectField, StringField, SubmitField, TextAreaField
+from wtforms import BooleanField, PasswordField, SelectField, StringField, SubmitField, TextAreaField, DateField
+from wtforms.fields.html5 import DateField
 from wtforms.validators import InputRequired, DataRequired, Email, EqualTo, ValidationError
 from pytz import all_timezones, country_names, country_timezones
 from app.models import User
@@ -246,6 +247,7 @@ class EditNoteForm(FlaskForm):
 class ReminderForm(FlaskForm):
     title = StringField('Title:', validators=[InputRequired('Title is required'), DataRequired()])
     reminder = TextAreaField('Reminder:', validators=[InputRequired('Note contents is required'), DataRequired()])
+    reminder_date = DateField('Date Picker:', format='%Y-%m-%d')
     submit = SubmitField('Create Reminder')
 
 class EditReminderForm(FlaskForm):
