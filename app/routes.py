@@ -1,7 +1,7 @@
 from app import app, db, mail, login_manager, cache
 from datetime import datetime, timezone, timedelta
 from flask import render_template, send_from_directory, flash, redirect, session, url_for, request, jsonify, Response
-from app.forms import LoginForm, RegisterForm, NoteForm, EditNoteForm, EditUserForm, ReminderForm
+from app.forms import LoginForm, RegisterForm, NoteForm, EditNoteForm, EditUserForm, ReminderForm, EditReminderForm
 from flask_login import current_user, login_user, logout_user, login_required, fresh_login_required
 from app.models import User, Note, Tag, Note_Tags, Reminder
 from pytz import all_timezones, country_names, country_timezones
@@ -382,7 +382,26 @@ def singlereminder(ReminderID):
 @app.route('/reminders/edit/<ReminderID>', methods=['GET', 'POST'])
 @login_required
 def editreminder(ReminderID):
-    return render_template('editreminder.html', title=reminder.title)
+    reminder = Reminder.query.filter_by(id=int(ReminderID)).first()
+    if reminder is None or reminder.user_id != current_user.id:
+       return redirect(url_for('reminders'))
+    form = EditReminderForm()
+    if request.method == 'POST' and form.validate_on_submit():
+        if form.delete.data:
+          return deletereminder(ReminderID)
+
+        reminder.title = form.title.data
+        reminder.reminder = form.reminder.data
+        # Save the changes
+        db.session.commit()
+        # Redirect to the note detail page
+        return redirect(url_for('reminders'))
+    # Set the form data from the note
+    form.title.data = reminder.title
+    form.reminder.data = reminder.reminder
+    form.reminder_date.data = reminder.reminder_date
+    # Render the edit not page from the template and form
+    return render_template('editreminder.html', title='Edit', form=form, ReminderID=ReminderID)
 
 @app.route('/reminders/delete/<ReminderID>', methods=['GET', 'POST', 'DELETE'])
 @login_required
