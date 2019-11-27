@@ -387,7 +387,12 @@ def editreminder(ReminderID):
 @app.route('/reminders/delete/<ReminderID>', methods=['GET', 'POST', 'DELETE'])
 @login_required
 def deletereminder(ReminderID):
-    return None
+    reminder = Reminder.query.filter_by(id=int(ReminderID)).first()
+    if reminder is not None and reminder.user_id == current_user.id:
+        flash("Deleted reminder '" + reminder.title + "'.", 'success')
+        db.session.delete(reminder)
+        db.session.commit()
+    return redirect(url_for('reminders'))
 
 @app.route('/notes')
 @login_required

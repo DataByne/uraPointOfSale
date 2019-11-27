@@ -194,6 +194,14 @@ $.extend({
             $.navigateTo(url);
         }
      },
+     /**
+      * Delete a reminder
+      */
+      deleteReminder: function (title, url) {
+         if (confirm("Are you sure you want to permanatly delete the reminder '" + title + "'?")) {
+             $.navigateTo(url);
+         }
+      },
     /**
      * Populate a time zone selector
      *
@@ -216,4 +224,3 @@ $.extend({
 $(window).on('popstate', function (e) {
     $.navigateTo($(location).attr('href'), null, 'GET', false);
 });
-
