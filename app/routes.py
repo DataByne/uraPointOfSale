@@ -1,6 +1,6 @@
 from app import app, db, mail, login_manager, cache
 from datetime import datetime, timezone, timedelta
-from flask import render_template, send_from_directory, flash, redirect, session, url_for, request, jsonify, Response
+from flask import render_template, send_from_directory, abort, flash, redirect, session, url_for, request, jsonify, Response
 from app.forms import LoginForm, RegisterForm, NoteForm, EditNoteForm, EditUserForm
 from flask_login import current_user, login_user, logout_user, login_required, fresh_login_required
 from app.models import User, Note, Tag, Note_Tags
@@ -168,10 +168,10 @@ def register(CountryID=None):
     # Add country codes to the country code select field
     form.country.choices = [(country_id, country_names[country_id]) for country_id in country_names]
     # Set the default country code to the supplied CountryID or default to 'US'
-    if CountryID in country_timezones:
-      form.country.data = CountryID
+    if isinstance(CountryID, str) and CountryID in country_timezones:
+        form.country.data = CountryID
     else:
-      form.country.data = 'US'
+        form.country.data = 'US'
     # Add the time zones for the selected country code to the time zone select field
     form.time_zone.choices = [(tz, tz) for tz in country_timezones[form.country.data]]
     # Set the default time zone to the first
@@ -203,10 +203,15 @@ def user(UserID):
     Returns:
         Rendering of user page, redirect to index if the current user is not the user of UserID
     """
+    # get the user identifier
+    try:
+        user_id = int(UserID)
+    except:
+        abort(404);
     #gets the user from the user table
-    user = User.query.filter_by(id = int(UserID)).first()
+    user = User.query.filter_by(id=user_id).first()
     #gets the count of total notes
-    count = Note.query.filter_by(user_id = int(UserID)).count()
+    count = Note.query.filter_by(user_id=user_id).count()
     #checks user is valid
     if user is None or user.id != current_user.id:
         return redirect(url_for('index'))
@@ -224,8 +229,13 @@ def edituser(UserID):
     Returns:
         redirect to user page if not right user or user edit page render
     """
+    # get the user identifier
+    try:
+        user_id = int(UserID)
+    except:
+        abort(404);
     #finds user
-    user = User.query.filter_by(id=int(UserID)).first()
+    user = User.query.filter_by(id=user_id).first()
     #redirects if not the valid user
     if user is None or user.id != current_user.id:
         return redirect(url_for('user', UserID=current_user.id))
@@ -233,14 +243,14 @@ def edituser(UserID):
     if login_expired():
         # redirect to the login
         flash('Please login to edit your profile.', 'info')
-        return redirect(url_for('login', next=url_for('edituser', UserID=UserID)))
+        return redirect(url_for('login', next=url_for('edituser', UserID=user_id)))
     form = EditUserForm()
     # Add country codes to the country code select field
     #This works for reasons, do not touch it or it will break
     CountryID = form.country.data
-    if CountryID is None or CountryID == "" or CountryID.upper() == "NONE":
+    if not isinstance(CountryID, str) or CountryID == "" or CountryID.upper() == "NONE":
         CountryID = user.country
-        if CountryID is None:
+        if not isinstance(CountryID, str) or CountryID == "" or CountryID.upper() == "NONE":
             CountryID = 'US'
     #sets choices for country and time zone fields
     form.country.choices = [(country_id, country_names[country_id]) for country_id in country_names]
@@ -255,7 +265,7 @@ def edituser(UserID):
         if form.password.data != "":
             user.set_password(form.password.data)
         db.session.commit()
-        return redirect(url_for('user', UserID=UserID))
+        return redirect(url_for('user', UserID=user_id))
     #sets the fields to the current user information
     form.username.data = user.username
     form.email.data = user.email
@@ -275,22 +285,27 @@ def deleteuser(UserID):
     Returns:
         Redirect to logout
     """
+    # get the user identifier
+    try:
+        user_id = int(UserID)
+    except:
+        abort(404);
     #redirects user if they are trying to delete another users account
-    if UserID is None or current_user.id != int(UserID):
+    if UserID is None or current_user.id != user_id:
         return redirect(url_for('user', UserID=current_user.id))
     # Check if the session expired
     if login_expired(timedelta(seconds=2)):
         # redirect to the login
         flash('Please login to delete your account.', 'warning')
-        return redirect(url_for('login', next=url_for('deleteuser', UserID=UserID)))
+        return redirect(url_for('login', next=url_for('deleteuser', UserID=user_id)))
     #finds user tuple
-    user = User.query.filter_by(id = int(UserID)).first()
+    user = User.query.filter_by(id=user_id).first()
     flash("Successfully deleted the user '" + user.username + "' and all authored notes.", 'success');
     #finds all notes of the user and deletes them
-    note = Note.query.filter_by(user_id=int(UserID)).first()
+    note = Note.query.filter_by(user_id=user_id).first()
     while note is not None:
         db.session.delete(note)
-        note = Note.query.filter_by(user_id=int(UserID)).first()
+        note = Note.query.filter_by(user_id=user_id).first()
     #deletes user and commits the changes
     db.session.delete(user)
     db.session.commit()
@@ -424,8 +439,13 @@ def editnote(NoteID):
     Returns:
         Rendering of the edit note page, redirect to delete the note, redirect to note detail page, or redirect to the notes list page if note can not be found
     """
+    # get the note identifier
+    try:
+        note_id = int(NoteID)
+    except:
+        abort(404);
     # Query note by identifier
-    note = Note.query.filter_by(id=int(NoteID)).first()
+    note = Note.query.filter_by(id=note_id).first()
     # Check note exists and is authored by current user
     if note is None or note.user_id != current_user.id:
         # Redirect to notes list page
@@ -438,7 +458,7 @@ def editnote(NoteID):
         # Check if deleting note
         if form.delete.data:
           # Delete note
-          return deletenote(NoteID)
+          return deletenote(note_id)
         # Set note to form data
         note.title = form.title.data
         note.note = form.note.data
@@ -451,9 +471,9 @@ def editnote(NoteID):
     # Set the form data from the note
     form.title.data = note.title
     form.note.data = note.note
-    form.tags.data = getTagsString(NoteID)
+    form.tags.data = getTagsString(note_id)
     # Render the edit not page from the template and form
-    return render_template('editnote.html', title='Edit', form=form, NoteID=NoteID)
+    return render_template('editnote.html', title='Edit', form=form, NoteID=note_id)
 
 @app.route('/notes/delete/<NoteID>', methods=['GET', 'POST', 'DELETE'])
 @login_required
@@ -466,8 +486,13 @@ def deletenote(NoteID):
     Returns:
         Redirect to the notes list page
     """
+    # get the note identifier
+    try:
+        note_id = int(NoteID)
+    except:
+        abort(404);
     # Query note by idenifier
-    note = Note.query.filter_by(id=int(NoteID)).first()
+    note = Note.query.filter_by(id=note_id).first()
     # Check note exists and is authored by current user
     if note is not None and note.user_id == current_user.id:
         # Flash a successful delete message
@@ -489,8 +514,13 @@ def singlenote(NoteID):
     Returns:
         Rendering of the note detail page or redirects to notes list page if the note can not be found
     """
+    # get the note identifier
+    try:
+        note_id = int(NoteID)
+    except:
+        abort(404);
     # Query note by identifier
-    note = Note.query.filter_by(id=int(NoteID)).first()
+    note = Note.query.filter_by(id=note_id).first()
     # Check note exists and is authored by current user
     if note is None or note.user_id != current_user.id:
         # Redirect to notes list page
@@ -537,6 +567,10 @@ def gettimezones(CountryID=None):
     Returns:
         A dictionary of time zones
     """
+    if not isinstance(CountryID, str) or CountryID == "" or CountryID.upper() == "NONE":
+        CountryID = user.country
+        if not isinstance(CountryID, str) or CountryID == "" or CountryID.upper() == "NONE":
+            CountryID = 'US'
     # Check country code is valid
     if CountryID in country_timezones:
         # Get time zones for country
