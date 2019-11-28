@@ -112,6 +112,8 @@ def user_tag_useage_png():
     fig = Figure(figsize=(9,5))
     #This is the stuff the makes the images
     notes = Note.query.filter_by(user_id=current_user.id).all()
+    if len(notes) == 0:
+        return None
     note_totals = {}
     for note in notes:
         tags = getTagsList(note.id)
@@ -291,6 +293,10 @@ def deleteuser(UserID):
     while note is not None:
         db.session.delete(note)
         note = Note.query.filter_by(user_id=int(UserID)).first()
+    reminder = Reminder.query.filter_by(user_id=int(UserID)).first()
+    while reminder is not None:
+        db.session.delete(reminder)
+        reminder = Reminder.query.filter_by(user_id=int(UserID)).first()
     #deletes user and commits the changes
     db.session.delete(user)
     db.session.commit()

@@ -5,7 +5,6 @@
         <div class="col-10 col-md-8 text-center">
             <h1>Create a new reminder.</h1>
         </div>
-        <!--<form id="addreminderform" name="addreminderform" class="mt-4 mb-5 mb-md-0 col-10 col-md-8 justify-content-center" action="" method="post" novalidate>-->
         <form id="addreminderform" name="addreminderform" class="mt-4 mb-5 mb-md-0 col-10 col-md-8 justify-content-center" action="" method="post" novalidate onsubmit="event.preventDefault(); $.submitForm('{{ url_for('addreminder') }}', $(this).serialize());">
             {{ form.hidden_tag() }}
             <div class="form-group row">

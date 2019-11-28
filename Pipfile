@@ -22,6 +22,7 @@ pytz = "*"
 matplotlib = "*"
 flask-mail = "*"
 flask-caching = "*"
+apscheduler = "*"
 
 [requires]
 python_version = "3.7"
