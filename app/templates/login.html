@@ -4,7 +4,7 @@
     <div class="row my-5">
         <div class="offset-1 offset-sm-2 offset-lg-3">
             <h1 class="text-center">Please login to start writing notes!</h1>
-            <form id="loginform" name="loginform" class="needs-validation justify-content-center mt-4" action="" method="post" novalidat onsubmit="event.preventDefault(); $.submitForm('{{ url_for('login') }}', $(this).serialize());"e>
+            <form id="loginform" name="loginform" class="needs-validation justify-content-center mt-4" action="" method="post" novalidat onsubmit="event.preventDefault(); $.submitForm('{{ url_for('login') }}', $(this).serialize());">
                 {{ form.hidden_tag() }}
                 {% set login_isvalid = "" %}
                 {% if form.submit.errors %}

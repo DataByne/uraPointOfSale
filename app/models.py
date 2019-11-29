@@ -80,7 +80,7 @@ class Reminder(db.Model):
     creation_date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     title = db.Column(db.String, index=True)
     reminder = db.Column(db.String, index=True)
-    reminder_date = db.Column(db.DateTime, index=True, default=(datetime.utcnow() + timedelta(days=1)))
+    reminder_date = db.Column(db.DateTime, index=True)
     already_reminded = db.Column(db.Boolean, index=True, default=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 

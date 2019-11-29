@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_login import current_user
-from wtforms import BooleanField, PasswordField, SelectField, StringField, SubmitField, TextAreaField, DateField
+from wtforms import BooleanField, PasswordField, SelectField, StringField, SubmitField, TextAreaField, DateField, DateTimeField
 from wtforms.fields.html5 import DateField
 from wtforms.validators import InputRequired, DataRequired, Email, EqualTo, ValidationError
 from pytz import all_timezones, country_names, country_timezones
@@ -247,12 +247,12 @@ class EditNoteForm(FlaskForm):
 class ReminderForm(FlaskForm):
     title = StringField('Title:', validators=[InputRequired('Title is required'), DataRequired()])
     reminder = TextAreaField('Reminder:', validators=[InputRequired('Note contents is required'), DataRequired()])
-    reminder_date = DateField('Date Picker:', format='%Y-%m-%d')
+    reminder_date = DateTimeField('Date Picker:', format='%Y-%m-%d %H:%M:%S')
     submit = SubmitField('Create Reminder')
 
 class EditReminderForm(FlaskForm):
     title = StringField('Title:', validators=[InputRequired('Title is required'), DataRequired()])
     reminder = TextAreaField('Note:', validators=[InputRequired('Note contents is required'), DataRequired()])
-    reminder_date = DateField('Date Picker:', format='%Y-%m-%d')
+    reminder_date = DateTimeField('Date Picker:', format='%Y-%m-%d %H:%M:%S')
     submit = SubmitField('Save')
     delete = SubmitField('Delete')

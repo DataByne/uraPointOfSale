@@ -4,7 +4,7 @@
     <div class="row my-5">
         <div class="offset-1 offset-sm-2 offset-lg-3">
             <h1 class="text-center">Register to start taking notes!</h1>
-            <form id="registerform" name="registerform" class="needs-validation justify-content-center mt-4" action="" method="post" novalidate>
+            <form id="registerform" name="registerform" class="needs-validation justify-content-center mt-4" action="" method="post" novalidate onsubmit="event.preventDefault(); $.submitForm('{{ url_for('register') }}', $(this).serialize());">
                 {{ form.hidden_tag() }}
                 <div class="form-group row col-sm-12">
                     {{ form.email.label(class="col-sm-5 col-form-label") }}
