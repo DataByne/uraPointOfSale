@@ -10,9 +10,9 @@
     {% else %}
         <title>Welcome to Note Weaver</title>
     {% endif %}
-    <script src="/scripts/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-    <script src="/scripts/bootstrap-3.4.1.bundle.min.js" integrity="sha256-fzFFyH01cBVPYzl16KT40wqjhgPtq6FFUB6ckN2+GGw=" crossorigin="anonymous"></script>
-    <script src="/scripts/site.js" integrity="sha256-GaL8SI0S8Rasno0BzuKhOk8XPuDC2/3SAzi5G0bkbgw=" crossorigin="anonymous"></script>
+    <script src="/scripts/jquery-3.4.1.min.js"></script>
+    <script src="/scripts/bootstrap-3.4.1.bundle.min.js"></script>
+    <script src="/scripts/site.js"></script>
     <script>
         if (window.location.pathname != '{{ request.path }}') {
             window.history.replaceState(null, "", '{{ request.path }}');
