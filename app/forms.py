@@ -247,12 +247,12 @@ class EditNoteForm(FlaskForm):
 class ReminderForm(FlaskForm):
     title = StringField('Title:', validators=[InputRequired('Title is required'), DataRequired()])
     reminder = TextAreaField('Reminder:', validators=[InputRequired('Note contents is required'), DataRequired()])
-    reminder_date = DateTimeField('Date Picker:', format='%Y-%m-%d %H:%M:%S')
+    reminder_date = DateTimeField('Date:', format='%Y-%m-%d %H:%M:%S')
     submit = SubmitField('Create Reminder')
 
 class EditReminderForm(FlaskForm):
     title = StringField('Title:', validators=[InputRequired('Title is required'), DataRequired()])
     reminder = TextAreaField('Note:', validators=[InputRequired('Note contents is required'), DataRequired()])
-    reminder_date = DateTimeField('Date Picker:', format='%Y-%m-%d %H:%M:%S')
+    reminder_date = DateTimeField('Date:', format='%Y-%m-%d %H:%M:%S')
     submit = SubmitField('Save')
     delete = SubmitField('Delete')

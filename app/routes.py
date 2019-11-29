@@ -413,6 +413,7 @@ def editreminder(ReminderID):
 
         reminder.title = form.title.data
         reminder.reminder = form.reminder.data
+        reminder.reminder_date = form.reminder_date.data
         # Save the changes
         db.session.commit()
         # Redirect to the note detail page
