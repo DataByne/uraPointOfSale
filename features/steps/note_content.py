@@ -1,9 +1,9 @@
 from behave import given, when, then
 
 
-@given(u'We have a note')
+@given(u'we have a note')
 def step_impl(context):
-    raise NotImplementedError(u'STEP: Given We have a note')
+    raise NotImplementedError(u'STEP: Given we have a note')
 
 
 @when(u'we implement a test')
@@ -14,11 +14,6 @@ def step_impl(context):
 @then(u'we will check the contents of the notes')
 def step_impl(context):
     raise NotImplementedError(u'STEP: Then we will check the contents of the notes')
-
-
-@given(u'we have a note')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Given we have a note')
 
 
 @when(u'we have a test')
