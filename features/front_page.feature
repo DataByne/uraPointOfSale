@@ -4,8 +4,8 @@ Feature: Front Page
     Scenario: I navigate to company website
         Given I am on the landing page
         Then I see the company name
-        And link to github
-        And link to KentState
+        Then I see a link to "https://github.com/DataByne/uraPointOfSale"
+        And I see a link to "https://www.kent.edu/cs"
 
     Scenario: From front page I can navigate to other pages
         Given I am on the landing page
