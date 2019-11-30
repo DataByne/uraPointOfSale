@@ -14,9 +14,8 @@ Feature: Front Page
 
     Scenario: I see welcome back message as registered
         Given I am on the landing page
-        And I am registered
         And I am logged in
-        Then I see welcome back {username} message
+        Then I see the text "Welcome back to Note Weaver!"
 
     Scenario: I see welcome back message as anonymous
         Given I am on the landing page
@@ -25,4 +24,4 @@ Feature: Front Page
 
     Scenario: I see company logo
         Given I am on the landing page
-        Then I see company logo
+        Then I see the image company logo
