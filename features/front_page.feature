@@ -9,7 +9,7 @@ Feature: Front Page
 
     Scenario: From front page I can navigate to other pages
         Given I am on the landing page
-        Then I see the navigation bar 
+        Then I see the navigation bar
         And I can navigate to other pages
 
     Scenario: I see welcome back message as registered
@@ -17,7 +17,7 @@ Feature: Front Page
         And I am registered
         And I am logged in
         Then I see welcome back {username} message
-    
+
     Scenario: I see welcome back message as anonymous
         Given I am on the landing page
         And I am not logged in

@@ -11,7 +11,7 @@ def splinter_browser( context, type='chrome' ):
 
 	Generator function that provides a web driver browser object for use in
 	testing. The browser defaults to a Chrome web driver.
-	
+
 	Args:
 		context:	Behave testing context
 		type:		Specific webdriver to run
@@ -20,7 +20,7 @@ def splinter_browser( context, type='chrome' ):
 		A browser object attribute to the Behave testing module's context. The
 		type of the browser is set to whichever the generator is provided.
 	"""
-	context.browser = Browser( driver_name=type )
+	context.browser = Browser( driver_name='flask', app=app )
 	yield context.browser
 	context.browser.quit()
 
@@ -43,7 +43,7 @@ def flask_client( context, *args, **kwargs ):
 
 	# close temp db code
 	# remove temp db code
-	
+
 
 
 def before_all( context ):
@@ -52,14 +52,14 @@ def before_all( context ):
 	Args:
 		context:	Behave testing context
 	"""
-	# use_fixture( splinter_browser, context )
+	use_fixture( splinter_browser, context )
 
 
 def before_tag( context, tag ):
 	"""Prepares fixtures based on tags
-	
+
 	Description
-	
+
 	Args:
 		context:	Behave testing context
 		tag:		Tag passed via @fixture.[tag]

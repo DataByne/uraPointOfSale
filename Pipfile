@@ -17,7 +17,7 @@ pylint = "*"
 behave = "*"
 python-dotenv = "*"
 selenium = "*"
-splinter = "*"
+splinter = {extras = ["flask"],version = "*"}
 pytz = "*"
 matplotlib = "*"
 flask-mail = "*"
