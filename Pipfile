@@ -17,11 +17,15 @@ pylint = "*"
 behave = "*"
 python-dotenv = "*"
 selenium = "*"
-splinter = {extras = ["flask"],version = "*"}
 pytz = "*"
 matplotlib = "*"
 flask-mail = "*"
 flask-caching = "*"
+bleach = "*"
 
 [requires]
 python_version = "3.7"
+
+[packages.splinter]
+extras = [ "flask",]
+version = "*"

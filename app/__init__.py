@@ -1,13 +1,14 @@
-from flask import Flask
+from flask import Flask, Markup
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager, current_user
 from datetime import timedelta
-import pytz
 from flask_mail import Mail, Message
 from flask_caching import Cache
 from werkzeug.exceptions import ServiceUnavailable
+import bleach
+import pytz
 
 app = Flask(__name__)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
@@ -17,7 +18,7 @@ migrate = Migrate(app, db)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.refresh_view = 'login'
-login_manager.needs_refresh_message = "Session expires, please login again";
+login_manager.needs_refresh_message = "Session expired, please login again.";
 login_manager.needs_refresh_message_category = "info"
 if app.config['MAIL_USERNAME'] is None or app.config['MAIL_PASSWORD'] is None:
     raise ServiceUnavailable('Mail service is not properly configured')
@@ -44,5 +45,22 @@ def user_datetime_filter(value, time_zone, format='%Y-%m-%d %I:%M:%S%p %Z'):
     # Format the time to the user time zone
     return value.astimezone(pytz.timezone(time_zone)).strftime(format)
 
+def markup_text_filter(text):
+    """ Filters the contents of note content to mark as html safe to convert tags on webpages
+    Returns:
+        String markedup
+    """
+    # Markup the string
+    return Markup(bleach.clean(
+        text,
+        tags=['a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em', 'i', 'li', 'ol', 'p', 'small', 'span', 'strong', 'ul'],
+        attributes={'a': ['href', 'title'], 'abbr': ['title'], 'acronym': ['title'], '*': ['style']},
+        styles=['color', 'font-family', 'font-weight'],
+        protocols=['http', 'https', 'mailto']
+    ))
+
+# Set the markup filter
+app.jinja_env.filters['markup'] = markup_text_filter
 # Set the user time zone filter
 app.jinja_env.filters['user_datetime'] = user_datetime_filter
+
