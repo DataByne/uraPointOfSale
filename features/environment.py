@@ -2,8 +2,9 @@ import os
 import tempfile
 from behave import fixture, use_fixture
 from splinter import Browser
+from flask_sqlalchemy import SQLAlchemy
 
-from app import app
+import app
 
 @fixture
 def splinter_browser( context, type='chrome' ):
@@ -20,26 +21,29 @@ def splinter_browser( context, type='chrome' ):
 		    A browser object attribute to the Behave testing module's context. The
 		    type of the browser is set to whichever the generator is provided.
 	  """
-	  context.browser = Browser( driver_name='flask', app=app )
+	  context.browser = Browser('firefox')
 	  yield context.browser
 	  context.browser.quit()
 
 @fixture
 def flask_client(context, *args, **kwargs):
-	  """Sets up temporary flask context
-
-	  Generator function.
-
-	  Yields:
-		  A flask testing client attribute to Behave's context.
-	  """
-	  # temporary db file code here
-	  app.testing = True
-	  context.client = app.test_client()
-	  context.request = app.test_request_context()
-	  # with app.app_context():
-		  # initialize db code here
-	  yield context.client
+	'''app.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+	app.app.testing = True
+	context.client = app.app.test_client()
+	context.request = app.app.test_request_context()
+	with app.app.app.app_context():
+		ontext.db = SQLAlchemy()
+		context.db.init_app.app(app.app)
+		context.db.create_all()
+		yield context.client
+		context.db.session.remove()
+		context.db.drop_all()'''
+	app.app.testing = True
+	#context = app.app.app_context()
+	context.client = app.app.test_client()
+	context.request = app.app.test_request_context()
+	yield context.client
+	#yield context.client
 
 	  # close temp db code
 	  # remove temp db code
@@ -52,6 +56,7 @@ def before_all( context ):
 	  """
 	  use_fixture(splinter_browser, context)
 	  use_fixture(flask_client, context)
+	  #models.init(environment='test')
 
 def before_tag( context, tag ):
 	  """Prepares fixtures based on tags

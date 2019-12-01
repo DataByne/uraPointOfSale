@@ -1,5 +1,6 @@
 from behave import *
 from flask import url_for
+from app import routes
 
 @given('I am on the landing page')
 def step_impl(context):
@@ -25,21 +26,23 @@ def step_impl(context):
         context.browser.find_link_by_href('/about').first.click()
         assert(context.browser.url == url_for('about'))
 
-@given('I am logged in')
+@given('I am registered')
 def step_impl(context):
     with context.request:
-        context.browser.find_link_by_href('/register').click()
+        context.browser.visit(url_for('register'))
+        print(context.browser.url)
         context.browser.find_by_xpath("//input[@name='email']").fill('exampleuser@exampleuser.com')
         context.browser.find_by_xpath("//input[@name='username']").fill('exampleusername')
         context.browser.find_by_xpath("//input[@name='password']").fill('ExamplePa33word!')
         context.browser.find_by_xpath("//input[@name='password_confirm']").fill('ExamplePa33word!')
-        context.browser.find_by_xpath("//input[@value='Register']").first.click()
+        context.browser.find_by_id("submit").first.click()
+        print(context.browser.html)
         assert(context.browser.url == url_for('login'))
-        context.browser.fill('username', 'exampleusername')
-        context.browser.fill('password', 'ExamplePa33word!')
-        context.browser.find_by_id('submit').first.click()
+        #context.browser.fill('username', 'exampleusername')
+        #context.browser.fill('password', 'ExamplePa33word!')
+        #context.browser.find_by_id('submit').first.click()
 
 @then('I see the text "{text}"')
 def step_impl(context, text):
     with context.request:
-        assert(context.browser.find_by_text(text))
+        assert(context.browser.is_text_present(text))

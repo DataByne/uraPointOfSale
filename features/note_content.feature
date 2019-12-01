@@ -3,7 +3,8 @@ Feature: Checking the contents of a file
     said note.
 
     Background: We are on the note creation page
-        Given I am logged in
+        Given I am registered
+        And I am logged in
         And we are on the note creation page
 
     Scenario: A note is created
