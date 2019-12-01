@@ -4,16 +4,16 @@ Feature: Listing notes
     Background: Someone asked to view notes
 
     Scenario: The user is not logged in
-        Given someone asks for a list of notes
-        When that person is not logged in
-        Then they are prompted to log in
+        Given I am not logged in
+        And I visit my notes
+        Then I am redirected to login
 
-    Scenario: The user is logged in
-        Given someone asks for a list of notes
-        When that person has one or more notes saved
-        Then their list of notes are displayed
+    Scenario: The user has notes
+        Given I am logged in
+        And I have more than zero notes
+        Then I see the text "You have weaved these notes!"
 
-    Scenario: The user is logged in
-        Given someone asks for a list of notes
-        When that person does not have any notes saved
-        Then a message appears saying that there are no notes
+    Scenario: The user has no notes
+        Given I am logged in
+        And I have zero notes
+        Then I see the text "You currently have no notes."

@@ -5,7 +5,7 @@
         <div class="offset-0 offset-xs-1 offset-lg-1 col-lg-10 text-center">
             {% set haveNotes = false %}
             {% set searching = false %}
-            {% if search or request.path.startswith(url_for('searchnote')) %}
+            {% if search or request.path.startswith(url_for('app.searchnote')) %}
                 {% set searching = true %}
             {% endif %}
             {% if notes and notes.count() > 0 %}
@@ -26,7 +26,7 @@
             {% endif %}
             <div class="row my-4">
                 {% if searching and search or search == '' or haveNotes %}
-                    <form id="searchform" class="col-12 col-lg-6 col-md-5" onsubmit="event.preventDefault(); $.submitForm($.joinUrl('{{ url_for('searchnote') }}', encodeURIComponent($('#query').val())), $(this).serialize(), 'GET');">
+                    <form id="searchform" class="col-12 col-lg-6 col-md-5" onsubmit="event.preventDefault(); $.submitForm($.joinUrl('{{ url_for('app.searchnote') }}', encodeURIComponent($('#query').val())), $(this).serialize(), 'GET');">
                         <input id="query" class="form-control col-lg-7 col-md-7 d-inline" type="text" placeholder="Search" aria-label="Search" value="{% if search %}{{ search }}{% endif %}" autofocus="autofocus" required>
                         <button type="submit" class="form-control btn btn-primary ml-md-2 my-2 my-md-0 col-lg-4 col-md-4 d-inline">Search</button>
                     </form>
@@ -35,12 +35,11 @@
                 {% endif %}
 
                 {% if searching %}
-                    <button class="btn btn-secondary mx-3 ml-md-3 mr-md-0 col-lg-3 col-md-4 mb-2 mb-md-0 d-inline float-right" onclick="$.navigateTo('{{ url_for('notes') }}');">Go Back to Your Notes</button>
+                    <button class="btn btn-secondary mx-3 ml-md-3 mr-md-0 col-lg-3 col-md-4 mb-2 mb-md-0 d-inline float-right" onclick="$.navigateTo('{{ url_for('app.notes') }}');">Go Back to Your Notes</button>
                 {% else %}
                     <div class="mx-3 ml-md-3 mr-md-0 col-lg-3 col-md-4 mb-2 mb-md-0 d-inline float-right"></div>
                 {% endif %}
-                
-                <button id="addnotebutton" class="btn btn-info mx-3 ml-md-2 mr-md-0 col-lg-2 col-md-2 d-inline float-right" onclick="$.navigateTo('{{ url_for('addnote') }}');">Add Note</button>
+                <button id="addnotebutton" class="btn btn-info mx-3 ml-md-2 mr-md-0 col-lg-2 col-md-2 d-inline float-right" onclick="$.navigateTo('{{ url_for('app.addnote') }}');">Add Note</button>
             </div>
             {% if haveNotes %}
             <button id="btnShowCard" class="btn btn-info">Change View</button>
@@ -54,7 +53,7 @@
                                 <p>{{ note.note | truncate(128, True) }}</p><br>
                             </div>
                             <div class="float-left">Tag: {{ taglist[note.id]}}</div>
-                            <div class="card-footer">                                    
+                            <div class="card-footer">
                                     <button class="btn btn-primary col-12" id="editnote" onclick="$.navigateTo('{{ url_for('editnote', NoteID=note.id) }}');">Edit</button>
                                     <button class="btn btn-danger col-12 mt-2" id="deletenote" onclick="$.deleteNote('{{ note.title }}', '{{ url_for('deletenote', NoteID=note.id) }}');">Delete</button>
                             </div>
@@ -81,13 +80,13 @@
                     <tbody>
                         {% for note in notes %}
                             <tr class="table table-hover table-info">
-                                <td><a href="{{ url_for('singlenote', NoteID=note.id) }}">{{ note.title | truncate(64, True) }}</a></td>
-                                <td>{{ note.note | truncate(128, True) }}</td>
+                                <td><a href="{{ url_for('app.singlenote', NoteID=note.id) }}">{{ note.title | truncate(64, True) | markup }}</a></td>
+                                <td>{{ note.note | truncate(128, True) | markup }}</td>
                                 <td>{{ taglist[note.id]}}</td>
                                 <td>{{ note.note_date | user_datetime(current_user.time_zone) }}</td>
                                 <td>
-                                    <button class="btn btn-primary col-12" id="editnote" onclick="$.navigateTo('{{ url_for('editnote', NoteID=note.id) }}');">Edit</button>
-                                    <button class="btn btn-danger col-12 mt-2" id="deletenote" onclick="$.deleteNote('{{ note.title }}', '{{ url_for('deletenote', NoteID=note.id) }}');">Delete</button>
+                                    <button class="btn btn-primary col-12" id="editnote" onclick="$.navigateTo('{{ url_for('app.editnote', NoteID=note.id) }}');">Edit</button>
+                                    <button class="btn btn-danger col-12 mt-2" id="deletenote" onclick="$.deleteNote('{{ note.title }}', '{{ url_for('app.deletenote', NoteID=note.id) }}');">Delete</button>
                                 </td>
                             </tr>
                         {% endfor %}
@@ -133,7 +132,7 @@
                     "pagingType": "full_numbers",
                     "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]]
                 });
-            }); 
+            });
         });
     </script>
     <script>
@@ -154,13 +153,13 @@
         // Function that displays new items based on page number that was clickeda
         $(".pagination li.page-item").on("click", function() {
             if ($(this).hasClass('active')) {
-                return false; 
+                return false;
             } else {
-                var currentPage = $(this).index(); 
-                $(".pagination li").removeClass('active'); 
-                $(this).addClass('active'); 
-                $("#noteCards .card").hide(); 
-                var grandTotal = notesPerPage * currentPage; 
+                var currentPage = $(this).index();
+                $(".pagination li").removeClass('active');
+                $(this).addClass('active');
+                $("#noteCards .card").hide();
+                var grandTotal = notesPerPage * currentPage;
                 // show selected notes
                 for (var i = grandTotal - notesPerPage; i < grandTotal; i++) {
                     $("#noteCards .card:eq(" + i + ")").show();
@@ -169,20 +168,20 @@
         });
 
         $("#next-page").on("click", function() {
-        var currentPage = $(".pagination li.active").index(); 
+        var currentPage = $(".pagination li.active").index();
             if (currentPage === totalPages) {
-                return false; 
+                return false;
             } else {
-                currentPage++; 
-                $(".pagination li").removeClass('active'); 
-                $("#noteCards .card").hide(); 
-                var grandTotal = notesPerPage * currentPage; 
+                currentPage++;
+                $(".pagination li").removeClass('active');
+                $("#noteCards .card").hide();
+                var grandTotal = notesPerPage * currentPage;
 
                 for (var i = grandTotal - notesPerPage; i < grandTotal; ++i) {
-                    $("#noteCards .card:eq(" + i + ")").show(); 
+                    $("#noteCards .card:eq(" + i + ")").show();
                 }
                 // Make new page number active
-                $(".pagination li.page-item:eq(" + (currentPage - 1) + ")").addClass('active'); 
+                $(".pagination li.page-item:eq(" + (currentPage - 1) + ")").addClass('active');
             }
         });
 
@@ -191,17 +190,17 @@
             if (currentPage === 1) {
                 return false;
             } else {
-                currentPage--; 
-                $(".pagination li").removeClass('active'); 
-                $("#noteCards .card").hide(); 
-                var grandTotal = notesPerPage * currentPage; 
+                currentPage--;
+                $(".pagination li").removeClass('active');
+                $("#noteCards .card").hide();
+                var grandTotal = notesPerPage * currentPage;
 
                 for (var i = grandTotal - notesPerPage; i < grandTotal; i++) {
-                $("#noteCards .card:eq(" + i + ")").show(); 
+                $("#noteCards .card:eq(" + i + ")").show();
                 }
 
-                $(".pagination li.page-item:eq(" + (currentPage - 1) + ")").addClass('active'); 
-            } 
+                $(".pagination li.page-item:eq(" + (currentPage - 1) + ")").addClass('active');
+            }
         });
     </script>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">

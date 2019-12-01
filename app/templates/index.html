@@ -6,7 +6,7 @@
             {% if current_user.is_anonymous %}
                 <h1>Welcome to Note Weaver!</h1>
                   <p>A note taking app designed to making your life easier.</p>
-                  <img src="/images/logo-dark.png" alt="Note Weaver" width="320" height="160">
+                  <img id="company logo" src="/images/logo-dark.png" alt="Note Weaver" width="320" height="160">
                   <br><br>
                   <br><br>
                   <h2>About Us</h2>
@@ -37,7 +37,7 @@
                 <div>
                   <h2>Most Recent Notes</h2>
                       {% for note in notes %}
-                          <h5 style="margin:0;"><a href="{{ url_for('singlenote', NoteID=note.id) }}">{{ note.title }}</a></h5>
+                          <h5 style="margin:0;"><a href="{{ url_for('app.singlenote', NoteID=note.id) }}">{{ note.title | markup }}</a></h5>
                       {% endfor %}
                 </div>
                 <br>
