@@ -100,25 +100,23 @@
     <script>
         $(document).ready(function () {
             $("#noteCards").addClass("d-none"); // hide show note-cards at the bigging
-            var table = $('#noteTable').DataTable({
+
+            $('#noteTable').DataTable({
                 "searching": false,
                 "pagingType": "full_numbers",
                 "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]]
             });
-            
-            table; // initialize the DataTable
+
             $("#btnShowTable").hide(); // hide table at the biggining
+
             $("#btnShowCard").click(function(){
                 $("#btnShowCard").hide();
                 $("#btnShowTable").show();
                 $("#noteCards").removeClass("d-none");
                 $("#noteTable").addClass("d-none");
-                table.destroy();
-                table = $('#noteTable').DataTable({
-                    "searching": false,
-                    "paging": false,
-                    "bInfo" : false,
-                });
+                if ( $.fn.DataTable.isDataTable('#noteTable') ) {
+                    $('#noteTable').DataTable().destroy();
+                }
             });
 
             $("#btnShowTable").click(function(){
@@ -127,8 +125,10 @@
                 $("#noteCards").addClass("d-none");
                 $("#noteTable").removeClass("d-none");
                 // Reinitialize DataTable for notes-table
-                table = $('#noteTable').DataTable({
+                //$('#noteTable').empty();
+                $('#noteTable').DataTable({
                     'retrieve': true,
+                    "paging": true,
                     "searching": false,
                     "pagingType": "full_numbers",
                     "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]]
@@ -145,7 +145,7 @@
         // add first page
         $(".pagination").append("<li class='page-item active'><a href='javascript:void(0)' class='page-link'>" + 1 + "</a></li>"); // Add first page marker
         // add next pages
-        for (var i = 2; i <= totalPages; i++) {
+        for (var i = 2; i <= totalPages + 1; ++i) {
         $(".pagination").append("<li class='page-item'><a href='javascript:void(0)' class='page-link'>" + i + "</a></li>"); // Insert page number into pagination tabs
         }
         // Add Next button
@@ -178,7 +178,7 @@
                 $("#noteCards .card").hide(); 
                 var grandTotal = notesPerPage * currentPage; 
 
-                for (var i = grandTotal - notesPerPage; i < grandTotal; i++) {
+                for (var i = grandTotal - notesPerPage; i < grandTotal; ++i) {
                     $("#noteCards .card:eq(" + i + ")").show(); 
                 }
                 // Make new page number active
