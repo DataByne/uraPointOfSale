@@ -414,13 +414,15 @@ def addnote():
 
         #This is the temporary stuff to add nots, if a better way is added this is the stuff to replace
         str = form.tags.data
-        tags_list = str.split(',')
-        for tag in tags_list:
-            tag.strip()
-            tag.strip(',')
-        note = Note.query.order_by(desc(Note.note_date)).filter_by(user_id=current_user.id).first()
-        for tag in tags_list:
-            setTag(note.id, tag)
+        if str is not None and str != '':
+            tags_list = str.split(',')
+            for tag in tags_list:
+                tag.strip()
+                tag.strip(',')
+            note = Note.query.order_by(desc(Note.note_date)).filter_by(user_id=current_user.id).first()
+            for tag in tags_list:
+                if tag is not None and tag != '':
+                    setTag(note.id, tag)
 
         #So ends the hopeful temporary stuff
 
@@ -500,6 +502,8 @@ def deletenote(NoteID):
         # Flash a successful delete message
         flash("Deleted note '" + note.title + "'.", 'success')
         # Delete the note
+        for tag in note.tags:
+            db.session.delete(tag)
         db.session.delete(note)
         db.session.commit()
     # Redirect to notes list page
