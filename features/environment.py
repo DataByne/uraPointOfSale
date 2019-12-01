@@ -21,7 +21,7 @@ def splinter_browser( context, type='chrome' ):
 		    A browser object attribute to the Behave testing module's context. The
 		    type of the browser is set to whichever the generator is provided.
 	  """
-	  context.browser = Browser('firefox')
+	  context.browser = Browser('chrome')
 	  yield context.browser
 	  context.browser.quit()
 
@@ -39,7 +39,9 @@ def flask_client(context, *args, **kwargs):
 		context.db.session.remove()
 		context.db.drop_all()'''
 	app.app.testing = True
+	app.app.config['SERVER_NAME'] = os.environ.get('SERVER_NAME') or 'localhost:5000'
 	#context = app.app.app_context()
+	#context.db = app.app.db
 	context.client = app.app.test_client()
 	context.request = app.app.test_request_context()
 	yield context.client

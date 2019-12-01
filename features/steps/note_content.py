@@ -1,61 +1,35 @@
-from behave import given, when, then
+from behave import *
+from flask import url_for
+from app import routes
 
-
-@given(u'we have a note')
+@given('I want to create a note')
 def step_impl(context):
-    raise NotImplementedError(u'STEP: Given we have a note')
+    with context.request:
+        context.browser.visit(url_for('addnote'))
+        assert(context.browser.url == 'http://localhost:5000/notes/add')
 
-
-@when(u'we implement a test')
+@given('I create a note')
 def step_impl(context):
-    raise NotImplementedError(u'STEP: When we implement a test')
+    with context.request:
+        context.browser.find_by_xpath("//input[@name='title']").fill('This is the title')
+        context.browser.find_by_xpath("//input[@name='note']").fill('This is the note')
+        context.browser.find_by_xpath("//input[@name='tags']").fill('tag, tag2, tag3')
+        context.browser.find_by_id("submit").first.click()
+        assert(context.browser.url == 'http://localhost:5000/notes')
 
-
-@then(u'we will check the contents of the notes')
+@then('The note is created')
 def step_impl(context):
-    raise NotImplementedError(u'STEP: Then we will check the contents of the notes')
+    with context.request:
+        assert(context.broser.is_text_present('This is the title') and context.broser.is_text_present('This is the note') and context.broser.is_text_present('tag, tag2, tag3'))
 
-
-@when(u'we have a test')
+@given('I try to make an empty note')
 def step_impl(context):
-    raise NotImplementedError(u'STEP: When we have a test')
+    with context.request:
+        context.browser.find_by_xpath("//input[@name='title']").fill('')
+        context.browser.find_by_xpath("//input[@name='note']").fill('')
+        context.browser.find_by_id("submit").first.click()
 
-
-@then(u'the title will be checked')
+@then('the note is not created')
 def step_impl(context):
-    raise NotImplementedError(u'STEP: Then the title will be checked')
-
-
-@given(u'we have an empty note')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Given we have an empty note')
-
-
-@then(u'an error will show that the note is empty')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then an error will show that the note is empty')
-
-
-@given(u'we have a note without a title')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Given we have a note without a title')
-
-
-@when(u'we create a note')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: When we create a note')
-
-
-@then(u'a note without a title is created')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then a note without a title is created')
-
-
-@given(u'we have a note without content in the body')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Given we have a note without content in the body')
-
-
-@then(u'a note without a body is created')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then a note without a body is created')
+    with context.request:
+        assert(context.browser.is_text_present('Title is required') or context.browser.is_text_present('Note contents is required'))
