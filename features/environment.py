@@ -1,73 +1,40 @@
 import os
 import tempfile
+from time import sleep
+from threading import Thread
+from wsgiref.simple_server import WSGIServer, WSGIRequestHandler
 from behave import fixture, use_fixture
 from splinter import Browser
 from flask_sqlalchemy import SQLAlchemy
+from app import create_app, db
 
-import app
+def before_all(context):
+    WSGIServer.allow_reuse_address = True
+    context.app = create_app(True)
+    context.app.config['SERVER_HOST'] = os.environ.get('SERVER_HOST') or 'localhost'
+    context.app.config['SERVER_PORT'] = os.environ.get('SERVER_PORT') or 5000
+    context.app.config['SERVER_NAME'] = context.app.config['SERVER_HOST'] + ':' + str(context.app.config['SERVER_PORT'])
+    context.browser = Browser('chrome')
+    context.server = WSGIServer((context.app.config['SERVER_HOST'], int(context.app.config['SERVER_PORT'])), WSGIRequestHandler)
+    context.server.set_app(context.app)
+    context.thread = Thread(target=context.server.serve_forever)
+    context.thread.start()
 
-@fixture
-def splinter_browser( context, type='chrome' ):
-	  """Sets up a splinter browser session
+def after_all(context):
+    context.server.shutdown();
+    context.thread.join()
+    context.browser.quit()
 
-	  Generator function that provides a web driver browser object for use in
-	  testing. The browser defaults to a Chrome web driver.
+def before_scenario(context, scenario):
+    context.request = context.app.test_request_context()
+    context.client = context.app.test_client()
+    context.context = context.app.app_context()
+    with context.context:
+        db.create_all()
+    sleep(1)
 
-	  Args:
-		    context:	Behave testing context
-		    type:		Specific webdriver to run
+def after_scenario(context, scenario):
+    sleep(1)
+    with context.context:
+        db.drop_all()
 
-	  Yields:
-		    A browser object attribute to the Behave testing module's context. The
-		    type of the browser is set to whichever the generator is provided.
-	  """
-	  context.browser = Browser('firefox')
-	  yield context.browser
-	  context.browser.quit()
-
-@fixture
-def flask_client(context, *args, **kwargs):
-	'''app.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-	app.app.testing = True
-	context.client = app.app.test_client()
-	context.request = app.app.test_request_context()
-	with app.app.app.app_context():
-		ontext.db = SQLAlchemy()
-		context.db.init_app.app(app.app)
-		context.db.create_all()
-		yield context.client
-		context.db.session.remove()
-		context.db.drop_all()'''
-	app.app.testing = True
-	#context = app.app.app_context()
-	context.client = app.app.test_client()
-	context.request = app.app.test_request_context()
-	yield context.client
-	#yield context.client
-
-	  # close temp db code
-	  # remove temp db code
-
-def before_all( context ):
-	  """Runs before each test
-
-	  Args:
-  		  context:	Behave testing context
-	  """
-	  use_fixture(splinter_browser, context)
-	  use_fixture(flask_client, context)
-	  #models.init(environment='test')
-
-def before_tag( context, tag ):
-	  """Prepares fixtures based on tags
-
-	  Description
-
-	  Args:
-		    context:	Behave testing context
-		    tag:		Tag passed via @fixture.[tag]
-	  """
-	  if tag == "fixture.browser":
-		  use_fixture(splinter_browser, context)
-	  if tag == "fixture.client":
-	      use_fixture(flask_client, context)

@@ -37,7 +37,7 @@
                 <div>
                   <h2>Most Recent Notes</h2>
                       {% for note in notes %}
-                          <h5 style="margin:0;"><a href="{{ url_for('singlenote', NoteID=note.id) }}">{{ note.title | markup }}</a></h5>
+                          <h5 style="margin:0;"><a href="{{ url_for('app.singlenote', NoteID=note.id) }}">{{ note.title | markup }}</a></h5>
                       {% endfor %}
                 </div>
                 <br>

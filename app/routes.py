@@ -1,19 +1,19 @@
-from app import app, db, mail, login_manager, cache
+from app import db, mail, login_manager, cache
 from datetime import datetime, timezone, timedelta
-from flask import render_template, send_from_directory, abort, flash, redirect, session, url_for, request, jsonify, Response
+from flask import render_template, send_from_directory, abort, flash, redirect, session, url_for, request, jsonify, Response, Blueprint
 from app.forms import LoginForm, RegisterForm, NoteForm, EditNoteForm, EditUserForm
 from flask_login import current_user, login_user, logout_user, login_required, fresh_login_required
-from app.models import User, Note, Tag, Note_Tags
+from app.models import User, Note, Tag, NoteTags
 from pytz import all_timezones, country_names, country_timezones
 from werkzeug.urls import url_parse
 from sqlalchemy import or_, desc
 from sqlalchemy.sql.functions import func
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
-import io
 from flask_mail import Mail, Message
-import operator
 from flask_caching import Cache
+import operator
+import io
 
 def login_expired(timeout=timedelta(minutes=1)):
     """Check whether a login session expired by timing out after a specified interval
@@ -28,6 +28,8 @@ def login_expired(timeout=timedelta(minutes=1)):
         return True
     # Session is still fresh enough
     return False
+
+app = Blueprint('app', __name__)
 
 @app.route('/')
 @app.route('/index')
@@ -162,7 +164,7 @@ def register(CountryID=None):
     """
     # Check if user is already authenticated
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('app.index'))
     # Create registration form
     form = RegisterForm()
     # Add country codes to the country code select field
@@ -188,7 +190,7 @@ def register(CountryID=None):
         # Flash a successfully register message
         flash("Succesfully registered new user '" + user.username + "'.", 'success')
         # Redirect to the login page
-        return redirect(url_for('login'))
+        return redirect(url_for('app.login'))
     # Render the registration page from the template and form
     return render_template('register.html', title="Register", form=form, country_names=country_names)
 
@@ -214,7 +216,7 @@ def user(UserID):
     count = Note.query.filter_by(user_id=user_id).count()
     #checks user is valid
     if user is None or user.id != current_user.id:
-        return redirect(url_for('index'))
+        return redirect(url_for('app.index'))
     #renders page
     return render_template('user.html', title=user.username, count=count)
 
@@ -238,12 +240,12 @@ def edituser(UserID):
     user = User.query.filter_by(id=user_id).first()
     #redirects if not the valid user
     if user is None or user.id != current_user.id:
-        return redirect(url_for('user', UserID=current_user.id))
+        return redirect(url_for('app.user', UserID=current_user.id))
     # Check if the session expired
     if login_expired():
         # redirect to the login
         flash('Please login to edit your profile.', 'info')
-        return redirect(url_for('login', next=url_for('edituser', UserID=user_id)))
+        return redirect(url_for('app.login', next=url_for('app.edituser', UserID=user_id)))
     form = EditUserForm()
     # Add country codes to the country code select field
     #This works for reasons, do not touch it or it will break
@@ -265,7 +267,7 @@ def edituser(UserID):
         if form.password.data != "":
             user.set_password(form.password.data)
         db.session.commit()
-        return redirect(url_for('user', UserID=user_id))
+        return redirect(url_for('app.user', UserID=user_id))
     #sets the fields to the current user information
     form.username.data = user.username
     form.email.data = user.email
@@ -292,12 +294,12 @@ def deleteuser(UserID):
         abort(404);
     #redirects user if they are trying to delete another users account
     if UserID is None or current_user.id != user_id:
-        return redirect(url_for('user', UserID=current_user.id))
+        return redirect(url_for('app.user', UserID=current_user.id))
     # Check if the session expired
     if login_expired(timedelta(seconds=2)):
         # redirect to the login
         flash('Please login to delete your account.', 'warning')
-        return redirect(url_for('login', next=url_for('deleteuser', UserID=user_id)))
+        return redirect(url_for('app.login', next=url_for('app.deleteuser', UserID=user_id)))
     #finds user tuple
     user = User.query.filter_by(id=user_id).first()
     flash("Successfully deleted the user '" + user.username + "' and all authored notes.", 'success');
@@ -321,7 +323,7 @@ def login():
     """
     # Check if user is already authenticated
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('app.index'))
     # Create login form
     form = LoginForm()
     # Validate the form
@@ -346,7 +348,7 @@ def login():
                 next_page = request.values.get('next')
                 #if there is no next argument or if next arg is set to a full url, redirect to index
                 if not next_page or url_parse(next_page).netloc != '':
-                    next_page = url_for('index')
+                    next_page = url_for('app.index')
                 return redirect(next_page)
         # Flash error that user could not be authenicated
         flash('Login authentication failed.', 'danger')
@@ -367,7 +369,7 @@ def logout():
     # Flash message that user logged out
     flash('Successfully logged out.', 'success')
     # Redirect to landing page
-    return redirect(url_for('index'))
+    return redirect(url_for('app.index'))
 
 @app.route('/notes')
 @login_required
@@ -424,7 +426,7 @@ def addnote():
 
         db.session.commit()
         # Redirect to notes list page
-        return redirect(url_for('notes'))
+        return redirect(url_for('app.notes'))
     # Render the add note page from the template and form
     return render_template('addnote.html', title='Add A Note', form=form)
 
@@ -449,7 +451,7 @@ def editnote(NoteID):
     # Check note exists and is authored by current user
     if note is None or note.user_id != current_user.id:
         # Redirect to notes list page
-       return redirect(url_for('notes'))
+       return redirect(url_for('app.notes'))
     # Create the edit note form
     form = EditNoteForm()
     # Validate the form
@@ -467,7 +469,7 @@ def editnote(NoteID):
         # Save the changes
         db.session.commit()
         # Redirect to the note detail page
-        return redirect(url_for('notes'))
+        return redirect(url_for('app.notes'))
     # Set the form data from the note
     form.title.data = note.title
     form.note.data = note.note
@@ -501,7 +503,7 @@ def deletenote(NoteID):
         db.session.delete(note)
         db.session.commit()
     # Redirect to notes list page
-    return redirect(url_for('notes'))
+    return redirect(url_for('app.notes'))
 
 @app.route('/notes/<NoteID>')
 @login_required
@@ -524,7 +526,7 @@ def singlenote(NoteID):
     # Check note exists and is authored by current user
     if note is None or note.user_id != current_user.id:
         # Redirect to notes list page
-        return redirect(url_for('notes'))
+        return redirect(url_for('app.notes'))
     # Render note detail from the template and note
     return render_template('singlenote.html', title=note.title, note=note)
 
@@ -582,7 +584,7 @@ def gettimezones(CountryID=None):
     return jsonify([(tz, tz) for tz in timezones])
 
 def getTagsList(NoteID):
-    links = Note_Tags.query.filter_by(note_id=NoteID).all()
+    links = NoteTags.query.filter_by(note_id=NoteID).all()
     tags = []
     for link in links:
         tmptag = Tag.query.filter_by(id=link.tag_id).first()
@@ -591,7 +593,7 @@ def getTagsList(NoteID):
     return tags
 
 def getTagsString(NoteID):
-    links = Note_Tags.query.filter_by(note_id=NoteID).all()
+    links = NoteTags.query.filter_by(note_id=NoteID).all()
     tags = []
     for link in links:
         tmptag = Tag.query.filter_by(id=link.tag_id).first()
@@ -606,6 +608,7 @@ def setTag(NoteID, tag):
         new_tag = Tag(tag=tag)
         db.session.add(new_tag)
         temp = Tag.query.filter_by(tag=tag).first()
-    new_note_tag = Note_Tags(note_id = NoteID, tag_id = temp.id)
+    new_note_tag = NoteTags(note_id = NoteID, tag_id = temp.id)
     db.session.add(new_note_tag)
     db.session.commit()
+

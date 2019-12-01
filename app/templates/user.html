@@ -12,7 +12,7 @@
                 <div class="mb-2"><b>Time Zone: </b> {{ current_user.time_zone }}</div>
                 <div class="mb-2"><b>Number of Notes: </b>{{ count }}</div>
                 <div class="mt-3 text-center">
-                    <button type="button" class="btn btn-primary col-12 col-md-3" onclick="$.navigateTo('{{ url_for('edituser', UserID=current_user.id) }}');">Edit</button>
+                    <button type="button" class="btn btn-primary col-12 col-md-3" onclick="$.navigateTo('{{ url_for('app.edituser', UserID=current_user.id) }}');">Edit</button>
                 </div>
             </div>
         </div>

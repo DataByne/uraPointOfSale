@@ -9,22 +9,40 @@ from flask_caching import Cache
 from werkzeug.exceptions import ServiceUnavailable
 import bleach
 import pytz
+import os
 
-app = Flask(__name__)
-cache = Cache(app, config={'CACHE_TYPE': 'simple'})
-app.config.from_object(Config)
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
-login_manager = LoginManager(app)
-login_manager.login_view = 'login'
-login_manager.refresh_view = 'login'
-login_manager.needs_refresh_message = "Session expired, please login again.";
-login_manager.needs_refresh_message_category = "info"
-if app.config['MAIL_USERNAME'] is None or app.config['MAIL_PASSWORD'] is None:
-    raise ServiceUnavailable('Mail service is not properly configured')
-mail = Mail(app)
+cache = Cache()
+db = SQLAlchemy()
+login_manager = LoginManager()
+mail = Mail()
+migrate = Migrate()
 
-from app import routes, models, errors
+def create_app(testing=False):
+    app = Flask(__name__)
+    app.testing = testing
+    app.config.from_object(Config)
+    if app.config['MAIL_USERNAME'] is None or app.config['MAIL_PASSWORD'] is None:
+        raise ServiceUnavailable('Mail service is not properly configured')
+    if testing:
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+    cache.init_app(app, config={'CACHE_TYPE': 'simple'})
+    db.init_app(app)
+    login_manager.init_app(app)
+    login_manager.login_view = 'login'
+    login_manager.refresh_view = 'login'
+    login_manager.needs_refresh_message = "Session expired, please login again.";
+    login_manager.needs_refresh_message_category = "info"
+    mail.init_app(app)
+    migrate.init_app(app, db)
+    # Set the markup filter
+    app.jinja_env.filters['markup'] = markup_text_filter
+    # Set the user time zone filter
+    app.jinja_env.filters['user_datetime'] = user_datetime_filter
+    with app.app_context():
+        from . import errors, models, routes
+        app.register_blueprint(routes.app)
+        app.register_blueprint(errors.app)
+        return app
 
 def user_datetime_filter(value, time_zone, format='%Y-%m-%d %I:%M:%S%p %Z'):
     """ Filters a date and time for the user's timezone
@@ -58,9 +76,4 @@ def markup_text_filter(text):
         styles=['color', 'font-family', 'font-weight'],
         protocols=['http', 'https', 'mailto']
     ))
-
-# Set the markup filter
-app.jinja_env.filters['markup'] = markup_text_filter
-# Set the user time zone filter
-app.jinja_env.filters['user_datetime'] = user_datetime_filter
 

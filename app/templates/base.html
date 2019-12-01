@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <link href="/css/jquery.datetimepicker-2.3.7.min.css" rel="stylesheet" >
     <link href="/css/bootstrap-3.4.1.min.css" rel="stylesheet" >
     <link href="/css/site.css" rel="stylesheet" />
     {% if title %}
@@ -11,6 +12,7 @@
         <title>Welcome to Note Weaver</title>
     {% endif %}
     <script src="/scripts/jquery-3.4.1.min.js"></script>
+    <script src="/scripts/jquery.datetimepicker-2.3.7.full.min.js"></script>
     <script src="/scripts/bootstrap-3.4.1.bundle.min.js"></script>
     <script src="/scripts/site.js"></script>
     <script>
@@ -28,54 +30,54 @@
             </button>
             <div class="collapse navbar-collapse justify-content-stretch" id="navbarCollapse">
                 <ul class="navbar-nav mr-auto">
-                    {% if request.path == url_for('index') or request.path == '/' %}
+                    {% if request.path == url_for('app.index') or request.path == '/' %}
                         <li class="nav-item active"><a class="nav-link" href="">Home</a></li>
                     {% else %}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('app.index') }}">Home</a></li>
                     {% endif %}
-                    {% if request.path == url_for('addnote') %}
+                    {% if request.path == url_for('app.addnote') %}
                         <li class="nav-item active"><a class="nav-link" href="">Add Note</a></li>
                     {% else %}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('addnote') }}">Add Note</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('app.addnote') }}">Add Note</a></li>
                     {% endif %}
                     {% if current_user.is_anonymous %}
                         </ul>
                         <ul class="navbar-nav">
-                            {% if request.path == url_for('about') %}
+                            {% if request.path == url_for('app.about') %}
                                 <li class="nav-item active"><a class="nav-link" href="">About Us</a></li>
                             {% else %}
-                                <li class="nav-item"><a class="nav-link" href="{{ url_for('about') }}">About Us</a></li>
+                                <li class="nav-item"><a class="nav-link" href="{{ url_for('app.about') }}">About Us</a></li>
                             {% endif %}
-                            {% if request.path == url_for('register') %}
+                            {% if request.path == url_for('app.register') %}
                                 <li class="nav-item active"><a class="nav-link" href="">Register</a></li>
                             {% else %}
-                                <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">Register</a></li>
+                                <li class="nav-item"><a class="nav-link" href="{{ url_for('app.register') }}">Register</a></li>
                             {% endif %}
-                            {% if request.path == url_for('login') %}
+                            {% if request.path == url_for('app.login') %}
                                 <li class="nav-item active"><a class="nav-link" href="">Login</a></li>
                             {% else %}
-                                <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Login</a></li>
+                                <li class="nav-item"><a class="nav-link" href="{{ url_for('app.login') }}">Login</a></li>
                             {% endif %}
                         </ul>
                     {% else %}
-                        {% if request.path == url_for('notes') %}
+                        {% if request.path == url_for('app.notes') %}
                             <li class="nav-item active"><a class="nav-link" href="">Your Notes</a></li>
                         {% else %}
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('notes') }}">Your Notes</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('app.notes') }}">Your Notes</a></li>
                         {% endif %}
                         </ul>
                         <ul class="navbar-nav">
-                            {% if request.path == url_for('about') %}
+                            {% if request.path == url_for('app.about') %}
                                 <li class="nav-item active"><a class="nav-link" href="">About Us</a></li>
                             {% else %}
-                                <li class="nav-item"><a class="nav-link" href="{{ url_for('about') }}">About Us</a></li>
+                                <li class="nav-item"><a class="nav-link" href="{{ url_for('app.about') }}">About Us</a></li>
                             {% endif %}
                               <li class="nav-item dropdown dropbottom">
                                 <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ current_user.username}}</a>
                                 <div class="dropdown-menu dropdown-menu-right dropdown-dark bg-dark border-secondary" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item text-light bg-dark" href="{%- if request.path != url_for('user', UserID=current_user.id) %}{{ url_for('user', UserID=current_user.id)}}{% endif %}">Your profile</a>
+                                    <a class="dropdown-item text-light bg-dark" href="{%- if request.path != url_for('app.user', UserID=current_user.id) %}{{ url_for('app.user', UserID=current_user.id)}}{% endif %}">Your profile</a>
                                     <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item text-light bg-dark" href="{{ url_for('logout') }}">Logout</a>
+                                    <a class="dropdown-item text-light bg-dark" href="{{ url_for('app.logout') }}">Logout</a>
                                 </div>
                             </li>
                         </ul>

@@ -197,13 +197,13 @@ $.extend({
     /**
      * Populate a time zone selector
      *
-     * @param country    The country code for the time zones
+     * @param url        The country code url for the time zones
      * @param time_zones The time zone selector to populate
      */
-     populateTimeZones: function (country, time_zones) {
+     populateTimeZones: function (url, time_zones) {
         time_zones.attr('disabled', 'disabled');
         time_zones.empty();
-        $.getJSON("{{ url_for('gettimezones') }}" + '/' + country, function(data) {
+        $.getJSON(url, function(data) {
             data.forEach(function(item) {
                 time_zones.append($('<option>', { value: item[0], text: item[1] }));
             });

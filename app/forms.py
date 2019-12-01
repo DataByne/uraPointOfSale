@@ -223,6 +223,7 @@ class NoteForm(FlaskForm):
     """
     title = StringField('Title:', validators=[InputRequired('Title is required'), DataRequired()])
     note = TextAreaField('Note:', validators=[InputRequired('Note contents is required'), DataRequired()])
+    is_reminder = SelectField('Is Reminder:')
     tags = StringField('Tags:')
     submit = SubmitField('Create Note')
 

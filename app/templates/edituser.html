@@ -4,7 +4,7 @@
     <div class="row my-5">
         <div class="offset-1 offset-md-2">
             <h1 class="text-center">Edit your profile, {{ current_user.username }}!</h1>
-            <form id="edituserform" name="edituserform" class="justify-content-center mt-4" action="" method="post" novalidate onsubmit="event.preventDefault(); $.submitForm('{{ url_for('edituser', UserID=current_user.id) }}', $(this).serialize());">
+            <form id="edituserform" name="edituserform" class="justify-content-center mt-4" action="" method="post" novalidate onsubmit="event.preventDefault(); $.submitForm('{{ url_for('app.edituser', UserID=current_user.id) }}', $(this).serialize());">
                 {{ form.hidden_tag() }}
                 <div class="form-group row col-sm-12">
                     {{ form.username.label(class="col-sm-5 col-form-label") }}
@@ -67,7 +67,7 @@
                     {% if form.country.errors %}
                         {% set country_isvalid = " is-invalid" %}
                     {% endif %}
-                    {{ form.country(class="col-sm-7 form-control" + country_isvalid, onchange="$.populateTimeZones($('#country').val(), $('#time_zone'));") }}
+                    {{ form.country(class="col-sm-7 form-control" + country_isvalid, onchange="$.populateTimeZones('" + url_for('app.gettimezones') + "/' + $('#country').val(), $('#time_zone'));") }}
                     {% for error in form.country.errors %}
                         <div class="invalid-feedback text-center">
                             {{ error }}
@@ -89,7 +89,7 @@
                 </div>
                 <div class="form-group row col-sm-12 offset-md-2 text-center">
                     {{ form.submit(class="form-control btn btn-primary col-sm-12 col-md-3") }}
-                    <button type="button" class="btn btn-danger col-sm-12 col-md-3 ml-0 ml-md-4 mt-2 mt-md-0" onclick="$.deleteUser('{{ current_user.username }}', '{{ url_for('deleteuser', UserID=current_user.id) }}');">Delete</button>
+                    <button type="button" class="btn btn-danger col-sm-12 col-md-3 ml-0 ml-md-4 mt-2 mt-md-0" onclick="$.deleteUser('{{ current_user.username }}', '{{ url_for('app.deleteuser', UserID=current_user.id) }}');">Delete</button>
                 </div>
             </form>
         </div>

@@ -4,7 +4,7 @@
     <div class="row my-5">
         <div class="offset-1 offset-sm-0 offset-lg-2">
             <h1 class="text-center">Register to start taking notes!</h1>
-            <form id="registerform" name="registerform" class="needs-validation justify-content-center mt-4" action="" method="post" novalidate onsubmit="event.preventDefault(); $.submitForm('{{ url_for('register') }}', $(this).serialize());">
+            <form id="registerform" name="registerform" class="needs-validation justify-content-center mt-4" action="" method="post" novalidate onsubmit="event.preventDefault(); $.submitForm('{{ url_for('app.register') }}', $(this).serialize());">
                 {{ form.hidden_tag() }}
                 <div class="form-group row col-sm-12">
                     {{ form.email.label(class="col-sm-5 col-form-label") }}
@@ -67,7 +67,7 @@
                     {% if form.country.errors %}
                         {% set country_isvalid = " is-invalid" %}
                     {% endif %}
-                    {{ form.country(class="col-sm-7 form-control" + country_isvalid, onclick="$.populateTimeZones($('#country').val(), $('#time_zone'))") }}
+                    {{ form.country(class="col-sm-7 form-control" + country_isvalid, onclick="$.populateTimeZones('" + url_for('app.gettimezones') + "/' + $('#country').val(), $('#time_zone'))") }}
                     {% for error in form.country.errors %}
                         <div class="invalid-feedback text-center">
                             {{ error }}

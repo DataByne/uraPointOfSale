@@ -1,12 +1,12 @@
 from behave import *
 from flask import url_for
-from app import routes
+from time import sleep
 
 @given('I am on the landing page')
 def step_impl(context):
-    with context.request:
-        context.browser.visit(url_for('index'))
-        assert(context.browser.url == url_for('index'))
+    with context.context:
+        context.browser.visit(url_for('app.index'))
+        assert(context.browser.url == url_for('app.index'))
 
 @then('I see the company name')
 def step_impl(context):
@@ -22,27 +22,24 @@ def step_impl(context):
 
 @then('I can navigate to other pages')
 def step_impl(context):
-    with context.request:
+    with context.context:
         context.browser.find_link_by_href('/about').first.click()
-        assert(context.browser.url == url_for('about'))
+        sleep(0.5)
+        assert(context.browser.url == url_for('app.about'))
 
 @given('I am registered')
 def step_impl(context):
-    with context.request:
-        context.browser.visit(url_for('register'))
-        print(context.browser.url)
+    with context.context:
+        context.browser.visit(url_for('app.register'))
         context.browser.find_by_xpath("//input[@name='email']").fill('exampleuser@exampleuser.com')
         context.browser.find_by_xpath("//input[@name='username']").fill('exampleusername')
         context.browser.find_by_xpath("//input[@name='password']").fill('ExamplePa33word!')
         context.browser.find_by_xpath("//input[@name='password_confirm']").fill('ExamplePa33word!')
-        context.browser.find_by_id("submit").first.click()
-        print(context.browser.html)
-        assert(context.browser.url == url_for('login'))
-        #context.browser.fill('username', 'exampleusername')
-        #context.browser.fill('password', 'ExamplePa33word!')
-        #context.browser.find_by_id('submit').first.click()
+        context.browser.find_by_xpath("//input[@name='submit']").first.click()
+        sleep(0.5)
+        assert(context.browser.url == url_for('app.login'))
 
 @then('I see the text "{text}"')
 def step_impl(context, text):
-    with context.request:
+    with context.context:
         assert(context.browser.is_text_present(text))
