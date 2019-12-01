@@ -63,6 +63,6 @@ def before_tag( context, tag ):
 		    tag:		Tag passed via @fixture.[tag]
 	  """
 	  if tag == "fixture.browser":
-		    use_fixture(splinter_browser, context)
+		  use_fixture(splinter_browser, context)
 	  if tag == "fixture.client":
 	      use_fixture(flask_client, context)
