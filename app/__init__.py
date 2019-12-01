@@ -28,8 +28,8 @@ def create_app(testing=False):
     cache.init_app(app, config={'CACHE_TYPE': 'simple'})
     db.init_app(app)
     login_manager.init_app(app)
-    login_manager.login_view = 'login'
-    login_manager.refresh_view = 'login'
+    login_manager.login_view = 'app.login'
+    login_manager.refresh_view = 'app.login'
     login_manager.needs_refresh_message = "Session expired, please login again.";
     login_manager.needs_refresh_message_category = "info"
     mail.init_app(app)
