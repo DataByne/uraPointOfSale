@@ -73,7 +73,7 @@ def markup_text_filter(text):
         text,
         tags=['a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em', 'i', 'li', 'ol', 'p', 'small', 'span', 'strong', 'ul'],
         attributes={'a': ['href', 'title'], 'abbr': ['title'], 'acronym': ['title'], '*': ['style']},
-        styles=['color', 'font-family', 'font-weight'],
+        styles=['*'],
         protocols=['http', 'https', 'mailto']
     ))
 
