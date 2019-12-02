@@ -21,7 +21,7 @@ Feature: Note Creation
         And I am logged in
         And I want to create a note
         And the note has no title
-        Then that note is not created
+        Then the note is not created
 
     Scenario: A note is created without a body
         Given I am registered

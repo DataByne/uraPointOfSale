@@ -28,7 +28,7 @@
                 {% if searching and search or search == '' or haveNotes %}
                     <form id="searchform" class="col-12 col-lg-6 col-md-5" onsubmit="event.preventDefault(); $.submitForm($.joinUrl('{{ url_for('app.searchnote') }}', encodeURIComponent($('#query').val())), $(this).serialize(), 'GET');">
                         <input id="query" class="form-control col-lg-7 col-md-7 d-inline" type="text" placeholder="Search" aria-label="Search" value="{% if search %}{{ search }}{% endif %}" autofocus="autofocus" required>
-                        <button type="submit" class="form-control btn btn-primary ml-md-2 my-2 my-md-0 col-lg-4 col-md-4 d-inline">Search</button>
+                        <button type="submit" id="search" class="form-control btn btn-primary ml-md-2 my-2 my-md-0 col-lg-4 col-md-4 d-inline">Search</button>
                     </form>
                 {% else %}
                     <div class="col-12 col-lg-6 col-md-5"></div>

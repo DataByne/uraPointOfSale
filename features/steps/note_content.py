@@ -17,7 +17,7 @@ def step_impl(context):
         context.browser.find_by_xpath("//textarea[@name='note']").fill('This is the note')
         context.browser.find_by_xpath("//input[@name='tags']").fill('tag, tag2, tag3')
         context.browser.find_by_id("submit").first.click()
-        sleep(1)
+        sleep(2)
         assert(context.browser.url == url_for('app.notes'))
 
 @then('The note is created')
@@ -39,5 +39,12 @@ def step_impl(context):
 def step_impl(context):
     with context.context:
         context.browser.find_by_xpath("//input[@name='title']").fill('This is the title')
+        context.browser.find_by_xpath("//input[@name='tags']").fill('tag, tag2, tag3')
+        context.browser.find_by_id("submit").first.click()
+
+@given('the note has no title')
+def step_impl(context):
+    with context.context:
+        context.browser.find_by_xpath("//textarea[@name='note']").fill('This is the note')
         context.browser.find_by_xpath("//input[@name='tags']").fill('tag, tag2, tag3')
         context.browser.find_by_id("submit").first.click()
