@@ -123,6 +123,8 @@ def user_tag_useage_png():
             else:
                 note_totals[tag] = 1
     axis = fig.add_subplot(1,1,1)
+    if len(note_totals) == 0:
+        return None
     lists = sorted(note_totals.items(), key=operator.itemgetter(1), reverse=True)
     x, y = zip(*lists)
     axis.bar(x,y)
@@ -615,4 +617,3 @@ def setTag(NoteID, tag):
     new_note_tag = NoteTags(note_id = NoteID, tag_id = temp.id)
     db.session.add(new_note_tag)
     db.session.commit()
-

@@ -21,7 +21,7 @@ def before_all(context):
     context.thread.start()
 
 def after_all(context):
-    context.server.shutdown();
+    context.server.shutdown()
     context.thread.join()
     context.browser.quit()
 
@@ -34,7 +34,7 @@ def before_scenario(context, scenario):
     sleep(1)
 
 def after_scenario(context, scenario):
-    sleep(1)
-    with context.context:
-        db.drop_all()
-
+	sleep(1)
+	with context.context:
+		context.browser.cookies.delete()
+		db.drop_all()

@@ -19,4 +19,10 @@ Feature: Front Page
 
     Scenario: I can visit the about page
         Given I am on the about page
-        Then I can see the text "About Us"
+        Then I see the text "About Us"
+
+    Scenario: I am logged in
+        Given I am registered
+        And I am logged in
+        And I am on the landing page
+        Then I see the text "Welcome back to Note Weaver!"
