@@ -5,3 +5,7 @@ install:
  - pip install pipenv
  - pipenv install
  - behave
+before_script:
+ - wget http://chromedriver.storage.googleapis.com/78.0.3904.11/chromedriver_linux64.zip
+ - unzip chromedriver_linux64.zip -d /home/travis/virtualenv/python3.7.1/bin/
+ - export CHROME_BIN=chromium-browser
