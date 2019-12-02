@@ -44,32 +44,32 @@
             {% if haveNotes %}
             <button id="btnShowCard" class="btn btn-info">Change View</button>
             <button id="btnShowTable" class="btn btn-info">Change View</button>
-                <div id="noteCards">
-                <div class=" cards card-deck">
-                    {% for note in notes %}
-                        <div class="card mt-3" style="min-width: 45%; max-width: 450px;; min-height: 500px; max-height: 500px;">
-                            <div class="card-header"><a href="{{ url_for('app.singlenote', NoteID=note.id) }}">{{ note.title }}</a></div>
-                            <div class="card-body" style=" overflow-y: scroll">
-                                <p>{{ note.note}}</p><br>
+                <div id="noteCards" class="col-12">
+                    <div class="cards card-deck col-12">
+                        {% for note in notes %}
+                            <div class="card col-12 col-md-6 mt-3">
+                                <div class="card-header"><a href="{{ url_for('app.singlenote', NoteID=note.id) }}">{{ note.title | markup }}</a></div>
+                                <div class="card-body" style="overflow-y: auto">
+                                    <p>{{ note.note | markup }}</p><br>
+                                </div>
+                                <div class="float-left">Tag: {{ taglist[note.id]}}</div>
+                                <div class="card-footer">                                    
+                                        <button class="btn btn-primary col-12" id="editnote" onclick="$.navigateTo('{{ url_for('app.editnote', NoteID=note.id) }}');">Edit</button>
+                                        <button class="btn btn-danger col-12 mt-2" id="deletenote" onclick="$.deleteNote('{{ note.title }}', '{{ url_for('app.deletenote', NoteID=note.id) }}');">Delete</button>
+                                </div>
                             </div>
-                            <div class="float-left">Tag: {{ taglist[note.id]}}</div>
-                            <div class="card-footer">                                    
-                                    <button class="btn btn-primary col-12" id="editnote" onclick="$.navigateTo('{{ url_for('app.editnote', NoteID=note.id) }}');">Edit</button>
-                                    <button class="btn btn-danger col-12 mt-2" id="deletenote" onclick="$.deleteNote('{{ note.title }}', '{{ url_for('app.deletenote', NoteID=note.id) }}');">Delete</button>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div><br>
-                <nav aria-label="Page navigation">
-                    <ul class="pagination justify-content-center">
-                        <li id="previous-page">
-                                <a class="page-link" href="javascript:void(0)" aria-label=Previous><span aria-hidden=true>&laquo;</span></a>
-                        </li>
+                        {% endfor %}
+                    </div><br>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <li id="previous-page">
+                                    <a class="page-link" href="javascript:void(0)" aria-label=Previous>Prev</a>
+                            </li>
 
-                    </ul>
-                </nav>
+                        </ul>
+                    </nav>
                 </div>
-                <table id="noteTable" class="table-bordered mb-5">
+                <table id="noteTable" class="table-bordered col-12 mb-2">
                     <thead class="table table-dark">
                         <th scope="col">Title</th>
                         <th scope="col">Note</th>
@@ -79,7 +79,7 @@
                     </thead>
                     <tbody>
                         {% for note in notes %}
-                            <tr class="table table-hover table-info">
+                            <tr class="table table-hover table-info mb-5">
                                 <td><a href="{{ url_for('app.singlenote', NoteID=note.id) }}">{{ note.title | truncate(64, True) | markup }}</a></td>
                                 <td>{{ note.note | truncate(128, True) | markup }}</td>
                                 <td>{{ taglist[note.id]}}</td>
@@ -91,7 +91,7 @@
                             </tr>
                         {% endfor %}
                     </tbody>
-                </table>
+                </table><br><br>
             {% endif %}
         </div>
     </div>
@@ -103,10 +103,10 @@
 
             $('#noteTable').DataTable({
                 "searching": false,
-                "pagingType": "full_numbers",
+                "dataTable": false,
                 "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]]
             });
-
+            $('#noteTable').removeClass("dataTable");
             $("#btnShowTable").hide(); // hide table at the biggining
 
             $("#btnShowCard").click(function(){
@@ -125,14 +125,15 @@
                 $("#noteCards").addClass("d-none");
                 $("#noteTable").removeClass("d-none");
                 // Reinitialize DataTable for notes-table
-                //$('#noteTable').empty();
+
                 $('#noteTable').DataTable({
                     'retrieve': true,
                     "paging": true,
                     "searching": false,
-                    "pagingType": "full_numbers",
+                    "row-border": false,
                     "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]]
                 });
+                $('#noteTable').removeClass("dataTable");
             }); 
         });
     </script>
@@ -151,7 +152,7 @@
             $(".pagination").append("<li class='page-item'><a href='javascript:void(0)' class='page-link'>" + i + "</a></li>"); // Insert page number into pagination tabs
         }
         // Add Next button
-        $(".pagination").append("<li id='next-page'><a href='javascript:void(0)' class='page-link' aria-label=Next><span aria-hidden=true>&raquo;</span></a></li>");
+        $(".pagination").append("<li id='next-page'><a href='javascript:void(0)' class='page-link' aria-label=Next>Next</a></li>");
 
         // Function that displays new items based on page number that was clicked
         $(".pagination li.page-item").click(function(){
@@ -205,9 +206,5 @@
             } 
         });
     });
-
     </script>
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
-    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js" ></script>
-
 {% endblock %}
