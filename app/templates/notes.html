@@ -53,10 +53,12 @@
                                     <p>{{ note.note | markup }}</p><br>
                                 </div>
                                 <div class="float-left">Tag: {{ taglist[note.id]}}</div>
-                                <div class="card-footer">                                    
+                                {% if ownAccount %}
+                                <div class="card-footer">
                                         <button class="btn btn-primary col-12" id="editnote" onclick="$.navigateTo('{{ url_for('app.editnote', NoteID=note.id) }}');">Edit</button>
                                         <button class="btn btn-danger col-12 mt-2" id="deletenote" onclick="$.deleteNote('{{ note.title }}', '{{ url_for('app.deletenote', NoteID=note.id) }}');">Delete</button>
                                 </div>
+                                {% endif %}
                             </div>
                         {% endfor %}
                     </div><br>
@@ -84,10 +86,12 @@
                                 <td>{{ note.note | truncate(128, True) | markup }}</td>
                                 <td>{{ taglist[note.id]}}</td>
                                 <td>{{ note.note_date | user_datetime(current_user.time_zone) }}</td>
+                                {% if ownAccount %}
                                 <td>
                                     <button class="btn btn-primary col-12" id="editnote" onclick="$.navigateTo('{{ url_for('app.editnote', NoteID=note.id) }}');">Edit</button>
                                     <button class="btn btn-danger col-12 mt-2" id="deletenote" onclick="$.deleteNote('{{ note.title }}', '{{ url_for('app.deletenote', NoteID=note.id) }}');">Delete</button>
                                 </td>
+                                {% endif %}
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -134,7 +138,7 @@
                     "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]]
                 });
                 $('#noteTable').removeClass("dataTable");
-            }); 
+            });
         });
     </script>
     <script>
@@ -157,13 +161,13 @@
         // Function that displays new items based on page number that was clicked
         $(".pagination li.page-item").click(function(){
             if ($(this).hasClass("active")) {
-                return false; 
+                return false;
             } else {
-                var currentPage = $(this).index(); 
-                $(".pagination li").removeClass("active"); 
-                $(this).addClass("active"); 
-                $("#noteCards .card").hide(); 
-                var grandTotal = notesPerPage * currentPage; 
+                var currentPage = $(this).index();
+                $(".pagination li").removeClass("active");
+                $(this).addClass("active");
+                $("#noteCards .card").hide();
+                var grandTotal = notesPerPage * currentPage;
                 // show selected notes
                 for (var i = grandTotal - notesPerPage; i < grandTotal; i++) {
                     $("#noteCards .card:eq(" + i + ")").show();
@@ -172,20 +176,20 @@
         });
 
         $("#next-page").click(function() {
-            var currentPage = $(".pagination li.active").index(); 
+            var currentPage = $(".pagination li.active").index();
                 if (currentPage === totalPages) {
-                    return false; 
+                    return false;
                 } else {
-                    currentPage++; 
-                    $(".pagination li").removeClass("active"); 
-                    $("#noteCards .card").hide(); 
-                    var grandTotal = notesPerPage * currentPage; 
+                    currentPage++;
+                    $(".pagination li").removeClass("active");
+                    $("#noteCards .card").hide();
+                    var grandTotal = notesPerPage * currentPage;
 
                     for (var i = grandTotal - notesPerPage; i < grandTotal; ++i) {
-                        $("#noteCards .card:eq(" + i + ")").show(); 
+                        $("#noteCards .card:eq(" + i + ")").show();
                     }
                     // Make new page number active
-                    $(".pagination li.page-item:eq(" + (currentPage -1) + ")").addClass('active'); 
+                    $(".pagination li.page-item:eq(" + (currentPage -1) + ")").addClass('active');
                 }
         });
 
@@ -194,16 +198,16 @@
             if (currentPage === 1) {
                 return false;
             } else {
-                currentPage--; 
-                $(".pagination li").removeClass("active"); 
-                $("#noteCards .card").hide(); 
-                var grandTotal = notesPerPage * currentPage; 
+                currentPage--;
+                $(".pagination li").removeClass("active");
+                $("#noteCards .card").hide();
+                var grandTotal = notesPerPage * currentPage;
 
                 for (var i = grandTotal - notesPerPage; i < grandTotal; i++) {
-                    $("#noteCards .card:eq(" + i + ")").show(); 
+                    $("#noteCards .card:eq(" + i + ")").show();
                 }
-                $(".pagination li.page-item:eq(" + (currentPage -1) + ")").addClass('active'); 
-            } 
+                $(".pagination li.page-item:eq(" + (currentPage -1) + ")").addClass('active');
+            }
         });
     });
     </script>

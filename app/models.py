@@ -76,9 +76,9 @@ class User(UserMixin, db.Model):
 
 class Tag(db.Model):
     """Tag model
-    
+
     db.Model
-    
+
     Attributes:
         id:    The tag identifier
         tag:   The name of the tage
@@ -123,6 +123,7 @@ class Note(db.Model):
     last_edited = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     reminder_date = db.Column(db.DateTime, index=True, nullable=True)
     already_reminded = db.Column(db.Boolean, index=True, default=False)
+    public_note = db.Column(db.Boolean, index=True, default=False)
     tags = db.relationship('NoteTags', back_populates='note')
 
     def __repr__(self):
@@ -138,9 +139,9 @@ class Note(db.Model):
 
 class NoteTags(db.Model):
     """NoteTags model
-    
+
     db.Model
-    
+
     Attributes:
         note_id: The note identifier
         tag_id:  The tag identifier
@@ -151,4 +152,3 @@ class NoteTags(db.Model):
     tag_id = db.Column(db.Integer, db.ForeignKey('tag.id'), primary_key=True)
     tag = db.relationship('Tag', back_populates='notes')
     note = db.relationship('Note', back_populates='tags')
-

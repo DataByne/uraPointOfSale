@@ -208,6 +208,8 @@ def user(UserID):
         Rendering of user page, redirect to index if the current user is not the user of UserID
     """
     # get the user identifier
+    userNotes = {}
+    tags = {}
     try:
         user_id = int(UserID)
     except:
@@ -219,6 +221,15 @@ def user(UserID):
     #checks user is valid
     if user is None or user.id != current_user.id:
         return redirect(url_for('app.index'))
+    if user.id != current_user.id:
+        userNotes = Note.query.filter_by(user_id=user_id, public_note=True).all()
+        for note in userNotes:
+            actual_tags = getTagsString(note.id)
+            if len(actual_tags) == 0:
+                tags[note.id] = ""
+            else:
+                tags[note.id] = actual_tags
+        return render_template('notes.html', title= (user.username + "'s Notes'"), notes=userNotes, search=False, taglist=tags, ownAccount=False)
     #renders page
     return render_template('user.html', title=user.username, count=count)
 
@@ -394,7 +405,7 @@ def notes():
         else:
             tags[note.id] = actual_tags
     #
-    return render_template('notes.html', title='Your Notes', notes=userNotes, search=False, taglist=tags)
+    return render_template('notes.html', title='Your Notes', notes=userNotes, search=False, taglist=tags, ownAccount=True)
 
 @app.route('/notes/add', methods=['GET', 'POST'])
 @login_required
@@ -410,7 +421,7 @@ def addnote():
     if request.method == 'POST' and form.validate_on_submit():
         cache.clear()
         # Create a new note from the form data
-        newnote = Note(title = form.title.data, note=form.note.data, user_id=current_user.id)
+        newnote = Note(title = form.title.data, note=form.note.data, user_id=current_user.id, public_note=form.public_note.data)
         # Add the note to the database
         db.session.add(newnote)
 
