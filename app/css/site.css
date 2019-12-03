@@ -29,3 +29,8 @@ img {
     margin: 5;
 }
 
+.card {
+    min-width: 45%;
+    height: 60vh;
+    padding: 0;
+}
