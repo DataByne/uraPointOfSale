@@ -3,46 +3,95 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="/css/jquery.datetimepicker-2.3.7.min.css" rel="stylesheet" >
+    <link href="/css/bootstrap-3.4.1.min.css" rel="stylesheet" >
     <link href="/css/site.css" rel="stylesheet" />
     {% if title %}
         <title>{{ title }} - Note Weaver</title>
     {% else %}
         <title>Welcome to Note Weaver</title>
     {% endif %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+    <script src="/scripts/jquery-3.4.1.min.js"></script>
+    <script src="/scripts/jquery.datetimepicker-2.3.7.full.min.js"></script>
+    <script src="/scripts/bootstrap-3.4.1.bundle.min.js"></script>
+    <script src="/scripts/site.js"></script>
+    <script>
+        if (window.location.pathname != '{{ request.path }}') {
+            window.history.replaceState(null, "", '{{ request.path }}');
+        }
+    </script>
   </head>
   <body>
     <header>
-        <nav role="navigation" class="navbar navbar-expand-md navbar-fixed-top navbar-dark">
-            <span class="navbar-brand">Note Weaver:</span>
+        <nav role="navigation" class="navbar navbar-expand-md navbar-fixed-top navbar-dark bg-dark">
+            <span class="navbar-brand"><img src="/images/logo-light.png" width="80" height="40"></span>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div class="collapse navbar-collapse justify-content-stretch" id="navbarCollapse">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('addnote') }}">Add Note</a></li>
-                    {% if current_user.is_anonymous %}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">Register</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Login</a></li>
+                    {% if request.path == url_for('app.index') or request.path == '/' %}
+                        <li class="nav-item active"><a class="nav-link" href="">Home</a></li>
                     {% else %}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('notes') }}">Your Notes</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('app.index') }}">Home</a></li>
+                    {% endif %}
+                    {% if request.path == url_for('app.addnote') %}
+                        <li class="nav-item active"><a class="nav-link" href="">Add Note</a></li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('app.addnote') }}">Add Note</a></li>
+                    {% endif %}
+                    {% if current_user.is_anonymous %}
+                        </ul>
+                        <ul class="navbar-nav">
+                            {% if request.path == url_for('app.about') %}
+                                <li class="nav-item active"><a class="nav-link" href="">About Us</a></li>
+                            {% else %}
+                                <li class="nav-item"><a class="nav-link" href="{{ url_for('app.about') }}">About Us</a></li>
+                            {% endif %}
+                            {% if request.path == url_for('app.register') %}
+                                <li class="nav-item active"><a class="nav-link" href="">Register</a></li>
+                            {% else %}
+                                <li class="nav-item"><a class="nav-link" href="{{ url_for('app.register') }}">Register</a></li>
+                            {% endif %}
+                            {% if request.path == url_for('app.login') %}
+                                <li class="nav-item active"><a class="nav-link" href="">Login</a></li>
+                            {% else %}
+                                <li class="nav-item"><a class="nav-link" href="{{ url_for('app.login') }}">Login</a></li>
+                            {% endif %}
+                        </ul>
+                    {% else %}
+                        {% if request.path == url_for('app.notes') %}
+                            <li class="nav-item active"><a class="nav-link" href="">Your Notes</a></li>
+                        {% else %}
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('app.notes') }}">Your Notes</a></li>
+                        {% endif %}
+                        </ul>
+                        <ul class="navbar-nav">
+                            {% if request.path == url_for('app.about') %}
+                                <li class="nav-item active"><a class="nav-link" href="">About Us</a></li>
+                            {% else %}
+                                <li class="nav-item"><a class="nav-link" href="{{ url_for('app.about') }}">About Us</a></li>
+                            {% endif %}
+                              <li class="nav-item dropdown dropbottom">
+                                <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ current_user.username}}</a>
+                                <div class="dropdown-menu dropdown-menu-right dropdown-dark bg-dark border-secondary" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item text-light bg-dark" href="{%- if request.path != url_for('app.user', UserID=current_user.id) %}{{ url_for('app.user', UserID=current_user.id)}}{% endif %}">Your profile</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item text-light bg-dark" href="{{ url_for('app.logout') }}">Logout</a>
+                                </div>
+                            </li>
+                        </ul>
                     {% endif %}
                 </ul>
-                {% if not current_user.is_anonymous %}
-                    <div class="d-none d-md-inline"><a class="nav-item" href="{{ url_for('user', UserID = current_user.id)}}">{{ current_user.username }}</a></span>
-                {% endif %}
             </div>
         </nav>
     </header>
     <main role="main" class="container">
-        <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o" crossorigin="anonymous"></script>
-        {% with messages = get_flashed_messages() %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-success" role="alert">{{ message }}</div>
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} justify-content-center text-center" role="alert">{{ message }}</div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
@@ -54,4 +103,5 @@
       <p align="center">© Team Spider 2019 <img class="pic2" src="/images/spider.gif" width="50" height="35"></p>
     </footer>
   </body>
+  <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js" ></script>
 </html>

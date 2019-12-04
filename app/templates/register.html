@@ -2,9 +2,9 @@
 
 {% block content %}
     <div class="row my-5">
-        <div class="offset-1 offset-sm-2 offset-lg-3 text-center">
-            <h1>Register to start taking notes!</h1>
-            <form class="needs-validation justify-content-center mt-4" action="" method="post" novalidate>
+        <div class="offset-1 offset-sm-0 offset-lg-2">
+            <h1 class="text-center">Register to start taking notes!</h1>
+            <form id="registerform" name="registerform" class="needs-validation justify-content-center mt-4" action="" method="post" novalidate onsubmit="event.preventDefault(); $.submitForm('{{ url_for('app.register') }}', $(this).serialize());">
                 {{ form.hidden_tag() }}
                 <div class="form-group row col-sm-12">
                     {{ form.email.label(class="col-sm-5 col-form-label") }}
@@ -14,7 +14,7 @@
                     {% endif %}
                     {{ form.email(autofocus=true, class="col-sm-7 form-control" + email_isvalid) }}
                     {% for error in form.email.errors %}
-                        <div class="invalid-feedback">
+                        <div class="invalid-feedback text-center">
                             {{ error }}
                         </div>
                     {% endfor %}
@@ -27,7 +27,7 @@
                     {% endif %}
                     {{ form.username(class="col-sm-7 form-control" + username_isvalid) }}
                     {% for error in form.username.errors %}
-                        <div class="invalid-feedback">
+                        <div class="invalid-feedback text-center">
                             {{ error }}
                         </div>
                     {% endfor %}
@@ -40,11 +40,14 @@
                     {% endif %}
                     {{ form.password(class="col-sm-7 form-control" + password_isvalid) }}
                     {% for error in form.password.errors %}
-                        <div class="invalid-feedback">
+                        <div class="invalid-feedback text-center">
                             {{ error }}
                         </div>
-                    {% endfor %}
+		                {% endfor %}
                 </div>
+		            <div class="form-group row col-sm-12 text-center">
+                   <small>Password must have one upper and lower case letter, one number, one special character, and be at least 8 characters long</small>
+ 		            </div>
                 <div class="form-group row col-sm-12">
                     {{ form.password_confirm.label(class="col-sm-5 col-form-label") }}
                     {% set password_confirm_isvalid = "" %}
@@ -53,10 +56,10 @@
                     {% endif %}
                     {{ form.password_confirm(class="col-sm-7 form-control" + password_confirm_isvalid) }}
                     {% for error in form.password_confirm.errors %}
-                        <div class="invalid-feedback">
+                        <div class="invalid-feedback text-center">
                             {{ error }}
                         </div>
-                    {% endfor %}
+		    {% endfor %}
                 </div>
                 <div class="form-group row col-sm-12">
                     {{ form.country.label(class="col-sm-5 col-form-label") }}
@@ -64,9 +67,9 @@
                     {% if form.country.errors %}
                         {% set country_isvalid = " is-invalid" %}
                     {% endif %}
-                    {{ form.country(class="col-sm-7 form-control" + country_isvalid) }}
+                    {{ form.country(class="col-sm-7 form-control" + country_isvalid, onclick="$.populateTimeZones('" + url_for('app.gettimezones') + "/' + $('#country').val(), $('#time_zone'))") }}
                     {% for error in form.country.errors %}
-                        <div class="invalid-feedback">
+                        <div class="invalid-feedback text-center">
                             {{ error }}
                         </div>
                     {% endfor %}
@@ -79,41 +82,15 @@
                     {% endif %}
                     {{ form.time_zone(class="col-sm-7 form-control" + time_zone_isvalid) }}
                     {% for error in form.time_zone.errors %}
-                        <div class="invalid-feedback">
+                        <div class="invalid-feedback text-center">
                             {{ error }}
                         </div>
                     {% endfor %}
                 </div>
-                <div class="form-group row offset-sm-4 col-sm-4">
+                <div class="form-group row offset-sm-4 col-sm-4 text-center">
                     {{ form.submit(class="form-control btn btn-primary") }}
                 </div>
             </form>
         </div>
     </div>
-    <script charset="utf-8" type="text/javascript">
-        $(function() {
-            // Update timezones select
-            function updateTimezones() {
-                var time_zone = $('#time_zone');
-                time_zone.attr('disabled', 'disabled');
-                time_zone.empty();
-                $.getJSON("{{ url_for('gettimezones') }}" + '/' + $('#country').val(), function(data) {
-                    data.forEach(function(item) {
-                        time_zone.append(
-                            $('<option>', {
-                                value: item[0],
-                                text: item[1]
-                            })
-                        );
-                    });
-                    time_zone.removeAttr('disabled');
-                });
-            }
-            // On country select change
-            $('#country').change(function() {
-                updateTimezones();
-            });
-        });
-    </script>
 {% endblock %}
-

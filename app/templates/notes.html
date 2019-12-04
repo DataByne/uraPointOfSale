@@ -3,44 +3,208 @@
 {% block content %}
     <div class="row mt-5">
         <div class="offset-0 offset-xs-1 offset-lg-1 col-lg-10 text-center">
-            {% if notes.count() == 0 %}
-                <h1>You currently have no notes, {{ current_user.username }}.</h1>
-                <button class="btn btn-primary mt-4 mb-5" onclick="window.location.href = '{{ url_for('addnote') }}';">Add Note</button>
+            {% set haveNotes = false %}
+            {% set searching = false %}
+            {% if search or request.path.startswith(url_for('app.searchnote')) %}
+                {% set searching = true %}
+            {% endif %}
+            {% if notes and notes.count() > 0 %}
+                {% set haveNotes = true %}
+            {% endif %}
+            {% if searching and search and search != '' %}
+                {% if haveNotes %}
+                    <h1>These are the notes matching your search.</h1>
+                {% else %}
+                    <h1>You currently have no notes matching your search.</h1>
+                {% endif %}
+            {% elif search == '' %}
+                 <h1>Search your notes.</h1>
+            {% elif haveNotes %}
+                <h1>You have weaved these notes!</h1>
             {% else %}
-                <h1>These are your notes, {{ current_user.username }}!</h1>
-                <button class="btn btn-primary my-4 float-right" onclick="window.location.href = '{{ url_for('addnote') }}';">Add Note</button>
-                <table class="table-bordered mb-5 col-sm-12">
+                <h1>You currently have no notes.</h1>
+            {% endif %}
+            <div class="row my-4">
+                {% if searching and search or search == '' or haveNotes %}
+                    <form id="searchform" class="col-12 col-lg-6 col-md-5" onsubmit="event.preventDefault(); $.submitForm($.joinUrl('{{ url_for('app.searchnote') }}', encodeURIComponent($('#query').val())), $(this).serialize(), 'GET');">
+                        <input id="query" class="form-control col-lg-7 col-md-7 d-inline" type="text" placeholder="Search" aria-label="Search" value="{% if search %}{{ search }}{% endif %}" autofocus="autofocus" required>
+                        <button type="submit" id="search" class="form-control btn btn-primary ml-md-2 my-2 my-md-0 col-lg-4 col-md-4 d-inline">Search</button>
+                    </form>
+                {% else %}
+                    <div class="col-12 col-lg-6 col-md-5"></div>
+                {% endif %}
+
+                {% if searching %}
+                    <button class="btn btn-secondary mx-3 ml-md-3 mr-md-0 col-lg-3 col-md-4 mb-2 mb-md-0 d-inline float-right" onclick="$.navigateTo('{{ url_for('app.notes') }}');">Go Back to Your Notes</button>
+                {% else %}
+                    <div class="mx-3 ml-md-3 mr-md-0 col-lg-3 col-md-4 mb-2 mb-md-0 d-inline float-right"></div>
+                {% endif %}
+                <button id="addnotebutton" class="btn btn-info mx-3 ml-md-2 mr-md-0 col-lg-2 col-md-2 d-inline float-right" onclick="$.navigateTo('{{ url_for('app.addnote') }}');">Add Note</button>
+            </div>
+            {% if haveNotes %}
+            <button id="btnShowCard" class="btn btn-info">Change View</button>
+            <button id="btnShowTable" class="btn btn-info">Change View</button>
+                <div id="noteCards" class="col-12">
+                    <div class="cards card-deck col-12">
+                        {% for note in notes %}
+                            <div class="card col-12 col-md-6 mt-3">
+                                <div class="card-header"><a href="{{ url_for('app.singlenote', NoteID=note.id) }}">{{ note.title | markup }}</a></div>
+                                <div class="card-body" style="overflow-y: auto">
+                                    <p>{{ note.note | markup }}</p><br>
+                                </div>
+                                <div class="float-left">Tag: {{ taglist[note.id]}}</div>
+                                <div class="card-footer">                                    
+                                        <button class="btn btn-primary col-12" id="editnote" onclick="$.navigateTo('{{ url_for('app.editnote', NoteID=note.id) }}');">Edit</button>
+                                        <button class="btn btn-danger col-12 mt-2" id="deletenote" onclick="$.deleteNote('{{ note.title }}', '{{ url_for('app.deletenote', NoteID=note.id) }}');">Delete</button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div><br>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <li id="previous-page">
+                                    <a class="page-link" href="javascript:void(0)" aria-label=Previous>Prev</a>
+                            </li>
+
+                        </ul>
+                    </nav>
+                </div>
+                <table id="noteTable" class="table-bordered col-12 mb-2">
                     <thead class="table table-dark">
                         <th scope="col">Title</th>
                         <th scope="col">Note</th>
+                        <th scope="col">Tags</th>
                         <th scope="col">Date</th>
                         <th scope="col">Actions</th>
                     </thead>
                     <tbody>
                         {% for note in notes %}
-                            <tr class="table table-hover table-info">
-                                <td><a href="{{ url_for('singlenote', NoteID=note.id) }}">{{ note.title }}</a></td>
-                                <td>{{ note.note | truncate(32, True) }}</td>
+                            <tr class="table table-hover table-info mb-5">
+                                <td><a href="{{ url_for('app.singlenote', NoteID=note.id) }}">{{ note.title | truncate(64, True) | markup }}</a></td>
+                                <td>{{ note.note | truncate(128, True) | markup }}</td>
+                                <td>{{ taglist[note.id]}}</td>
                                 <td>{{ note.note_date | user_datetime(current_user.time_zone) }}</td>
                                 <td>
-                                    <button class="btn btn-primary col-12 col-xl-5" id="editnote" onclick="editNote('{{ url_for('editnote', NoteID=note.id) }}');">Edit</button>
-                                    <button class="btn btn-danger col-12 col-xl-5 ml-xl-1" id="deletenote" onclick="deleteNote('{{ note.title }}', '{{ url_for('deletenote', NoteID=note.id) }}');">Delete</button>
+                                    <button class="btn btn-primary col-12" id="editnote" onclick="$.navigateTo('{{ url_for('app.editnote', NoteID=note.id) }}');">Edit</button>
+                                    <button class="btn btn-danger col-12 mt-2" id="deletenote" onclick="$.deleteNote('{{ note.title }}', '{{ url_for('app.deletenote', NoteID=note.id) }}');">Delete</button>
                                 </td>
                             </tr>
                         {% endfor %}
                     </tbody>
-                </table>
+                </table><br><br>
             {% endif %}
         </div>
     </div>
+
     <script>
-        function editNote(url) {
-            window.location.href = url;
+        'use strict';
+        $(document).ready(function () {
+            $("#noteCards").addClass("d-none"); // hide show note-cards at the bigging
+
+            $('#noteTable').DataTable({
+                "searching": false,
+                "dataTable": false,
+                "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]]
+            });
+            $('#noteTable').removeClass("dataTable");
+            $("#btnShowTable").hide(); // hide table at the biggining
+
+            $("#btnShowCard").click(function(){
+                $("#btnShowCard").hide();
+                $("#btnShowTable").show();
+                $("#noteCards").removeClass("d-none");
+                $("#noteTable").addClass("d-none");
+                if ( $.fn.DataTable.isDataTable('#noteTable') ) {
+                    $('#noteTable').DataTable().destroy();
+                }
+            });
+
+            $("#btnShowTable").click(function(){
+                $("#btnShowCard").show();
+                $("#btnShowTable").hide();
+                $("#noteCards").addClass("d-none");
+                $("#noteTable").removeClass("d-none");
+                // Reinitialize DataTable for notes-table
+
+                $('#noteTable').DataTable({
+                    'retrieve': true,
+                    "paging": true,
+                    "searching": false,
+                    "row-border": false,
+                    "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]]
+                });
+                $('#noteTable').removeClass("dataTable");
+            }); 
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+        var numberOfNotes = $('#noteCards .card').length;
+        var notesPerPage = 4;
+        // Get number of pages
+        $('#noteCards .card:gt(' + (notesPerPage - 1) + ')').hide();
+        var totalPages = Math.ceil(numberOfNotes / notesPerPage);
+        // add first page
+        $(".pagination").append("<li class='page-item active'><a href='javascript:void(0)' class='page-link'>" + 1 + "</a></li>"); // Add first page marker
+        // add next pages
+
+        for (var i = 2; i <= totalPages; i++) {
+            $(".pagination").append("<li class='page-item'><a href='javascript:void(0)' class='page-link'>" + i + "</a></li>"); // Insert page number into pagination tabs
         }
-        function deleteNote(title, url) {
-            if (confirm("Are you sure you want to delete the note '" + title + "'?")) {
-                window.location.href = url;
+        // Add Next button
+        $(".pagination").append("<li id='next-page'><a href='javascript:void(0)' class='page-link' aria-label=Next>Next</a></li>");
+
+        // Function that displays new items based on page number that was clicked
+        $(".pagination li.page-item").click(function(){
+            if ($(this).hasClass("active")) {
+                return false; 
+            } else {
+                var currentPage = $(this).index(); 
+                $(".pagination li").removeClass("active"); 
+                $(this).addClass("active"); 
+                $("#noteCards .card").hide(); 
+                var grandTotal = notesPerPage * currentPage; 
+                // show selected notes
+                for (var i = grandTotal - notesPerPage; i < grandTotal; i++) {
+                    $("#noteCards .card:eq(" + i + ")").show();
+                }
             }
-        }
+        });
+
+        $("#next-page").click(function() {
+            var currentPage = $(".pagination li.active").index(); 
+                if (currentPage === totalPages) {
+                    return false; 
+                } else {
+                    currentPage++; 
+                    $(".pagination li").removeClass("active"); 
+                    $("#noteCards .card").hide(); 
+                    var grandTotal = notesPerPage * currentPage; 
+
+                    for (var i = grandTotal - notesPerPage; i < grandTotal; ++i) {
+                        $("#noteCards .card:eq(" + i + ")").show(); 
+                    }
+                    // Make new page number active
+                    $(".pagination li.page-item:eq(" + (currentPage -1) + ")").addClass('active'); 
+                }
+        });
+
+        $("#previous-page").click(function() {
+            var currentPage = $('.pagination li.active').index();
+            if (currentPage === 1) {
+                return false;
+            } else {
+                currentPage--; 
+                $(".pagination li").removeClass("active"); 
+                $("#noteCards .card").hide(); 
+                var grandTotal = notesPerPage * currentPage; 
+
+                for (var i = grandTotal - notesPerPage; i < grandTotal; i++) {
+                    $("#noteCards .card:eq(" + i + ")").show(); 
+                }
+                $(".pagination li.page-item:eq(" + (currentPage -1) + ")").addClass('active'); 
+            } 
+        });
+    });
     </script>
 {% endblock %}
