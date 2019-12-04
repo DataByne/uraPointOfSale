@@ -10,7 +10,7 @@ from selenium.webdriver.common.keys import Keys
 def step_impl(context):
     with context.context:
         context.browser.visit(url_for('app.notes'))
-        context.browser.find_by_id('editnote').first.click()
+        context.browser.find_by_name('editnote').first.click()
         context.browser.find_by_xpath("//input[@name='title']").fill(' and even more title')
         context.browser.find_by_id("submit").first.click()
         sleep(1)
@@ -20,7 +20,7 @@ def step_impl(context):
 def step_impl(context):
     with context.context:
         context.browser.visit(url_for('app.notes'))
-        context.browser.find_by_id('deletenote').first.click()
+        context.browser.find_by_name('deletenote').first.click()
         alert = context.browser.get_alert()
         alert.accept()
         sleep(1)
