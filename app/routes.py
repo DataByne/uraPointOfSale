@@ -426,8 +426,13 @@ def addnote():
     # Validate the form
     if request.method == 'POST' and form.validate_on_submit():
         cache.clear()
+        is_public = None
+        if form.public_note.data == "True":
+            is_public = True
+        else:
+            is_public = False
         # Create a new note from the form data
-        newnote = Note(title = form.title.data, note=form.note.data, user_id=current_user.id, public_note=form.public_note.data)
+        newnote = Note(title = form.title.data, note=form.note.data, user_id=current_user.id, public_note=is_public)
         # Add the note to the database
         db.session.add(newnote)
 
@@ -438,13 +443,11 @@ def addnote():
             tags_list_raw = str.split(',')
             tag_list = []
             for tag in tags_list_raw:
-                tag.strip(',')
-                tag.strip()
-                if not tag in tag_list and tag is not None and tag != '':
-                    tag_list.append(tag)
+                temp = tag.strip(',').strip()
+                if not temp in tag_list and temp is not None and temp != '' and temp != ' ':
+                    tag_list.append(temp)
 
             for tag in tag_list:
-                print("'" + tag + "'")
                 setTag(note.id, tag)
 
         #So ends the hopeful temporary stuff
