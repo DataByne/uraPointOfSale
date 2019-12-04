@@ -199,11 +199,11 @@ def register(CountryID=None):
     # Render the registration page from the template and form
     return render_template('register.html', title="Register", form=form, country_names=country_names)
 
-@app.route("/user/<Username>")
+@app.route("/user/<string:Username>")
 def publicUser(Username):
     user = User.query.filter_by(username=Username).first()
     if user is None:
-        return redirect(url_for('index'))
+        return redirect(url_for('app.index'))
     userNotes = Note.query.filter_by(user_id=user.id, public_note=True)
     tags = {}
     for note in userNotes:
@@ -216,7 +216,7 @@ def publicUser(Username):
     return render_template('publicnotes.html', title=(Username + "'s Notes"), notes=userNotes, search=False, taglist=tags, user=user)
 
 
-@app.route("/user/<UserID>")
+@app.route("/user/<int:UserID>")
 @login_required
 def user(UserID):
     """Route for user page
