@@ -85,8 +85,8 @@
                                 <td>{{ taglist[note.id]}}</td>
                                 <td>{{ note.note_date | user_datetime(current_user.time_zone) }}</td>
                                 <td>
-                                    <button class="btn btn-primary col-12" id="editnote" onclick="$.navigateTo('{{ url_for('app.editnote', NoteID=note.id) }}');">Edit</button>
-                                    <button class="btn btn-danger col-12 mt-2" id="deletenote" onclick="$.deleteNote('{{ note.title }}', '{{ url_for('app.deletenote', NoteID=note.id) }}');">Delete</button>
+                                    <button class="btn btn-primary col-12" id="editnote" name="editnote" onclick="$.navigateTo('{{ url_for('app.editnote', NoteID=note.id) }}');">Edit</button>
+                                    <button class="btn btn-danger col-12 mt-2" id="deletenote" name="deletenote" onclick="$.deleteNote('{{ note.title }}', '{{ url_for('app.deletenote', NoteID=note.id) }}');">Delete</button>
                                 </td>
                             </tr>
                         {% endfor %}
