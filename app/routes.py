@@ -210,7 +210,7 @@ def publicUser(Username):
         else:
             tags[note.id] = actual_tags
     #
-    return render_template('notes.html', title=(Username + "'s Notes"), notes=userNotes, search=False, taglist=tags, ownAccount=False)
+    return render_template('publicnotes.html', title=(Username + "'s Notes"), notes=userNotes, search=False, taglist=tags, user=user)
 
 
 @app.route("/user/<UserID>")
@@ -385,6 +385,8 @@ def logout():
     logout_user()
     # Flash message that user logged out
     flash('Successfully logged out.', 'success')
+    #clears the cache
+    cache.clear()
     # Redirect to landing page
     return redirect(url_for('app.index'))
 
@@ -431,15 +433,19 @@ def addnote():
 
         #This is the temporary stuff to add nots, if a better way is added this is the stuff to replace
         str = form.tags.data
+        note = Note.query.order_by(desc(Note.note_date)).filter_by(user_id=current_user.id).first()
         if str is not None and str != '':
-            tags_list = str.split(',')
-            for tag in tags_list:
-                tag.strip()
+            tags_list_raw = str.split(',')
+            tag_list = []
+            for tag in tags_list_raw:
                 tag.strip(',')
-            note = Note.query.order_by(desc(Note.note_date)).filter_by(user_id=current_user.id).first()
-            for tag in tags_list:
-                if tag is not None and tag != '':
-                    setTag(note.id, tag)
+                tag.strip()
+                if not tag in tag_list and tag is not None and tag != '':
+                    tag_list.append(tag)
+
+            for tag in tag_list:
+                print("'" + tag + "'")
+                setTag(note.id, tag)
 
         #So ends the hopeful temporary stuff
 
@@ -483,7 +489,10 @@ def editnote(NoteID):
         # Set note to form data
         note.title = form.title.data
         note.note = form.note.data
-        note.public_note = form.public_note.data
+        if form.public_note.data == "True":
+            note.public_note = True
+        else:
+            note.public_note = False
         # Update note last edited timestamp to now
         note.last_edited = datetime.utcnow()
         # Save the changes
@@ -494,7 +503,7 @@ def editnote(NoteID):
     form.title.data = note.title
     form.note.data = note.note
     form.tags.data = getTagsString(note_id)
-    form.public_note.data = note.public_note
+    form.public_note.data = str(note.public_note)
     # Render the edit not page from the template and form
     return render_template('editnote.html', title='Edit', form=form, NoteID=note_id)
 
@@ -529,7 +538,6 @@ def deletenote(NoteID):
     return redirect(url_for('app.notes'))
 
 @app.route('/notes/<NoteID>')
-@login_required
 def singlenote(NoteID):
     """Route for note detail
 
@@ -546,12 +554,22 @@ def singlenote(NoteID):
         abort(404);
     # Query note by identifier
     note = Note.query.filter_by(id=note_id).first()
-    # Check note exists and is authored by current user
-    if note is None or note.user_id != current_user.id:
-        # Redirect to notes list page
+    #makes sure the note exists
+    if note is None:
         return redirect(url_for('app.notes'))
-    # Render note detail from the template and note
-    return render_template('singlenote.html', title=note.title, note=note, public=note.public_note)
+    #checks to see if the user is logged in and if they are the creator of the note
+    elif not current_user.is_anonymous and current_user.id == note.user_id:
+        return render_template('singlenote.html', title=note.title, note=note, public=note.public_note, owner=True)
+    #if the user is not the creator of the note and the note is public show it to them
+    elif note.public_note:
+        return render_template('singlenote.html', title=note.title, note=note, public=True, owner=False)
+    #if the note is private and they are not the user get redirected to the other user's page
+    else:
+        user = User.query.filter_by(id=note.user_id).first()
+        if user is None:
+            return redirect(url_for('app.notes'))
+        else:
+            return redirect(url_for('app.publicnotes', user.username))
 
 @app.route('/notes/search/')
 @app.route('/notes/search')

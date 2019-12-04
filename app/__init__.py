@@ -51,7 +51,7 @@ def user_datetime_filter(value, time_zone, format='%Y-%m-%d %I:%M:%S%p %Z'):
         Date and time for user's timezone or UTC
     """
     # Check current user exists and there is no time zone supplied
-    if current_user and not time_zone:
+    if current_user and not time_zone and not current_user.is_anonymous:
         # Set the user time zone
         time_zone = current_user.time_zone
     # Localize the timestamp to UTC
@@ -76,4 +76,3 @@ def markup_text_filter(text):
         styles=['color', 'background-color', 'font-family', 'font-size', 'font-decoration'],
         protocols=['http', 'https', 'mailto']
     ))
-

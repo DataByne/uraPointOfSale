@@ -53,12 +53,10 @@
                                     <p>{{ note.note | markup }}</p><br>
                                 </div>
                                 <div class="float-left">Tag: {{ taglist[note.id]}}</div>
-                                {% if ownAccount %}
                                 <div class="card-footer">
                                         <button class="btn btn-primary col-12" id="editnote" onclick="$.navigateTo('{{ url_for('app.editnote', NoteID=note.id) }}');">Edit</button>
                                         <button class="btn btn-danger col-12 mt-2" id="deletenote" onclick="$.deleteNote('{{ note.title }}', '{{ url_for('app.deletenote', NoteID=note.id) }}');">Delete</button>
                                 </div>
-                                {% endif %}
                             </div>
                         {% endfor %}
                     </div><br>
@@ -86,12 +84,10 @@
                                 <td>{{ note.note | truncate(128, True) | markup }}</td>
                                 <td>{{ taglist[note.id]}}</td>
                                 <td>{{ note.note_date | user_datetime(current_user.time_zone) }}</td>
-                                {% if ownAccount %}
                                 <td>
                                     <button class="btn btn-primary col-12" id="editnote" onclick="$.navigateTo('{{ url_for('app.editnote', NoteID=note.id) }}');">Edit</button>
                                     <button class="btn btn-danger col-12 mt-2" id="deletenote" onclick="$.deleteNote('{{ note.title }}', '{{ url_for('app.deletenote', NoteID=note.id) }}');">Delete</button>
                                 </td>
-                                {% endif %}
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -104,7 +100,6 @@
         'use strict';
         $(document).ready(function () {
             $("#noteCards").addClass("d-none"); // hide show note-cards at the bigging
-
             $('#noteTable').DataTable({
                 "searching": false,
                 "dataTable": false,
@@ -112,7 +107,6 @@
             });
             $('#noteTable').removeClass("dataTable");
             $("#btnShowTable").hide(); // hide table at the biggining
-
             $("#btnShowCard").click(function(){
                 $("#btnShowCard").hide();
                 $("#btnShowTable").show();
@@ -122,14 +116,12 @@
                     $('#noteTable').DataTable().destroy();
                 }
             });
-
             $("#btnShowTable").click(function(){
                 $("#btnShowCard").show();
                 $("#btnShowTable").hide();
                 $("#noteCards").addClass("d-none");
                 $("#noteTable").removeClass("d-none");
                 // Reinitialize DataTable for notes-table
-
                 $('#noteTable').DataTable({
                     'retrieve': true,
                     "paging": true,
@@ -151,13 +143,11 @@
         // add first page
         $(".pagination").append("<li class='page-item active'><a href='javascript:void(0)' class='page-link'>" + 1 + "</a></li>"); // Add first page marker
         // add next pages
-
         for (var i = 2; i <= totalPages; i++) {
             $(".pagination").append("<li class='page-item'><a href='javascript:void(0)' class='page-link'>" + i + "</a></li>"); // Insert page number into pagination tabs
         }
         // Add Next button
         $(".pagination").append("<li id='next-page'><a href='javascript:void(0)' class='page-link' aria-label=Next>Next</a></li>");
-
         // Function that displays new items based on page number that was clicked
         $(".pagination li.page-item").click(function(){
             if ($(this).hasClass("active")) {
@@ -174,7 +164,6 @@
                 }
             }
         });
-
         $("#next-page").click(function() {
             var currentPage = $(".pagination li.active").index();
                 if (currentPage === totalPages) {
@@ -184,7 +173,6 @@
                     $(".pagination li").removeClass("active");
                     $("#noteCards .card").hide();
                     var grandTotal = notesPerPage * currentPage;
-
                     for (var i = grandTotal - notesPerPage; i < grandTotal; ++i) {
                         $("#noteCards .card:eq(" + i + ")").show();
                     }
@@ -192,7 +180,6 @@
                     $(".pagination li.page-item:eq(" + (currentPage -1) + ")").addClass('active');
                 }
         });
-
         $("#previous-page").click(function() {
             var currentPage = $('.pagination li.active').index();
             if (currentPage === 1) {
@@ -202,7 +189,6 @@
                 $(".pagination li").removeClass("active");
                 $("#noteCards .card").hide();
                 var grandTotal = notesPerPage * currentPage;
-
                 for (var i = grandTotal - notesPerPage; i < grandTotal; i++) {
                     $("#noteCards .card:eq(" + i + ")").show();
                 }

@@ -223,8 +223,8 @@ class NoteForm(FlaskForm):
     """
     title = StringField('Title:', validators=[InputRequired('Title is required'), DataRequired()])
     note = TextAreaField('Note:', validators=[InputRequired('Note contents is required'), DataRequired()])
-    is_reminder = SelectField('Is Reminder:', coerce=bool, choices=[(False, 'No'), (True, 'Yes')])
-    public_note = SelectField('Public Note:', coerce=bool, choices=[(False, 'No'), (True, 'Yes')])
+    is_reminder = SelectField('Is Reminder:', choices=[('False', 'No'), ('True', 'Yes')])
+    public_note = SelectField('Public Note:', choices=[('False', 'No'), ('True', 'Yes')])
     tags = StringField('Tags:')
     submit = SubmitField('Create Note')
 
@@ -241,8 +241,8 @@ class EditNoteForm(FlaskForm):
     """
     title = StringField('Title:', validators=[InputRequired('Title is required'), DataRequired()])
     note = TextAreaField('Note:', validators=[InputRequired('Note contents is required'), DataRequired()])
-    is_reminder = SelectField('Is Reminder:', coerce=bool, choices=[(False, 'No'), (True, 'Yes')])
-    public_note = SelectField('Public Note:', coerce=bool, choices=[(False, 'No'), (True, 'Yes')])
+    is_reminder = SelectField('Is Reminder:', choices=[('False', 'No'), ('True', 'Yes')])
+    public_note = SelectField('Public Note:', choices=[('False', 'No'), ('True', 'Yes')])
     submit = SubmitField('Save')
     tags = StringField('Tags:')
     delete = SubmitField('Delete')

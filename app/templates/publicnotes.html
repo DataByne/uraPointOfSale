@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="row mt-5">
+        <div class="offset-0 offset-xs-1 offset-lg-1 col-lg-10 text-center">
+            {% set haveNotes = false %}
+            {% set searching = false %}
+            {% if search or request.path.startswith(url_for('app.searchnote')) %}
+                {% set searching = true %}
+            {% endif %}
+            {% if notes and notes.count() > 0 %}
+                {% set haveNotes = true %}
+            {% endif %}
+            {% if searching and search and search != '' %}
+                {% if haveNotes %}
+                    <h1>These are the notes matching your search.</h1>
+                {% else %}
+                    <h1>{{ user.username }} currently have no notes matching your search.</h1>
+                {% endif %}
+            {% elif search == '' %}
+                 <h1>Search {{ user.username }}'s notes.</h1>
+            {% elif haveNotes %}
+                <h1>{{ user.username }} have weaved these notes!</h1>
+            {% else %}
+                <h1>{{ user.username }} currently have no public notes.</h1>
+            {% endif %}
+            <div class="row my-4">
+                {% if searching and search or search == '' or haveNotes %}
+                    <form id="searchform" class="col-12 col-lg-6 col-md-5" onsubmit="event.preventDefault(); $.submitForm($.joinUrl('{{ url_for('app.searchnote') }}', encodeURIComponent($('#query').val())), $(this).serialize(), 'GET');">
+                        <input id="query" class="form-control col-lg-7 col-md-7 d-inline" type="text" placeholder="Search" aria-label="Search" value="{% if search %}{{ search }}{% endif %}" autofocus="autofocus" required>
+                        <button type="submit" id="search" class="form-control btn btn-primary ml-md-2 my-2 my-md-0 col-lg-4 col-md-4 d-inline">Search</button>
+                    </form>
+                {% else %}
+                    <div class="col-12 col-lg-6 col-md-5"></div>
+                {% endif %}
+
+                {% if searching %}
+                    <button class="btn btn-secondary mx-3 ml-md-3 mr-md-0 col-lg-3 col-md-4 mb-2 mb-md-0 d-inline float-right" onclick="$.navigateTo('{{ url_for('app.publicnotes', user.username) }}');">Go Back to {{ user.username }}'s Notes</button>
+                {% else %}
+                    <div class="mx-3 ml-md-3 mr-md-0 col-lg-3 col-md-4 mb-2 mb-md-0 d-inline float-right"></div>
+                {% endif %}
+            </div>
+            {% if haveNotes %}
+            <table id="noteTable" class="table-bordered col-12 mb-2">
+                <thead class="table table-dark">
+                    <th scope="col">Title</th>
+                    <th scope="col">Note</th>
+                    <th scope="col">Tags</th>
+                    <th scope="col">Date</th>
+                </thead>
+                <tbody>
+                    {% for note in notes %}
+                        <tr class="table table-hover table-info mb-5">
+                            <td><a href="{{ url_for('app.singlenote', NoteID=note.id) }}">{{ note.title | truncate(64, True) | markup }}</a></td>
+                            <td>{{ note.note | truncate(128, True) | markup }}</td>
+                            <td>{{ taglist[note.id]}}</td>
+                            <td>{{ note.note_date | user_datetime(current_user.time_zone) }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table><br><br>
+            {% endif %}
+          </div>
+        </div>
+{% endblock %}
