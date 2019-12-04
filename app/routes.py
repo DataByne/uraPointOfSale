@@ -42,6 +42,7 @@ def index():
     userNotes = None
     numNotes = None
     time = None
+    hasTags = False
     average_count = 0
     if not current_user.is_anonymous:
         userNotes = Note.query.order_by(desc(Note.note_date)).filter_by(user_id=current_user.id).limit(5).all()
@@ -52,10 +53,12 @@ def index():
         temp = 0
         for note in notes:
             temp = temp + len(note.note)
+            if not hasTags and len(getTagsList(note.id)) > 0:
+                hasTags = True
         if len(notes) != 0:
             average_count = temp / len(notes)
             average_count = int(average_count)
-    return render_template('index.html', title='Home', notes=userNotes, num=numNotes, time=time, average_count=average_count)
+    return render_template('index.html', title='Home', notes=userNotes, num=numNotes, time=time, average_count=average_count, hasTags=hasTags)
 
 @app.route('/css/<path:path>')
 def send_css(path):

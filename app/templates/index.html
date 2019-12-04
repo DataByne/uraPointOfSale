@@ -70,7 +70,9 @@
                         </p>
                     <p><b>Average Length of Note: </b>{{ average_count }}</p>
                     <img src="/images/user_activity_by_weekday.png" alt="User Activity By Week">
+                    {% if hasTags %}
                     <img src="/images/user_tag_useage.png" alt="User Tag Usage">
+                    {% endif %}
                     <br><br>
                     {% endif %}
                 </div>
