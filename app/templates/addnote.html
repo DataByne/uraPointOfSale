@@ -46,6 +46,19 @@
                     </div>
                 {% endfor %}
             </div>
+            <div class="d-none" id="rem_date" >
+                {{ form.reminder_date.label(class="col-md-2 col-form-label") }}
+                {% set reminder_date_isvalid = "" %}
+                {% if form.tags.errors %}
+                    {% set reminder_date_isvalid = " is-invalid" %}
+                {% endif %}
+                {{ form.reminder_date(class="col-md-10 h-100 form-control" + reminder_date_isvalid) }}
+                {% for error in form.tags.errors %}
+                    <div class="invalid-feedback text-center">
+                        {{ error }}
+                    </div>
+                {% endfor %}
+            </div>
             <div class="form-group row">
                 {{ form.public_note.label(class="col-md-2 col-form-label") }}
                 {% set public_note_isvalid = "" %}
@@ -81,4 +94,14 @@
             </div>
         </form>
     </div>
+    <script>
+        $('#reminder_date').datetimepicker({
+            format:'Y.m.d H:i',
+            inline:true,
+            lang:'en'
+        });
+        $('#is_reminder').change(function () {
+            $('#rem_date').toggleClass('d-none');
+        });
+    </script>
 {% endblock %}

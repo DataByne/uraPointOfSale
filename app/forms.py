@@ -224,9 +224,12 @@ class NoteForm(FlaskForm):
     title = StringField('Title:', validators=[InputRequired('Title is required'), DataRequired()])
     note = TextAreaField('Note:', validators=[InputRequired('Note contents is required'), DataRequired()])
     is_reminder = SelectField('Is Reminder:', choices=[('False', 'No'), ('True', 'Yes')])
+    reminder_date = StringField('Remider Date & Time:')
     public_note = SelectField('Public Note:', choices=[('False', 'No'), ('True', 'Yes')])
     tags = StringField('Tags:')
     submit = SubmitField('Create Note')
+
+
 
 class EditNoteForm(FlaskForm):
     """Form for editing a note
@@ -242,6 +245,8 @@ class EditNoteForm(FlaskForm):
     title = StringField('Title:', validators=[InputRequired('Title is required'), DataRequired()])
     note = TextAreaField('Note:', validators=[InputRequired('Note contents is required'), DataRequired()])
     is_reminder = SelectField('Is Reminder:', choices=[('False', 'No'), ('True', 'Yes')])
+    reminder_date = StringField('Remider Date & Time:')
+
     public_note = SelectField('Public Note:', choices=[('False', 'No'), ('True', 'Yes')])
     submit = SubmitField('Save')
     tags = StringField('Tags:')

@@ -430,12 +430,22 @@ def addnote():
     if request.method == 'POST' and form.validate_on_submit():
         cache.clear()
         is_public = None
+
+        if form.is_reminder.data == "True":
+            is_reminder = True
+        else:
+            is_reminder = False
         if form.public_note.data == "True":
             is_public = True
         else:
             is_public = False
+
+        if is_reminder:
+            reminder_date = datetime.strptime(form.reminder_date.data, '%Y.%m.%d %H:%M')
+        else:
+            reminder_date = None
         # Create a new note from the form data
-        newnote = Note(title = form.title.data, note=form.note.data, user_id=current_user.id, public_note=is_public)
+        newnote = Note(title = form.title.data, note=form.note.data, user_id=current_user.id, public_note=is_public, reminder_date= reminder_date)
         # Add the note to the database
         db.session.add(newnote)
 
