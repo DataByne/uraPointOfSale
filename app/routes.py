@@ -196,20 +196,33 @@ def register(CountryID=None):
     # Render the registration page from the template and form
     return render_template('register.html', title="Register", form=form, country_names=country_names)
 
+@app.route("/user/<Username>")
+def publicUser(Username):
+    user = User.query.filter_by(username=Username).first()
+    if user is None:
+        return redirect(url_for('index'))
+    userNotes = Note.query.filter_by(user_id=user.id, public_note=True)
+    tags = {}
+    for note in userNotes:
+        actual_tags = getTagsString(note.id)
+        if len(actual_tags) == 0:
+            tags[note.id] = ""
+        else:
+            tags[note.id] = actual_tags
+    #
+    return render_template('notes.html', title=(Username + "'s Notes"), notes=userNotes, search=False, taglist=tags, ownAccount=False)
+
+
 @app.route("/user/<UserID>")
 @login_required
 def user(UserID):
     """Route for user page
-
     Parameters:
         UserID: self explanatory, passed by the html page
-
     Returns:
         Rendering of user page, redirect to index if the current user is not the user of UserID
     """
     # get the user identifier
-    userNotes = {}
-    tags = {}
     try:
         user_id = int(UserID)
     except:
@@ -221,15 +234,6 @@ def user(UserID):
     #checks user is valid
     if user is None or user.id != current_user.id:
         return redirect(url_for('app.index'))
-    if user.id != current_user.id:
-        userNotes = Note.query.filter_by(user_id=user_id, public_note=True).all()
-        for note in userNotes:
-            actual_tags = getTagsString(note.id)
-            if len(actual_tags) == 0:
-                tags[note.id] = ""
-            else:
-                tags[note.id] = actual_tags
-        return render_template('notes.html', title= (user.username + "'s Notes'"), notes=userNotes, search=False, taglist=tags, ownAccount=False)
     #renders page
     return render_template('user.html', title=user.username, count=count)
 
@@ -479,6 +483,7 @@ def editnote(NoteID):
         # Set note to form data
         note.title = form.title.data
         note.note = form.note.data
+        note.public_note = form.public_note.data
         # Update note last edited timestamp to now
         note.last_edited = datetime.utcnow()
         # Save the changes
@@ -489,6 +494,7 @@ def editnote(NoteID):
     form.title.data = note.title
     form.note.data = note.note
     form.tags.data = getTagsString(note_id)
+    form.public_note.data = note.public_note
     # Render the edit not page from the template and form
     return render_template('editnote.html', title='Edit', form=form, NoteID=note_id)
 
@@ -545,7 +551,7 @@ def singlenote(NoteID):
         # Redirect to notes list page
         return redirect(url_for('app.notes'))
     # Render note detail from the template and note
-    return render_template('singlenote.html', title=note.title, note=note)
+    return render_template('singlenote.html', title=note.title, note=note, public=note.public_note)
 
 @app.route('/notes/search/')
 @app.route('/notes/search')

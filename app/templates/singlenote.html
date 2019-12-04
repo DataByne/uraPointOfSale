@@ -11,6 +11,8 @@
                 <button type="button" class="btn btn-secondary col-3" onclick="$.goBack();">Back</button>
             </div>
             <div class="mt-3">
+                <small>This note is {% if public %}public{% else %}private{% endif %}.</small>
+                <br>
                 <small>Created: {{ note.note_date | user_datetime(current_user.time_zone) }}</small>
             </div>
             {% if note.note_date | user_datetime(current_user.time_zone) != note.last_edited | user_datetime(current_user.time_zone) %}
