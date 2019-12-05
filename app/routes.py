@@ -509,6 +509,10 @@ def editnote(NoteID):
             note.public_note = True
         else:
             note.public_note = False
+        if form.is_reminder.data == "True":
+            note.reminder_date = datetime.strptime(form.reminder_date.data, '%Y.%m.%d %H:%M')
+        else:
+            note.reminder_date = None
         # Update note last edited timestamp to now
         note.last_edited = datetime.utcnow()
         # Save the changes
@@ -520,6 +524,9 @@ def editnote(NoteID):
     form.note.data = note.note
     form.tags.data = getTagsString(note_id)
     form.public_note.data = str(note.public_note)
+    if note.reminder_date != None:
+        form.is_reminder.data = "True"
+        form.reminder_date.data = note.reminder_date
     # Render the edit not page from the template and form
     return render_template('editnote.html', title='Edit', form=form, NoteID=note_id)
 

@@ -5,6 +5,7 @@ from wtforms.validators import InputRequired, DataRequired, Email, EqualTo, Vali
 from pytz import all_timezones, country_names, country_timezones
 from app.models import User
 import re
+from datetime import datetime
 
 class LoginForm(FlaskForm):
     """Form for logging into the site
@@ -229,6 +230,12 @@ class NoteForm(FlaskForm):
     tags = StringField('Tags:')
     submit = SubmitField('Create Note')
 
+    def validate_reminder_date(self, reminder_date):
+        try:
+            datetime.strptime(reminder_date.data, '%Y.%m.%d %H:%M')
+        except:
+            print("VAlidation Failed")
+            raise ValidationError('Invalid reminder date.')
 
 
 class EditNoteForm(FlaskForm):

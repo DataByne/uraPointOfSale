@@ -46,7 +46,7 @@
                     </div>
                 {% endfor %}
             </div>
-            <div class="d-none" id="rem_date" >
+            <div class="d-none" id="rem_date">
                     {{ form.reminder_date.label(class="col-md-2 col-form-label") }}
                     {% set reminder_date_isvalid = "" %}
                     {% if form.tags.errors %}
@@ -59,6 +59,11 @@
                         </div>
                     {% endfor %}
                 </div>
+                {% if form.is_reminder.data == "True" %}
+                <script>
+                  $('#rem_date').toggleClass('d-none');
+                </script>
+                {% endif %}
             <div class="form-group row">
                 {{ form.public_note.label(class="col-md-2 col-form-label") }}
                 {% set public_note_isvalid = "" %}
